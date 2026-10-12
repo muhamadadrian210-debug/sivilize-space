@@ -54,7 +54,7 @@ export default function LandingPage() {
       a: 'Tidak sama sekali. Seluruh pengelolaan katalog produk, layanan, pengubahan info kontak, hingga pergantian tema tampilan dilakukan lewat browser di ponsel Anda melalui Client Dashboard SivilizeSpace.',
     },
     {
-      q: 'Bisakah saya menggunakan domain pribadi seperti www.tokosaya.com?',
+      q: 'Bisakah saya menggunakan domain pribadi seperti www.bisnissaya.com?',
       a: 'Bisa banget! Untuk sewa tahunan pada Paket Pro dan Bisnis, Anda mendapatkan domain pribadi gratis (.my.id, .biz.id, atau .COM). Jika Anda sudah memiliki domain sendiri sebelumnya, tim teknis kami akan menyambungkannya secara gratis ke sistem Anycast Edge kami.',
     },
   ];

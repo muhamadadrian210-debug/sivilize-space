@@ -85,13 +85,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         message: nextStatus
-          ? `Toko "${currentStore.store_name}" berhasil DIAKTIFKAN kembali.`
-          : `EMERGENCY KILL-SWITCH: Toko "${currentStore.store_name}" dinonaktifkan (SUSPENDED).`,
+          ? `Website "${currentStore.store_name}" berhasil DIAKTIFKAN kembali.`
+          : `EMERGENCY KILL-SWITCH: Website "${currentStore.store_name}" dinonaktifkan (SUSPENDED).`,
         store: updated,
       });
     }
 
-    // Aksi 2: Perpanjang Masa Aktif Sewa Toko Manual (CEO Approval)
+    // Aksi 2: Perpanjang Masa Aktif Sewa Website Manual (CEO Approval)
     if (action === 'extend_subscription') {
       const days = days_to_add || 30;
       const { data: currentStore } = await supabaseAdmin
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (!currentStore) {
-        return NextResponse.json({ error: 'Toko tidak ditemukan.' }, { status: 404 });
+        return NextResponse.json({ error: 'Website tidak ditemukan.' }, { status: 404 });
       }
 
       const currentExpiry = currentStore.expired_at ? new Date(currentStore.expired_at) : new Date();
@@ -130,13 +130,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Aksi 3: Hapus Permanen Toko (Clean Up)
+    // Aksi 3: Hapus Permanen Website (Clean Up)
     if (action === 'delete_store') {
       const { error } = await supabaseAdmin.from('stores').delete().eq('id', store_id);
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
-      return NextResponse.json({ success: true, message: 'Toko berhasil dihapus permanen.' });
+      return NextResponse.json({ success: true, message: 'Website berhasil dihapus permanen.' });
     }
 
     return NextResponse.json({ error: 'Aksi tidak dikenali.' }, { status: 400 });

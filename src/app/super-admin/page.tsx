@@ -111,8 +111,8 @@ export default function SuperAdminPage() {
   // Emergency Kill-Switch Toggle
   const handleToggleKillSwitch = async (store: Store) => {
     const confirmText = store.is_active
-      ? `PERINGATAN: Anda yakin ingin me-nonaktifkan (SUSPEND) toko "${store.store_name}" secara darurat? Toko akan langsung mati dari publik!`
-      : `Aktifkan kembali toko "${store.store_name}"?`;
+      ? `PERINGATAN: Anda yakin ingin me-nonaktifkan (SUSPEND) website "${store.store_name}" secara darurat? Website akan langsung mati dari publik!`
+      : `Aktifkan kembali website "${store.store_name}"?`;
 
     if (!confirm(confirmText)) return;
 
@@ -127,7 +127,7 @@ export default function SuperAdminPage() {
         setActionMessage(data.message);
         fetchDashboardData();
       } else {
-        alert(data.error || 'Gagal mengubah status toko.');
+        alert(data.error || 'Gagal mengubah status website.');
       }
     } catch {
       alert('Terjadi kesalahan koneksi.');
@@ -136,7 +136,7 @@ export default function SuperAdminPage() {
 
   // Manual Subscription Extension
   const handleExtendSubscription = async (store: Store, days: number) => {
-    if (!confirm(`Perpanjang masa sewa toko "${store.store_name}" selama +${days} hari?`)) return;
+    if (!confirm(`Perpanjang masa sewa website "${store.store_name}" selama +${days} hari?`)) return;
 
     try {
       const res = await fetch('/api/super-admin/stores', {
@@ -162,7 +162,7 @@ export default function SuperAdminPage() {
 
   // Delete Store
   const handleDeleteStore = async (store: Store) => {
-    if (!confirm(`HAPUS PERMANEN: Toko "${store.store_name}" beserta seluruh produknya akan dihapus permanen dari Supabase. Lanjutkan?`)) return;
+    if (!confirm(`HAPUS PERMANEN: Website "${store.store_name}" beserta seluruh datanya akan dihapus permanen dari Supabase. Lanjutkan?`)) return;
 
     try {
       const res = await fetch('/api/super-admin/stores', {
@@ -172,10 +172,10 @@ export default function SuperAdminPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setActionMessage(`Toko "${store.store_name}" berhasil dihapus.`);
+        setActionMessage(`Website "${store.store_name}" berhasil dihapus.`);
         fetchDashboardData();
       } else {
-        alert(data.error || 'Gagal menghapus toko.');
+        alert(data.error || 'Gagal menghapus website.');
       }
     } catch {
       alert('Terjadi kesalahan koneksi.');
@@ -346,19 +346,19 @@ export default function SuperAdminPage() {
         {/* 1. Platform Executive Metrics */}
         <section className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-neutral-400 uppercase">Total Toko</span>
+            <span className="text-[11px] font-mono text-neutral-400 uppercase">Total Website</span>
             <p className="text-3xl font-black text-white font-mono mt-1">{stats.total_stores}</p>
             <span className="text-[10px] text-neutral-500 mt-2">Seluruh ekosistem WaaS</span>
           </div>
 
           <div className="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-emerald-400 uppercase">Toko Aktif (Live)</span>
+            <span className="text-[11px] font-mono text-emerald-400 uppercase">Website Aktif (Live)</span>
             <p className="text-3xl font-black text-emerald-300 font-mono mt-1">{stats.active_stores}</p>
             <span className="text-[10px] text-emerald-500 mt-2">Anycast Edge Aktif</span>
           </div>
 
           <div className="p-5 rounded-2xl bg-rose-950/20 border border-rose-900/40 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-rose-400 uppercase">Toko Suspended</span>
+            <span className="text-[11px] font-mono text-rose-400 uppercase">Website Suspended</span>
             <p className="text-3xl font-black text-rose-300 font-mono mt-1">{stats.suspended_stores}</p>
             <span className="text-[10px] text-rose-500 mt-2">Dinonaktifkan / Expired</span>
           </div>
@@ -376,13 +376,13 @@ export default function SuperAdminPage() {
           </div>
         </section>
 
-        {/* 2. Tenant Control Center (Daftar Seluruh Toko) */}
+        {/* 2. Tenant Control Center (Daftar Seluruh Website) */}
         <section className="rounded-3xl bg-neutral-900 border border-neutral-800 overflow-hidden shadow-xl">
           <div className="p-6 border-b border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-black text-white">Manajemen Toko Penyewa (Tenants)</h2>
+              <h2 className="text-lg font-black text-white">Manajemen Website Penyewa (Tenants)</h2>
               <p className="text-xs text-neutral-400">
-                Kontrol hak tayang, perpanjangan sewa manual, dan tombol darurat pemblokiran toko
+                Kontrol hak tayang, perpanjangan sewa manual, dan tombol darurat pemblokiran website
               </p>
             </div>
 
@@ -394,7 +394,7 @@ export default function SuperAdminPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari toko / slug / HP..."
+                  placeholder="Cari website / slug / HP..."
                   className="pl-9 pr-3.5 py-1.5 rounded-xl bg-black border border-neutral-800 text-xs text-white focus:outline-none focus:border-rose-500 w-full sm:w-56 font-mono"
                 />
               </div>
@@ -436,7 +436,7 @@ export default function SuperAdminPage() {
             <table className="w-full text-left text-xs">
               <thead className="bg-black/60 text-neutral-400 font-mono text-[11px] uppercase border-b border-neutral-800">
                 <tr>
-                  <th className="p-4 pl-6">Nama Toko & Subdomain</th>
+                  <th className="p-4 pl-6">Nama Bisnis & Subdomain</th>
                   <th className="p-4">Kategori & Template</th>
                   <th className="p-4">Kontak Pemilik</th>
                   <th className="p-4">Masa Berlaku Sewa</th>
@@ -458,7 +458,7 @@ export default function SuperAdminPage() {
                             target="_blank"
                             rel="noreferrer"
                             className="text-neutral-500 hover:text-white"
-                            title="Kunjungi website toko"
+                            title="Kunjungi website publik"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                           </a>
@@ -533,7 +533,7 @@ export default function SuperAdminPage() {
                                 ? 'bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800'
                                 : 'bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800'
                             }`}
-                            title={store.is_active ? 'Matikan Toko Seketika' : 'Aktifkan Toko'}
+                            title={store.is_active ? 'Matikan Website Seketika' : 'Aktifkan Website'}
                           >
                             <Power className="w-3.5 h-3.5" />
                             <span className="text-[10px] uppercase font-mono">
@@ -557,7 +557,7 @@ export default function SuperAdminPage() {
                             type="button"
                             onClick={() => handleDeleteStore(store)}
                             className="p-2 rounded-xl bg-neutral-800 hover:bg-rose-950 hover:text-rose-400 text-neutral-400 transition-colors cursor-pointer"
-                            title="Hapus Toko Permanen"
+                            title="Hapus Website Permanen"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

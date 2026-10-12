@@ -945,9 +945,10 @@ export default function RakitWebPage() {
   const [faqLayout, setFaqLayout] = useState<'accordion_1' | 'grid_cards_2'>('accordion_1');
   const [layoutStudioTab, setLayoutStudioTab] = useState<'catalog' | 'contact' | 'gallery' | 'testimonials' | 'about' | 'faq'>('catalog');
 
-  // --- STATE IDENTITAS & KONTEN TOKO OTOMATIS BERADAPTASI ---
+  // --- STATE IDENTITAS & KONTEN WEBSITE OTOMATIS BERADAPTASI ---
   const [storeName, setStoreName] = useState(BUSINESS_PRESETS.fnb.storeName);
-  const [heroHeadline, setHeroHeadline] = useState(BUSINESS_PRESETS.fnb.heroHeadline);
+  const heroHeadlineState = useState(BUSINESS_PRESETS.fnb.heroHeadline);
+  const [heroHeadline, setHeroHeadline] = heroHeadlineState;
   const [heroSubhead, setHeroSubhead] = useState(BUSINESS_PRESETS.fnb.heroSubhead);
   const [heroBadge, setHeroBadge] = useState(BUSINESS_PRESETS.fnb.heroBadge);
   const [promoText, setPromoText] = useState(BUSINESS_PRESETS.fnb.promoText);
@@ -961,7 +962,7 @@ export default function RakitWebPage() {
   const [aboutStoryData, setAboutStoryData] = useState(BUSINESS_PRESETS.fnb.aboutStory);
   const [categoriesList, setCategoriesList] = useState(BUSINESS_PRESETS.fnb.categoriesList);
 
-  // --- STATE MULTI-HALAMAN KUSTOM TOKO (+RP 50.000 / HALAMAN / TAHUN) ---
+  // --- STATE MULTI-HALAMAN KUSTOM WEBSITE (+RP 50.000 / HALAMAN / TAHUN) ---
   const [customPagesList, setCustomPagesList] = useState<ConfigCustomPage[]>(BUSINESS_PRESETS.fnb.pages);
   const [newCustomPageTitle, setNewCustomPageTitle] = useState('');
 
@@ -1041,7 +1042,7 @@ export default function RakitWebPage() {
     },
   ];
 
-  // --- STATE KATALOG MENU & FOTO PRODUK TOKO (BEBAS TARUH FOTO MENU) ---
+  // --- STATE KATALOG MENU & FOTO PRODUK WEBSITE (BEBAS TARUH FOTO MENU) ---
   const [productsList, setProductsList] = useState<ConfigProductItem[]>(BUSINESS_PRESETS.fnb.products);
 
   // --- STATE PAKET ADD-ON OPSIONAL RESMI (PRD BAB III & BAB XI) ---
@@ -1120,7 +1121,7 @@ export default function RakitWebPage() {
   const [selectedSurface, setSelectedSurface] = useState<'solid' | 'frosted' | 'deep' | 'flat'>('solid');
   const [selectedRadius, setSelectedRadius] = useState<'sharp' | 'crisp' | 'rounded' | 'pill'>('rounded');
   const [selectedLoading, setSelectedLoading] = useState<'instant' | 'shimmer' | 'progressbar' | 'pulse'>('instant');
-  const [selectedCheckoutChannel, setSelectedCheckoutChannel] = useState<'wa_direct' | 'bank_transfer' | 'pos_cashier'>('wa_direct');
+  const [selectedCheckoutChannel, setSelectedCheckoutChannel] = useState<'instant_web' | 'bank_transfer' | 'pos_cashier'>('instant_web');
 
   // --- KUSTOMISASI DETAIL TATA LETAK & BESAR KECIL TEKS (KONTROL PENUH) ---
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
@@ -1188,7 +1189,7 @@ export default function RakitWebPage() {
     {
       id: 'botanical',
       name: 'Botanical Organik',
-      desc: 'Nuansa daun lembut toko herbal & kopi',
+      desc: 'Nuansa daun lembut bisnis herbal & kafe',
       url: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1200&q=80',
     },
   ];
@@ -1370,14 +1371,14 @@ export default function RakitWebPage() {
     },
     {
       id: '3',
-      name: '3 Kolom (Standar Toko)',
+      name: '3 Kolom (Standar Bisnis)',
       desc: 'Keseimbangan sempurna antara jumlah produk dan kelegaan visual katalog.',
       price: 0,
     },
     {
       id: '4',
       name: '4 Kolom (Katalog Padat)',
-      desc: 'Ideal untuk minimarket, grosir, toko perkakas & inventaris banyak.',
+      desc: 'Ideal untuk minimarket, grosir, distributor perkakas & inventaris banyak.',
       price: 25000,
     },
     {
@@ -1410,7 +1411,7 @@ export default function RakitWebPage() {
     {
       id: 'centered',
       name: 'Minimalist Centered Logo',
-      desc: 'Logo toko di tengah dengan menu split kiri-kanan ala butik Paris.',
+      desc: 'Logo bisnis di tengah dengan menu split kiri-kanan ala butik Paris.',
       price: 25000,
     },
     {
@@ -1477,35 +1478,35 @@ export default function RakitWebPage() {
     {
       id: 'pulse',
       name: 'Brand Logo Pulse Intro',
-      desc: 'Logo toko berdenyut halus 0.3 detik pertama saat website pertama kali dibuka.',
+      desc: 'Logo bisnis berdenyut halus 0.3 detik pertama saat website pertama kali dibuka.',
       price: 25000,
     },
   ];
 
-  // METODE CHECKOUT & TRANSAKSI PENGUNJUNG WEBSITE (TIDAK DIPAKSAKAN MAYAR)
+  // METODE TRANSAKSI MANDIRI PENGUNJUNG DI DALAM WEBSITE (100% SELF-SERVE)
   const CHECKOUT_CHANNELS = [
     {
-      id: 'wa_direct',
-      name: 'Direct WhatsApp Web Order (Paling Populer)',
-      badge: '100% Bebas Potongan',
-      desc: 'Format order terstruktur lengkap dengan nama pemesan, daftar item, dan alamat langsung masuk ke chat WhatsApp pemilik bisnis.',
-      buyerFlow: 'Pengunjung klik pesan -> invoice terformat rapi terkirim ke nomor WA pemilik.',
+      id: 'instant_web',
+      name: 'Pesan & Booking Mandiri di Web (Self-Serve)',
+      badge: '100% Selesai di Web',
+      desc: 'Pengunjung memesan atau booking langsung di dalam website Anda tanpa harus chat manual. Data order tercatat otomatis.',
+      buyerFlow: 'Pengunjung pilih item -> isi data langsung di website -> pesanan terekam otomatis di sistem.',
       price: 0,
     },
     {
       id: 'bank_transfer',
-      name: 'Transfer Rekening Bank / QRIS Pribadi Bisnis',
+      name: 'Pembayaran QRIS & Transfer Langsung di Website',
       badge: 'Langsung ke Rekening Anda',
-      desc: 'Pengunjung mentransfer langsung ke rekening bank BCA/Mandiri/BRI atau QRIS bisnis milik Anda. Uang 100% di tangan Anda tanpa perantara.',
-      buyerFlow: 'Pengunjung bayar ke rekening Anda -> kirim struk transfer konfirmasi ke sistem.',
+      desc: 'Pengunjung bertransaksi atau scan QRIS langsung di layar website Anda. Uang 100% di tangan Anda tanpa perantara.',
+      buyerFlow: 'Pengunjung scan QRIS di web -> pembayaran terverifikasi otomatis.',
       price: 0,
     },
     {
       id: 'pos_cashier',
-      name: 'Ambil di Tempat / Bayar di Kasir (Pickup & COD)',
-      badge: 'Cocok Lokasi Fisik & Kafe',
-      desc: 'Pengunjung memilih barang online untuk diambil langsung di lokasi fisik atau bayar tunai di kasir.',
-      buyerFlow: 'Pengunjung terima kode pesanan -> bayar tunai / debit saat ambil pesanan di lokasi fisik.',
+      name: 'Reservasi / Bayar di Tempat (Self-Checkin)',
+      badge: 'Cocok Jasa & Lokasi Fisik',
+      desc: 'Pengunjung memesan online lewat website untuk diambil atau dilayani langsung di lokasi fisik bisnis Anda.',
+      buyerFlow: 'Pengunjung terima kode reservasi website -> dilayani langsung di lokasi fisik Anda.',
       price: 0,
     },
   ];
@@ -1596,7 +1597,7 @@ export default function RakitWebPage() {
       title: newCustomPageTitle.trim(),
       badge: 'Halaman Kustom',
       category: 'custom',
-      summary: `Halaman khusus "${newCustomPageTitle.trim()}" yang dibuat mandiri oleh pemilik toko.`,
+      summary: `Halaman khusus "${newCustomPageTitle.trim()}" yang dibuat mandiri oleh pemilik website.`,
       icon: '📄',
     };
 
@@ -1645,7 +1646,7 @@ export default function RakitWebPage() {
 
   const handleDeleteProduct = (productId: string) => {
     if (productsList.length <= 1) {
-      alert('Minimal harus ada 1 produk aktif di etalase toko Anda.');
+      alert('Minimal harus ada 1 produk aktif di etalase website Anda.');
       return;
     }
     setProductsList((prev) => prev.filter((item) => item.id !== productId));
@@ -2534,7 +2535,7 @@ export default function RakitWebPage() {
                     <button
                       key={ch.id}
                       type="button"
-                      onClick={() => setSelectedCheckoutChannel(ch.id as 'wa_direct' | 'bank_transfer' | 'pos_cashier')}
+                      onClick={() => setSelectedCheckoutChannel(ch.id as 'instant_web' | 'bank_transfer' | 'pos_cashier')}
                       className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-start justify-between gap-4 ${
                         selectedCheckoutChannel === ch.id
                           ? 'border-neutral-950 bg-neutral-950 text-white shadow-xs'
@@ -3971,7 +3972,7 @@ export default function RakitWebPage() {
                                           type="button"
                                           className={`py-1 px-2.5 ${getButtonStyleClass()} bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 text-[9px] font-bold group-hover:bg-emerald-600 transition-colors shrink-0`}
                                         >
-                                          {selectedCheckoutChannel === 'wa_direct' ? 'Pesan WA' : selectedCheckoutChannel === 'bank_transfer' ? 'Beli' : 'Ambil'}
+                                          {selectedCheckoutChannel === 'instant_web' ? 'Pesan di Web' : selectedCheckoutChannel === 'bank_transfer' ? 'Bayar di Web' : 'Reservasi di Web'}
                                         </button>
                                       </div>
                                     ))}
@@ -3979,7 +3980,7 @@ export default function RakitWebPage() {
                                 </div>
                               )}
 
-                              {/* SECTION: CERITA TOKO / NILAI (ABOUT) BERDASARKAN LAYOUT */}
+                              {/* SECTION: PROFIL BISNIS / NILAI (ABOUT) BERDASARKAN LAYOUT */}
                               {secKey === 'about' && (
                                 <div className={`p-3.5 ${activeRadiusClass} border ${previewTheme === 'dark' ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'} space-y-2`}>
                                   {aboutLayout === 'pillars_3' ? (

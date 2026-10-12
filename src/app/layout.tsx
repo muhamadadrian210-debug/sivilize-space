@@ -45,6 +45,14 @@ export const metadata: Metadata = {
     siteName: 'Sivilize Space',
     locale: 'id_ID',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sivilize Space — Platform Sewa Website Bisnis Siap Pakai & Mandiri',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -52,6 +60,7 @@ export const metadata: Metadata = {
     description:
       'Sewa website bisnis mandiri siap pakai dalam 60 detik. 100% selesai di web, transaksi QRIS otomatis.',
     creator: '@sivilizecorp',
+    images: ['/og-image.png'],
   },
   icons: {
     icon: [

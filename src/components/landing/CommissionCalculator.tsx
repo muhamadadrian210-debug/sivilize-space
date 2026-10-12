@@ -84,7 +84,7 @@ export function CommissionCalculator({ onStartNow }: CommissionCalculatorProps) 
                 Uang Hilang Terpotong Komisi
               </h4>
               <p className="text-xs text-slate-400 mb-6">
-                Belum termasuk perang banting harga dengan tetangga toko dan biaya promo paksaan.
+                Belum termasuk perang banting harga kompetitor marketplace dan biaya promo paksaan.
               </p>
 
               <div className="space-y-3 p-4 rounded-xl bg-black/40 border border-rose-900/40">
@@ -119,14 +119,14 @@ export function CommissionCalculator({ onStartNow }: CommissionCalculatorProps) 
                 Margin Bersih Masuk ke Rekening Anda
               </h4>
               <p className="text-xs text-slate-300 mb-6">
-                Hanya biaya sewa flat Rp 69.000/bln. Order masuk ke WhatsApp, terima QRIS 100% milik Anda.
+                Hanya biaya sewa flat murah. Semua transaksi QRIS 100% milik Anda.
               </p>
 
               <div className="space-y-3 p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-300">Biaya sewa toko flat:</span>
+                  <span className="text-slate-300">Biaya sewa website flat:</span>
                   <span className="font-mono font-semibold text-slate-200">
-                    Rp 69.000 / bln
+                    Mulai Rp 349.000 / thn
                   </span>
                 </div>
                 <div className="flex justify-between text-xs pt-2 border-t border-emerald-500/20">

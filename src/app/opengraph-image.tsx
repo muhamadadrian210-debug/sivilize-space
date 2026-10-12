@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Sivilize Space — Platform Sewa Website & Toko Instan Mandiri';
+export const alt = 'Sivilize Space — Platform Sewa Website Bisnis Siap Pakai';
 export const size = {
   width: 1200,
   height: 630,
@@ -126,7 +126,7 @@ export default async function Image() {
               letterSpacing: '2px',
             }}
           >
-            <span>PLATFORM SEWA WEBSITE TOKO NO. 1 DI INDONESIA</span>
+            <span>PLATFORM SEWA WEBSITE BISNIS NO. 1 DI INDONESIA</span>
           </div>
 
           <h1
@@ -139,7 +139,7 @@ export default async function Image() {
               color: '#FFFFFF',
             }}
           >
-            Sewa Website Siap Pakai & Toko Instan Mandiri.
+            Sewa Website Siap Pakai & Mandiri untuk Bisnis Anda.
           </h1>
 
           <p
@@ -151,8 +151,8 @@ export default async function Image() {
               maxWidth: '960px',
             }}
           >
-            Aktif dalam 60 detik. Bebas komisi pihak ketiga, transaksi QRIS otomatis di web,
-            infrastruktur Anycast Edge ultra-cepat & panel admin mandiri.
+            Aktif dalam 60 detik. Solusi sewa website bisnis mandiri & siap pakai untuk UMKM Indonesia.
+            Seluruh transaksi, aktivasi QRIS, dan kelola konten selesai 100% langsung di web tanpa repot chat WA.
           </p>
         </div>
 
@@ -169,7 +169,7 @@ export default async function Image() {
           <div style={{ display: 'flex', gap: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '16px', color: '#E2E8F0', fontWeight: 700 }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '999px', backgroundColor: '#10B981' }} />
-              <span>0% Biaya Komisi Penjualan</span>
+              <span>100% Selesai Mandiri di Web</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '16px', color: '#E2E8F0', fontWeight: 700 }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '999px', backgroundColor: '#10B981' }} />
@@ -177,7 +177,7 @@ export default async function Image() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '16px', color: '#E2E8F0', fontWeight: 700 }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '999px', backgroundColor: '#10B981' }} />
-              <span>Nota Pembayaran Resmi Sah (NIB)</span>
+              <span>Nota Pembayaran Sah (NIB)</span>
             </div>
           </div>
 

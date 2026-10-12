@@ -108,7 +108,7 @@ export function SaaSOperatingSystemShowcase() {
                   rel="noreferrer"
                   className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold text-xs flex items-center gap-1 transition-colors"
                 >
-                  <span>Lihat Web Toko</span>
+                  <span>Buka Website Live</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
@@ -158,7 +158,7 @@ export function SaaSOperatingSystemShowcase() {
                     Daftar Transaksi Pesanan Web Terkini
                   </h5>
                   <p className="text-[11px] text-neutral-500">
-                    Pelanggan checkout mandiri di website toko tanpa perlu chat manual
+                    Pengunjung bertransaksi mandiri di website tanpa repot konfirmasi manual
                   </p>
                 </div>
                 <span className="text-[11px] font-mono font-semibold text-neutral-500">

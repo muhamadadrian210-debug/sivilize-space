@@ -65,13 +65,13 @@ export function OfficialInvoiceModal({
   const handleCopySummary = () => {
     const text = `NOTA TRANSAKSI RESMI PT SIVILIZE CORP INDONESIA
 No. Invoice: ${invoice.invoiceNumber}
-Toko: ${invoice.storeName} (https://${invoice.slug}.sivilizecorp.my.id)
+Website Bisnis: ${invoice.storeName} (https://${invoice.slug}.sivilizecorp.my.id)
 Tanggal: ${invoice.paymentDate}
 Total: ${formatRupiah(invoice.amount)} (LUNAS)
 Metode: ${invoice.paymentMethod}
 Masa Berlaku: ${invoice.billingPeriod}
 Status: VERIFIED BY MAYAR.ID & BI-FAST QRIS
-Email Resmi Pengaduan: sivilizecorpindonesia@gmail.com
+Email Resmi Pelaporan & Kendala Teknis: sivilizecorpindonesia@gmail.com
 NIB: 0207260103661 (PT Sivilize Corp Indonesia)`;
 
     navigator.clipboard.writeText(text);
@@ -186,7 +186,7 @@ NIB: 0207260103661 (PT Sivilize Corp Indonesia)`;
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
               <div>
-                <span className="text-neutral-500 block text-[10px]">Nama Toko / Bisnis:</span>
+                <span className="text-neutral-500 block text-[10px]">Nama Bisnis / Brand:</span>
                 <strong className="text-neutral-950 text-sm">{invoice.storeName}</strong>
               </div>
               <div>
@@ -281,7 +281,7 @@ NIB: 0207260103661 (PT Sivilize Corp Indonesia)`;
                 onClick={onProceedToDashboard}
                 className="px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer"
               >
-                <span>Masuk ke Dashboard Toko</span>
+                <span>Masuk ke Dashboard Website</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </button>
             ) : (
@@ -289,7 +289,7 @@ NIB: 0207260103661 (PT Sivilize Corp Indonesia)`;
                 href="/dashboard"
                 className="px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-1.5"
               >
-                <span>Masuk ke Dashboard Toko</span>
+                <span>Masuk ke Dashboard Website</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}

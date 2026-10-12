@@ -89,8 +89,8 @@ export function LiveStorefrontShowcase({ onOpenOnboarding }: LiveStorefrontShowc
       features: [
         'Pemilihan ukuran baju (S, M, L, XL)',
         'Notifikasi stok tersisa real-time',
-        'Transfer langsung ke BCA / Mandiri toko',
-        'Integrasi resi kurir JNE & J&T',
+        'Transfer rekening resmi & info kontak bisnis',
+        'Informasi katalog & profil brand lengkap',
       ],
     },
     {
@@ -249,12 +249,12 @@ export function LiveStorefrontShowcase({ onOpenOnboarding }: LiveStorefrontShowc
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 leading-tight">
-            Lihat Persis Seperti Apa Website Toko Anda.
+            Lihat Persis Seperti Apa Website Bisnis Anda.
           </h2>
 
           <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
             Pilih antara <strong>Template Siap Pakai (Aktif 60 Detik)</strong> atau <strong>Hasil Rakitan Custom (Bebas Rombak)</strong>.
-            Semua toko di bawah ini berjalan di atas infrastruktur Anycast Edge kami, siap jualan langsung via WhatsApp / Bank tanpa potongan komisi!
+            Semua website di bawah ini berjalan di atas infrastruktur Anycast Edge kami, siap tayang profesional untuk bisnis Anda tanpa potongan komisi!
           </p>
 
           {/* Master Category Toggle: Template vs Custom */}
@@ -291,7 +291,7 @@ export function LiveStorefrontShowcase({ onOpenOnboarding }: LiveStorefrontShowc
           </div>
         </div>
 
-        {/* WORKBENCH SHOWCASE: KIRI PILIHAN TOKO, KANAN CANVAS BROWSER NYATA */}
+        {/* WORKBENCH SHOWCASE: KIRI PILIHAN WEBSITE, KANAN CANVAS BROWSER NYATA */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Kolom Kiri: Tab Pilihan Website (5 Kolom) */}
           <div className="lg:col-span-5 space-y-3">

@@ -106,7 +106,7 @@ export function SivilizeLogo({
             </span>
             <span className="w-1 h-1 rounded-full bg-emerald-500 shrink-0" />
             <span className="text-[9px] font-mono text-neutral-500 dark:text-neutral-400 leading-none">
-              SEWA WEB UMKM
+              SEWA WEBSITE BISNIS
             </span>
           </div>
         )}

@@ -35,22 +35,22 @@ export default async function TenantStorePage({ params }: PageProps) {
           <span className="text-3xl">🏪</span>
         </div>
         <h1 className="text-2xl font-bold text-slate-100 mb-2">
-          Toko &quot;{slug}&quot; Belum Terdaftar
+          Website &quot;{slug}&quot; Belum Terdaftar
         </h1>
         <p className="text-slate-400 max-w-md text-sm mb-6 leading-relaxed">
-          Nama toko ini masih tersedia! Anda bisa mendaftarkan toko instan Anda di SivilizeSpace sekarang.
+          Nama website bisnis ini masih tersedia! Anda bisa menyewa website instan Anda di Sivilize Space sekarang.
         </p>
         <Link
           href="/"
           className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 hover:scale-[1.02] transition-transform"
         >
-          Buka Toko Sendiri di SivilizeSpace
+          Sewa Website Sendiri di Sivilize Space
         </Link>
       </div>
     );
   }
 
-  // Cek status aktif toko (Masa tenggang / suspended)
+  // Cek status aktif website (Masa tenggang / suspended)
   if (!store.is_active) {
     return (
       <div className="min-h-screen bg-[#090d16] text-white flex flex-col items-center justify-center p-6 text-center">
@@ -58,10 +58,10 @@ export default async function TenantStorePage({ params }: PageProps) {
           <span className="text-3xl">⏳</span>
         </div>
         <h1 className="text-2xl font-bold text-slate-100 mb-2">
-          Toko Sedang Tidak Aktif
+          Website Sedang Tidak Aktif
         </h1>
         <p className="text-slate-400 max-w-md text-sm mb-6 leading-relaxed">
-          Masa aktif langganan toko ini sedang dalam masa tenggang atau nonaktif sementara. Silakan hubungi pemilik toko.
+          Masa aktif sewa website ini sedang dalam masa tenggang atau nonaktif sementara. Silakan hubungi pemilik website.
         </p>
       </div>
     );

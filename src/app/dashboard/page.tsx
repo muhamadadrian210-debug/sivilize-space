@@ -49,7 +49,7 @@ export default function TenantDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [customPages, setCustomPages] = useState<CustomPage[]>([]);
   const [activeTab, setActiveTab] = useState<
-    'katalog' | 'tata-letak' | 'halaman' | 'pesanan' | 'profil' | 'langganan'
+    'katalog' | 'tata-letak' | 'halaman' | 'profil' | 'langganan'
   >('katalog');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -121,40 +121,6 @@ export default function TenantDashboardPage() {
     dataUrl: string;
     sizeKb: number;
   } | null>(null);
-
-  // Simulated web orders for the tenant (langsung ke penjual tanpa perantara)
-  const simulatedOrders = [
-    {
-      id: 'ORD-1092',
-      customer: 'Budi Santoso',
-      phone: '081299887766',
-      items: 'Flores Bajawa Single Origin (1x), Croissant (1x)',
-      total: 50000,
-      payment: 'WhatsApp Direct Web Order',
-      time: '12 Okt 2026, 10:24 WITA',
-      status: 'Pesanan Masuk via WA',
-    },
-    {
-      id: 'ORD-1091',
-      customer: 'Siti Rahma',
-      phone: '081377889900',
-      items: 'Kopi Susu Senja Gula Aren (2x)',
-      total: 48000,
-      payment: 'Transfer Rekening Toko (BCA Penjual)',
-      time: '12 Okt 2026, 09:40 WITA',
-      status: 'Lunas Terverifikasi',
-    },
-    {
-      id: 'ORD-1090',
-      customer: 'Hendrik Pratama',
-      phone: '085233112233',
-      items: 'Cold Brew Botol 250ml (3x)',
-      total: 75000,
-      payment: 'Ambil di Toko / Kasir (Pickup & COD)',
-      time: '11 Okt 2026, 17:15 WITA',
-      status: 'Siap Diambil di Kasir',
-    },
-  ];
 
   const populateStoreForm = (s: Store) => {
     setStoreForm({
@@ -279,7 +245,7 @@ export default function TenantDashboardPage() {
       if (res.ok) {
         setStore(data.store);
         localStorage.setItem('sivilize_active_store', JSON.stringify(data.store));
-        setLayoutSaveNotice('✓ Tata letak dan grid toko berhasil disimpan dan langsung live!');
+        setLayoutSaveNotice('✓ Tata letak dan grid website berhasil disimpan dan langsung live!');
         setTimeout(() => setLayoutSaveNotice(''), 4000);
       } else {
         alert(data.error || 'Gagal menyimpan tata letak.');
@@ -310,10 +276,10 @@ export default function TenantDashboardPage() {
       tier === 'mikro' ? 349000 : tier === 'bisnis' ? 899000 : 599000;
     const planLabel =
       tier === 'mikro'
-        ? 'Paket Toko Mikro (1 Halaman)'
+        ? 'Paket Website Mikro (1 Halaman)'
         : tier === 'bisnis'
-        ? 'Paket Toko Bisnis (4-5 Halaman)'
-        : 'Paket Toko Pro (2-3 Halaman)';
+        ? 'Paket Website Bisnis (4-5 Halaman)'
+        : 'Paket Website Pro (2-3 Halaman)';
 
     const invData: OfficialInvoiceData = {
       invoiceNumber: `INV-SC-2026-${(store.id || '881920').slice(-6).toUpperCase()}`,
@@ -457,9 +423,9 @@ export default function TenantDashboardPage() {
       }
       setStore(data.store);
       localStorage.setItem('sivilize_active_store', JSON.stringify(data.store));
-      alert('✓ Pengaturan profil toko berhasil disimpan!');
+      alert('✓ Pengaturan profil website berhasil disimpan!');
     } catch {
-      alert('Gagal menyimpan profil toko.');
+      alert('Gagal menyimpan profil website.');
     }
   };
 
@@ -558,7 +524,7 @@ export default function TenantDashboardPage() {
     );
   }
 
-  // 1. TAMPILAN LOGIN MITRA PENYEWA TOKO (UTILE & CLEAN)
+  // 1. TAMPILAN LOGIN MITRA PENYEWA WEBSITE (UTILE & CLEAN)
   if (!store) {
     return (
       <div className="min-h-screen bg-[#F8F9FA] text-neutral-900 flex flex-col justify-center items-center p-4 font-sans selection:bg-neutral-900 selection:text-white">
@@ -567,9 +533,9 @@ export default function TenantDashboardPage() {
             <div className="w-12 h-12 rounded-2xl bg-neutral-950 mx-auto flex items-center justify-center text-white shadow-xs mb-3">
               <StoreIcon className="w-6 h-6" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-neutral-950">Portal Merchant Toko</h1>
+            <h1 className="text-xl font-bold tracking-tight text-neutral-950">Portal Kelola Website</h1>
             <p className="text-xs text-neutral-500 mt-1">
-              Kelola katalog, grid tata letak & pesanan web Anda
+              Kelola katalog layanan, grid tata letak & profil website mandiri Anda
             </p>
           </div>
 
@@ -583,7 +549,7 @@ export default function TenantDashboardPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                Nomor WhatsApp Toko:
+                Nomor Kontak Terdaftar:
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
@@ -620,13 +586,13 @@ export default function TenantDashboardPage() {
               disabled={isSubmittingLogin || loginPin.length !== 6}
               className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs tracking-tight transition-all cursor-pointer shadow-xs mt-2"
             >
-              {isSubmittingLogin ? 'Memverifikasi Akses...' : 'Masuk ke Dashboard Toko'}
+              {isSubmittingLogin ? 'Memverifikasi Akses...' : 'Masuk ke Dashboard Website'}
             </button>
 
             {/* Quick Demo Store Buttons */}
             <div className="pt-4 border-t border-neutral-100 space-y-2">
               <p className="text-[11px] text-neutral-500 font-medium text-center">
-                Pilih Akun Demo Toko Terverifikasi:
+                Pilih Akun Demo Website Terverifikasi:
               </p>
               <button
                 type="button"
@@ -679,7 +645,7 @@ export default function TenantDashboardPage() {
               className="px-3.5 py-1.5 rounded-xl border border-neutral-300 hover:bg-neutral-100 text-neutral-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5 text-neutral-500" />
-              <span className="hidden sm:inline">Lihat Website Toko</span>
+              <span className="hidden sm:inline">Buka Website Langsung</span>
             </Link>
 
             <button
@@ -747,22 +713,6 @@ export default function TenantDashboardPage() {
 
           <button
             type="button"
-            onClick={() => setActiveTab('pesanan')}
-            className={`py-3 px-3.5 text-xs font-bold border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer transition-colors ${
-              activeTab === 'pesanan'
-                ? 'border-neutral-950 text-neutral-950'
-                : 'border-transparent text-neutral-500 hover:text-neutral-900'
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            <span>Pesanan Web Masuk</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 font-mono font-bold">
-              2
-            </span>
-          </button>
-
-          <button
-            type="button"
             onClick={() => setActiveTab('profil')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer transition-colors ${
               activeTab === 'profil'
@@ -771,7 +721,7 @@ export default function TenantDashboardPage() {
             }`}
           >
             <StoreIcon className="w-4 h-4" />
-            <span>Profil Toko</span>
+            <span>Profil Bisnis & Website</span>
           </button>
 
           <button
@@ -926,7 +876,7 @@ export default function TenantDashboardPage() {
                   Kustomisasi Tata Letak & Grid Website
                 </h2>
                 <p className="text-xs text-neutral-500">
-                  Ubah format kolom katalog, jarak antar-kartu, dan gaya visual toko Anda secara bebas
+                  Ubah format kolom katalog, jarak antar-kartu, dan gaya visual website Anda secara bebas
                 </p>
               </div>
 
@@ -943,7 +893,7 @@ export default function TenantDashboardPage() {
                   className="px-5 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-2"
                 >
                   <Check className="w-4 h-4" />
-                  <span>{isSavingLayout ? 'Menyimpan...' : 'Simpan Tata Letak Toko'}</span>
+                  <span>{isSavingLayout ? 'Menyimpan...' : 'Simpan Tata Letak Website'}</span>
                 </button>
               </div>
             </div>
@@ -954,12 +904,12 @@ export default function TenantDashboardPage() {
                 {/* 1. Format Grid Desktop */}
                 <div className="rounded-2xl bg-white border border-neutral-200 p-5 space-y-3 shadow-xs">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                    1. Format Kolom Produk (Desktop)
+                    1. Format Kolom Produk & Layanan (Desktop)
                   </h3>
                   <div className="grid grid-cols-2 gap-2.5">
                     {[
                       { id: 2, label: '2 Kolom', desc: 'Editorial / Foto Besar' },
-                      { id: 3, label: '3 Kolom', desc: 'Standar Toko (Rekomendasi)' },
+                      { id: 3, label: '3 Kolom', desc: 'Standar Responsif (Rekomendasi)' },
                       { id: 4, label: '4 Kolom', desc: 'Katalog Padat / Grosir' },
                       { id: 'list', label: '1 Kolom (List Baris)', desc: 'Format Menu Restoran / Jasa' },
                     ].map((opt) => (
@@ -1367,7 +1317,7 @@ export default function TenantDashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-neutral-950">
-                  Kelola Halaman Ekstra & Add-On Toko
+                  Kelola Halaman Ekstra & Add-On Website
                 </h2>
                 <p className="text-xs text-neutral-500">
                   Sesuai ketentuan resmi PRD: Tambah halaman khusus (+Rp 50.000 / halaman / tahun) dengan SLA Anycast Edge
@@ -1474,72 +1424,19 @@ export default function TenantDashboardPage() {
           </div>
         )}
 
-        {/* TAB 4: PESANAN WEB MASUK */}
-        {activeTab === 'pesanan' && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-neutral-950">Transaksi & Pesanan Masuk di Web</h2>
-              <p className="text-xs text-neutral-500">
-                Pesanan dari pembeli di website toko mandiri Anda (langsung via WhatsApp Order, Transfer Rekening Toko, atau Kasir — 100% milik Anda tanpa potongan komisi)
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-white border border-neutral-200 overflow-hidden shadow-xs">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-neutral-50 text-neutral-500 font-mono text-[11px] uppercase border-b border-neutral-200">
-                  <tr>
-                    <th className="p-4 pl-6">No. Invoice</th>
-                    <th className="p-4">Nama Pembeli</th>
-                    <th className="p-4">Rincian Item</th>
-                    <th className="p-4">Total</th>
-                    <th className="p-4">Metode Pembayaran</th>
-                    <th className="p-4 pr-6">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-100 font-sans">
-                  {simulatedOrders.map((ord) => (
-                    <tr key={ord.id} className="hover:bg-neutral-50/60 transition-colors">
-                      <td className="p-4 pl-6 font-mono font-bold text-neutral-900">#{ord.id}</td>
-                      <td className="p-4">
-                        <p className="font-bold text-neutral-900">{ord.customer}</p>
-                        <span className="text-[11px] font-mono text-neutral-500">{ord.phone}</span>
-                      </td>
-                      <td className="p-4 text-neutral-700">{ord.items}</td>
-                      <td className="p-4 font-mono font-bold text-neutral-900 text-sm">
-                        {formatRupiah(ord.total)}
-                      </td>
-                      <td className="p-4">
-                        <span className="px-2 py-0.5 rounded bg-neutral-100 text-neutral-800 font-semibold text-[11px]">
-                          {ord.payment}
-                        </span>
-                      </td>
-                      <td className="p-4 pr-6">
-                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold flex items-center gap-1 w-fit">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>{ord.status}</span>
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 5: PROFIL TOKO */}
+        {/* TAB 4: PROFIL BISNIS & WEBSITE */}
         {activeTab === 'profil' && (
           <div className="max-w-3xl rounded-3xl bg-white border border-neutral-200 p-8 space-y-6 shadow-xs">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-neutral-950">Profil Bisnis & Identitas Toko</h2>
+              <h2 className="text-xl font-bold tracking-tight text-neutral-950">Profil Bisnis & Identitas Website</h2>
               <p className="text-xs text-neutral-500">
-                Informasi dasar toko, alamat, dan jam buka yang ditampilkan pada website publik
+                Informasi dasar bisnis, alamat, kontak, dan jam operasional yang ditampilkan pada website publik
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">Nama Toko:</label>
+                <label className="block text-xs font-semibold text-neutral-700 mb-1">Nama Bisnis / Brand:</label>
                 <input
                   type="text"
                   value={storeForm.store_name}
@@ -1549,7 +1446,7 @@ export default function TenantDashboardPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">Kategori Usaha:</label>
+                <label className="block text-xs font-semibold text-neutral-700 mb-1">Kategori Bidang Usaha:</label>
                 <input
                   type="text"
                   value={storeForm.category}
@@ -1606,7 +1503,7 @@ export default function TenantDashboardPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">Alamat Fisik Toko:</label>
+                <label className="block text-xs font-semibold text-neutral-700 mb-1">Alamat Fisik Bisnis:</label>
                 <input
                   type="text"
                   value={storeForm.address}
@@ -1659,7 +1556,7 @@ export default function TenantDashboardPage() {
               </div>
 
               <div className="pt-3 border-t border-neutral-200 text-xs space-y-1">
-                <p className="text-neutral-500">Masa Berlaku Sewa Toko:</p>
+                <p className="text-neutral-500">Masa Berlaku Sewa Website:</p>
                 <p className="font-mono font-bold text-neutral-900 text-sm">
                   {store.expired_at ? new Date(store.expired_at).toLocaleDateString('id-ID') : 'Trial 7 Hari Aktif'}
                 </p>
@@ -1800,7 +1697,7 @@ export default function TenantDashboardPage() {
                   <span className="font-mono text-xs">Rp 50.000 / Tahun</span>
                 </div>
                 <p className="text-indigo-700 text-[10px]">
-                  Termasuk sub-routing Anycast Edge, SSL, dan tombol navigasi otomatis di header toko.
+                  Termasuk sub-routing Anycast Edge, SSL, dan tombol navigasi otomatis di header website.
                 </p>
               </div>
 

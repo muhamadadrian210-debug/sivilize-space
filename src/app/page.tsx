@@ -43,15 +43,15 @@ export default function LandingPage() {
     },
     {
       q: 'Apakah semua transaksi dan operasional benar-benar terjadi di dalam website tanpa chat manual?',
-      a: 'Tepat sekali! Pelanggan Anda membuka website toko, memilih produk, menentukan varian, dan menyelesaikan checkout langsung di website dengan pembayaran QRIS Dinamis atau Transfer Bank. Invoice digital resmi terbit otomatis di sistem dan pesanan langsung tercatat di SaaS Dashboard Anda tanpa Anda harus mengirim foto dan totalan manual satu per satu.',
+      a: 'Tepat sekali! Seluruh proses sewa website, aktivasi subdomain, pembayaran QRIS otomatis, hingga penerbitan invoice sah diselesaikan 100% mandiri di dalam website Sivilize Space tanpa perlu chat manual WhatsApp. Email perusahaan kami (sivilizecorpindonesia@gmail.com) secara resmi hanya difungsikan untuk saluran pelaporan kendala teknis atau bug.',
     },
     {
-      q: 'Bagaimana uang penjualan sampai ke tangan saya?',
-      a: '100% uang pembayaran pembeli langsung masuk ke rekening bank atau QRIS milik Anda sendiri. SivilizeSpace tidak memotong komisi penjualan 15%–20% seperti yang dilakukan marketplace.',
+      q: 'Bagaimana uang penjualan atau reservasi sampai ke tangan saya?',
+      a: '100% uang pembayaran pengunjung langsung masuk ke rekening bank atau QRIS milik Anda sendiri. SivilizeSpace tidak memotong komisi sepeserpun (0% potongan komisi).',
     },
     {
-      q: 'Apakah saya membutuhkan keahlian koding atau laptop untuk mengelola toko?',
-      a: 'Tidak sama sekali. Seluruh pengelolaan produk, pengubahan harga bahan baku, penandaan stok habis, hingga pergantian tema tampilan dilakukan lewat browser di ponsel Anda melalui Client Dashboard SivilizeSpace.',
+      q: 'Apakah saya membutuhkan keahlian koding atau laptop untuk mengelola website?',
+      a: 'Tidak sama sekali. Seluruh pengelolaan katalog produk, layanan, pengubahan info kontak, hingga pergantian tema tampilan dilakukan lewat browser di ponsel Anda melalui Client Dashboard SivilizeSpace.',
     },
     {
       q: 'Bisakah saya menggunakan domain pribadi seperti www.tokosaya.com?',
@@ -76,12 +76,12 @@ export default function LandingPage() {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-neutral-950 leading-[1.08] max-w-4xl mx-auto">
-              Sewa Website Toko Instan Mandiri untuk Bisnis Anda.
+              Sewa Website Bisnis Siap Pakai & Mandiri untuk Usaha Anda.
             </h1>
 
             {/* Subheadline */}
             <p className="mt-6 text-base sm:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-              Solusi sewa website siap pakai terbaik untuk bisnis, UMKM, dan ritel Indonesia. Aktif dalam 60 detik mulai Rp 349.000/tahun. 100% bebas potongan komisi, transaksi QRIS otomatis langsung di web, hosting Anycast Edge global SLA 99.8% bergaransi resmi PT Sivilize Corp Indonesia.
+              Solusi sewa website profesional siap pakai terbaik untuk bisnis dan UMKM Indonesia. Aktif dalam 60 detik mulai Rp 349.000/tahun. 100% selesai mandiri di website tanpa repot chat WhatsApp, transaksi QRIS otomatis, hosting Anycast Edge global SLA 99.8% bergaransi resmi PT Sivilize Corp Indonesia.
             </p>
 
             {/* Direct Action Group */}
@@ -91,7 +91,7 @@ export default function LandingPage() {
                 onClick={() => handleOpenClaim()}
                 className="px-7 py-4 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-sm tracking-tight shadow-md transition-all active:scale-[0.98] cursor-pointer flex items-center gap-2"
               >
-                <span>Mulai Sewa Toko Sekarang</span>
+                <span>Mulai Sewa Website Sekarang</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 href="/demo"
                 className="px-6 py-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold text-sm transition-colors border border-neutral-200 flex items-center gap-2"
               >
-                <span>Jelajahi Demo Toko Nyata</span>
+                <span>Jelajahi Demo Website Live</span>
                 <ExternalLink className="w-4 h-4 text-neutral-500" />
               </Link>
             </div>
@@ -140,11 +140,11 @@ export default function LandingPage() {
               PUSAT KENDALI OPERASIONAL
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-neutral-950 mt-2">
-              Satu Platform SaaS untuk Seluruh Kegiatan Toko Anda
+              Satu Platform SaaS untuk Seluruh Kebutuhan Website Bisnis Anda
             </h2>
             <p className="text-xs sm:text-sm text-neutral-600 mt-2">
-              Bukan sekadar form chat. Dari manajemen katalog di dashboard hingga proses checkout
-              dan invoice digital di web penyewa — semua terintegrasi secara profesional.
+              Bukan sekadar form chat. Dari manajemen katalog layanan di dashboard hingga transaksi
+              dan invoice digital di web penyewa — semua diselesaikan 100% mandiri di dalam sistem.
             </p>
           </div>
 
@@ -226,7 +226,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
             <div>
               <span className="text-xs font-mono font-bold uppercase tracking-widest text-neutral-500">
-                SHOWCASE TOKO NYATA
+                SHOWCASE WEBSITE NYATA
               </span>
               <h2 className="text-3xl sm:text-4xl font-black text-neutral-950 mt-2">
                 Lihat Contoh Website yang Sedang Mengudara
@@ -236,7 +236,7 @@ export default function LandingPage() {
               href="/demo"
               className="text-xs font-bold text-neutral-900 hover:text-neutral-600 flex items-center gap-1 transition-colors"
             >
-              <span>Lihat Semua Demo Toko</span>
+              <span>Lihat Semua Demo Website</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -259,7 +259,7 @@ export default function LandingPage() {
                 rel="noreferrer"
                 className="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
               >
-                <span>Buka Web Toko</span>
+                <span>Buka Website Live</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -281,7 +281,7 @@ export default function LandingPage() {
                 rel="noreferrer"
                 className="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
               >
-                <span>Buka Web Toko</span>
+                <span>Buka Website Live</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -303,7 +303,7 @@ export default function LandingPage() {
                 rel="noreferrer"
                 className="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
               >
-                <span>Buka Web Toko</span>
+                <span>Buka Website Live</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -469,7 +469,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-rose-400 font-bold shrink-0">✗</span>
-                      <span>Akun toko rentan dibanned sepihak tanpa kejelasan.</span>
+                      <span>Akun jualan rentan dibanned sepihak tanpa kejelasan.</span>
                     </li>
                   </ul>
                 </div>

@@ -3,29 +3,27 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Sewa Website Toko Instan Mandiri No. 1 Indonesia | Sivilize Space',
-    template: '%s | Sivilize Space — Sewa Website UMKM',
+    default: 'Sewa Website Bisnis Siap Pakai & Mandiri No. 1 Indonesia | Sivilize Space',
+    template: '%s | Sivilize Space — Sewa Website Mandiri UMKM',
   },
   description:
-    'Sewa website dan toko online instan mandiri terbaik di Indonesia. Aktif dalam 60 detik, 0% komisi pihak ketiga, transaksi QRIS otomatis di web, infrastruktur Anycast Edge SLA 99.8%. PT Sivilize Corp Indonesia (NIB: 0207260103661).',
+    'Sewa website bisnis siap pakai & mandiri terbaik di Indonesia. Aktif dalam 60 detik, 100% transaksi dan aktivasi selesai langsung di web tanpa ribet WA, QRIS otomatis, Anycast Edge SLA 99.8%. PT Sivilize Corp Indonesia (NIB: 0207260103661).',
   keywords: [
     'sewa website',
-    'sewa website toko online',
+    'sewa website bisnis',
     'sewa website murah',
     'jasa sewa website indonesia',
     'sewa web siap pakai',
     'platform sewa website mandiri',
     'sewa website umkm',
     'sewa web profesional',
-    'sewa toko online tanpa coding',
-    'bikin website toko online instan',
-    'alternatif shopify indonesia',
-    'alternatif woocommerce',
+    'sewa website portofolio profil jasa',
+    'bikin website mandiri instan',
+    'alternatif web developer mahal',
     'waas website as a service indonesia',
     'sivilize space',
     'pt sivilize corp indonesia',
-    'katalog whatsapp mandiri',
-    'website ritel fnb bengkel klinik',
+    'website mandiri ritel fnb bengkel klinik salon',
   ],
   authors: [{ name: 'PT Sivilize Corp Indonesia', url: 'https://sivilizespace.vercel.app' }],
   creator: 'PT Sivilize Corp Indonesia',
@@ -40,9 +38,9 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Sewa Website Toko Instan Mandiri No. 1 Indonesia | Sivilize Space',
+    title: 'Sewa Website Bisnis Siap Pakai & Mandiri No. 1 Indonesia | Sivilize Space',
     description:
-      'Sewa website toko mandiri siap pakai dalam 60 detik. Bebas potongan komisi pihak ketiga, transaksi QRIS otomatis di web, hosting Anycast Edge global. Resmi PT Sivilize Corp Indonesia.',
+      'Sewa website bisnis mandiri siap pakai dalam 60 detik. 100% diselesaikan langsung di web tanpa repot chat WA, transaksi QRIS otomatis, hosting Anycast Edge global. Resmi PT Sivilize Corp Indonesia.',
     url: 'https://sivilizespace.vercel.app',
     siteName: 'Sivilize Space',
     locale: 'id_ID',
@@ -50,9 +48,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sewa Website Toko Instan Mandiri No. 1 Indonesia | Sivilize Space',
+    title: 'Sewa Website Bisnis Siap Pakai & Mandiri No. 1 Indonesia | Sivilize Space',
     description:
-      'Sewa website toko mandiri siap pakai dalam 60 detik. Bebas potongan komisi, transaksi QRIS langsung di web.',
+      'Sewa website bisnis mandiri siap pakai dalam 60 detik. 100% selesai di web, transaksi QRIS otomatis.',
     creator: '@sivilizecorp',
   },
   icons: {
@@ -95,7 +93,7 @@ export default function RootLayout({
         logo: 'https://sivilizespace.vercel.app/logo.svg',
         email: 'sivilizecorpindonesia@gmail.com',
         description:
-          'Penyedia infrastruktur Website-as-a-Service (WaaS) dan sewa website toko mandiri bagi UMKM dan korporasi Indonesia.',
+          'Penyedia infrastruktur Website-as-a-Service (WaaS) dan sewa website bisnis mandiri bagi UMKM dan korporasi Indonesia.',
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Kota Kupang',
@@ -113,7 +111,7 @@ export default function RootLayout({
         '@id': 'https://sivilizespace.vercel.app/#website',
         url: 'https://sivilizespace.vercel.app',
         name: 'Sivilize Space',
-        description: 'Platform Sewa Website & Toko Instan Mandiri UMKM Indonesia',
+        description: 'Platform Sewa Website Bisnis Siap Pakai & Mandiri UMKM Indonesia',
         publisher: {
           '@id': 'https://sivilizespace.vercel.app/#organization',
         },

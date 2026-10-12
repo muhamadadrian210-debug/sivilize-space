@@ -35,7 +35,7 @@ export function ComparisonTable() {
     },
     {
       feature: 'Perang Banting Harga Kompetitor',
-      marketplace: 'Ada iklan toko lawan di bawah produk Anda',
+      marketplace: 'Ada iklan bisnis lawan di bawah produk/jasa Anda',
       agency: 'Tidak ada',
       sivilize: 'Etalase Bersih Milik Anda 100%',
       highlight: false,

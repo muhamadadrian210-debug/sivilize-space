@@ -32,7 +32,7 @@ export default async function CustomDomainStorePage({ params }: PageProps) {
           Domain {domain} Belum Dikonfigurasi
         </h1>
         <p className="text-slate-400 max-w-md text-sm mb-6 leading-relaxed">
-          Domain ini belum tersambung ke toko aktif manapun di SivilizeSpace.
+          Domain ini belum tersambung ke website aktif manapun di Sivilize Space.
         </p>
       </div>
     );
@@ -42,10 +42,10 @@ export default async function CustomDomainStorePage({ params }: PageProps) {
     return (
       <div className="min-h-screen bg-[#090d16] text-white flex flex-col items-center justify-center p-6 text-center">
         <h1 className="text-2xl font-bold text-slate-100 mb-2">
-          Toko Sedang Tidak Aktif
+          Website Sedang Tidak Aktif
         </h1>
         <p className="text-slate-400 max-w-md text-sm mb-6">
-          Masa aktif langganan toko ini telah habis. Silakan hubungi pemilik toko.
+          Masa aktif sewa website ini telah habis. Silakan hubungi pemilik website.
         </p>
       </div>
     );

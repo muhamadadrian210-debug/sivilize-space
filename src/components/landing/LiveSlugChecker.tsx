@@ -51,7 +51,7 @@ export function LiveSlugChecker({ onClaimSlug }: LiveSlugCheckerProps) {
           setSuggestions([]);
         } else {
           setStatus('taken');
-          setMessage(data.reason || 'Nama ini sudah dipakai toko lain');
+          setMessage(data.reason || 'Nama ini sudah dipakai website lain');
           setSuggestions(data.suggestions || []);
         }
       } catch {
@@ -94,12 +94,12 @@ export function LiveSlugChecker({ onClaimSlug }: LiveSlugCheckerProps) {
                 } else if (slug && isValidSlug(slug)) {
                   onClaimSlug(slug);
                 } else {
-                  onClaimSlug('toko-saya');
+                  onClaimSlug('bisnis-saya');
                 }
               }}
               className="px-5 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-white/10 active:scale-[0.98] shrink-0 cursor-pointer"
             >
-              <span>{status === 'available' ? 'Klaim Domain Ini' : 'Cek & Buat Toko'}</span>
+              <span>{status === 'available' ? 'Klaim Domain Ini' : 'Sewa Website Sekarang'}</span>
               <ArrowRight className="w-4 h-4 text-slate-900" />
             </button>
           </div>

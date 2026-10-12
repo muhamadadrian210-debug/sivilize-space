@@ -1060,7 +1060,7 @@ export default function RakitWebPage() {
       id: 'addon_cashier',
       name: 'Akun Staf / Kasir Tambahan (SiKasir Multi-Staff)',
       badge: 'Multi-User POS',
-      category: 'Operasional Toko',
+      category: 'Operasional Website',
       price: 50000,
       period: '/ tahun',
       desc: 'Tambahkan hak akses login terpisah untuk barista, pelayan meja, dan kasir dengan proteksi PIN unik per staf.',
@@ -1073,7 +1073,7 @@ export default function RakitWebPage() {
       category: 'Billing & Keuangan',
       price: 50000,
       period: '/ tahun',
-      desc: 'Penerbitan QRIS otomatis per transaksi pembeli toko dengan verifikasi pembayaran real-time langsung ke rekening Anda.',
+      desc: 'Penerbitan QRIS otomatis per transaksi di website dengan verifikasi pembayaran real-time langsung ke rekening Anda.',
       icon: '💳',
     },
     {
@@ -1083,7 +1083,7 @@ export default function RakitWebPage() {
       category: 'Lokalisasi Bahasa',
       price: 75000,
       period: '/ tahun',
-      desc: 'Peralihan instan Bahasa Indonesia dan English pada seluruh menu katalog dan profil toko Anda untuk target ekspatriat.',
+      desc: 'Peralihan instan Bahasa Indonesia dan English pada seluruh menu katalog dan profil website Anda untuk target ekspatriat.',
       icon: '🌍',
     },
     {
@@ -1200,8 +1200,8 @@ export default function RakitWebPage() {
     hero: {
       label: 'Banner Utama (Hero Headline & Slogan)',
       icon: '🏛️',
-      category: 'Identitas Toko',
-      desc: 'Judul toko, slogan sambutan, dan deskripsi singkat.',
+      category: 'Identitas Bisnis',
+      desc: 'Judul brand, slogan sambutan, dan deskripsi singkat.',
     },
     promo: {
       label: 'Papan Promo & Pengumuman Berjalan',
@@ -1212,11 +1212,11 @@ export default function RakitWebPage() {
     catalog: {
       label: 'Katalog Menu & Produk Utama',
       icon: '☕',
-      category: 'Inti Toko',
+      category: 'Inti Website',
       desc: 'Daftar produk dengan format kolom grid pilihan.',
     },
     about: {
-      label: 'Cerita Toko & Kisah Pengrajin/Petani',
+      label: 'Cerita Brand & Keunggulan Layanan',
       icon: '📖',
       category: 'Branding',
       desc: 'Filosofi bisnis, sejarah berdirinya, atau profil pengrajin.',
@@ -1482,30 +1482,30 @@ export default function RakitWebPage() {
     },
   ];
 
-  // METODE CHECKOUT UNTUK PEMBELI TOKO (TIDAK DIPAKSAKAN MAYAR)
+  // METODE CHECKOUT & TRANSAKSI PENGUNJUNG WEBSITE (TIDAK DIPAKSAKAN MAYAR)
   const CHECKOUT_CHANNELS = [
     {
       id: 'wa_direct',
       name: 'Direct WhatsApp Web Order (Paling Populer)',
       badge: '100% Bebas Potongan',
-      desc: 'Format order terstruktur lengkap dengan nama pembeli, daftar item, dan alamat langsung masuk ke chat WhatsApp pemilik toko.',
-      buyerFlow: 'Pembeli klik pesan -> invoice terformat rapi terkirim ke nomor WA penjual.',
+      desc: 'Format order terstruktur lengkap dengan nama pemesan, daftar item, dan alamat langsung masuk ke chat WhatsApp pemilik bisnis.',
+      buyerFlow: 'Pengunjung klik pesan -> invoice terformat rapi terkirim ke nomor WA pemilik.',
       price: 0,
     },
     {
       id: 'bank_transfer',
-      name: 'Transfer Rekening Bank / QRIS Pribadi Toko',
+      name: 'Transfer Rekening Bank / QRIS Pribadi Bisnis',
       badge: 'Langsung ke Rekening Anda',
-      desc: 'Pembeli mentransfer langsung ke rekening bank BCA/Mandiri/BRI atau QRIS toko milik Anda. Uang 100% di tangan Anda tanpa perantara.',
-      buyerFlow: 'Pembeli bayar ke rekening Anda -> kirim struk transfer konfirmasi ke sistem.',
+      desc: 'Pengunjung mentransfer langsung ke rekening bank BCA/Mandiri/BRI atau QRIS bisnis milik Anda. Uang 100% di tangan Anda tanpa perantara.',
+      buyerFlow: 'Pengunjung bayar ke rekening Anda -> kirim struk transfer konfirmasi ke sistem.',
       price: 0,
     },
     {
       id: 'pos_cashier',
-      name: 'Ambil di Toko / Bayar di Kasir (Pickup & COD)',
-      badge: 'Cocok Toko Fisik & Kafe',
-      desc: 'Pembeli memilih barang online untuk diambil langsung di toko fisik atau bayar tunai di kasir meja.',
-      buyerFlow: 'Pembeli terima kode pesanan -> bayar tunai / debit saat ambil pesanan di toko.',
+      name: 'Ambil di Tempat / Bayar di Kasir (Pickup & COD)',
+      badge: 'Cocok Lokasi Fisik & Kafe',
+      desc: 'Pengunjung memilih barang online untuk diambil langsung di lokasi fisik atau bayar tunai di kasir.',
+      buyerFlow: 'Pengunjung terima kode pesanan -> bayar tunai / debit saat ambil pesanan di lokasi fisik.',
       price: 0,
     },
   ];
@@ -1713,7 +1713,7 @@ export default function RakitWebPage() {
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 leading-tight">
-                  Rakit Website Toko Anda Seperti Merakit PC.
+                  Rakit Website Bisnis Anda Seperti Merakit PC.
                 </h1>
 
                 <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
@@ -1781,7 +1781,7 @@ export default function RakitWebPage() {
                         </span>
                       </div>
                       <p className="text-[11px] text-neutral-500">
-                        Pilih jenis usaha Anda sebelum merakit. Seluruh nama toko, headline, katalog produk, layout, foto, dan FAQ akan menyesuaikan seketika!
+                        Pilih jenis usaha Anda sebelum merakit. Seluruh nama brand, headline, katalog produk, layout, foto, dan FAQ akan menyesuaikan seketika!
                       </p>
                     </div>
                   </div>
@@ -1897,7 +1897,7 @@ export default function RakitWebPage() {
                 </div>
               </div>
 
-              {/* MODUL 2: STUDIO GRID & TATA LETAK KOMPREHENSIF SELURUH BAGIAN TOKO */}
+              {/* MODUL 2: STUDIO GRID & TATA LETAK KOMPREHENSIF SELURUH BAGIAN WEBSITE */}
               <div className="p-6 rounded-3xl bg-white border border-neutral-200 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3 flex-wrap gap-2">
                   <div className="flex items-center gap-2.5">
@@ -1906,7 +1906,7 @@ export default function RakitWebPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm text-neutral-950 flex items-center gap-2">
-                        <span>2. Studio Grid & Tata Letak Komprehensif Seluruh Bagian Toko</span>
+                        <span>2. Studio Grid & Tata Letak Komprehensif Seluruh Bagian Website</span>
                         <span className="px-2 py-0.5 rounded-full text-[9px] bg-emerald-100 text-emerald-800 font-mono">
                           Lengkap Semua Section
                         </span>
@@ -1991,7 +1991,7 @@ export default function RakitWebPage() {
                 {layoutStudioTab === 'contact' && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-xs">
-                      <strong className="text-neutral-800 font-bold">Pilihan Tata Letak Kontak & Lokasi Toko:</strong>
+                      <strong className="text-neutral-800 font-bold">Pilihan Tata Letak Kontak & Lokasi Bisnis:</strong>
                       <span className="text-[10px] font-mono text-emerald-600 font-bold">Aktif: {CONTACT_LAYOUT_OPTIONS.find(c => c.id === contactLayout)?.name}</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -2327,7 +2327,7 @@ export default function RakitWebPage() {
                         </span>
                         <div>
                           <strong className="text-xs text-neutral-900">Halaman Beranda & Katalog Produk</strong>
-                          <p className="text-[10px] text-neutral-500">Etalase utama toko dan tombol checkout WhatsApp</p>
+                          <p className="text-[10px] text-neutral-500">Etalase utama website dan tombol kontak WhatsApp</p>
                         </div>
                       </div>
                       <button
@@ -2467,7 +2467,7 @@ export default function RakitWebPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm text-neutral-950">7. Efek Loading & Interaksi Transisi</h3>
-                      <p className="text-[11px] text-neutral-500">Pengalaman transisi mikro saat pembeli menjelajahi toko Anda</p>
+                      <p className="text-[11px] text-neutral-500">Pengalaman transisi mikro saat pengunjung menjelajahi website Anda</p>
                     </div>
                   </div>
                   <button
@@ -2520,8 +2520,8 @@ export default function RakitWebPage() {
                       <ShoppingBag className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="font-extrabold text-sm text-neutral-950">8. Alur Checkout Pembeli di Website Toko Anda</h3>
-                      <p className="text-[11px] text-neutral-500">Metode transaksi yang digunakan pembeli Anda saat berbelanja di toko</p>
+                      <h3 className="font-extrabold text-sm text-neutral-950">8. Alur Interaksi & Transaksi Pengunjung di Website Anda</h3>
+                      <p className="text-[11px] text-neutral-500">Metode transaksi yang digunakan pengunjung saat berinteraksi di website</p>
                     </div>
                   </div>
                   <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
@@ -2574,7 +2574,7 @@ export default function RakitWebPage() {
                   <div className="space-y-1">
                     <strong className="font-bold text-amber-900">Penegasan Arsitektur Pembayaran (B2B vs B2C):</strong>
                     <p className="text-[11px] leading-relaxed text-amber-800">
-                      <strong>1. Pembeli Anda:</strong> Membayar langsung ke Anda (via WhatsApp / Rekening Toko Anda / Kasir) 100% tanpa potongan komisi sepeser pun.<br />
+                      <strong>1. Pembeli / Klien Anda:</strong> Membayar langsung ke Anda (via WhatsApp / Rekening Resmi Bisnis Anda / Kasir) 100% tanpa potongan komisi sepeser pun.<br />
                       <strong>2. Anda (Penyewa):</strong> Membayar biaya sewa platform tahunan & add-on halaman ke PT Sivilize Corp Indonesia secara resmi via <strong>Mayar.id (QRIS Dinamis & Virtual Account)</strong> dengan invoice otomatis & proteksi PBI.
                     </p>
                   </div>
@@ -2590,7 +2590,7 @@ export default function RakitWebPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm text-neutral-950">9. Tata Letak Teks, Besar Kecil Tulisan & Gaya Tombol</h3>
-                      <p className="text-[11px] text-neutral-500">Atur sesuka hati posisi teks, skala font, dan bentuk tombol beli di toko Anda</p>
+                      <p className="text-[11px] text-neutral-500">Atur sesuka hati posisi teks, skala font, dan bentuk tombol aksi di website Anda</p>
                     </div>
                   </div>
                   <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
@@ -2608,7 +2608,7 @@ export default function RakitWebPage() {
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { id: 'left', label: '⬅️ Rata Kiri', desc: 'Standar editorial toko modern' },
+                      { id: 'left', label: '⬅️ Rata Kiri', desc: 'Standar editorial website modern' },
                       { id: 'center', label: '↔️ Rata Tengah', desc: 'Kafe mewah & butik elegan' },
                       { id: 'right', label: '➡️ Rata Kanan', desc: 'Eksentrik artistik modern' },
                     ].map((al) => (
@@ -2784,7 +2784,7 @@ export default function RakitWebPage() {
                                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
                                 : 'bg-neutral-100 border-neutral-200 text-neutral-400'
                             }`}
-                            title={isVisible ? 'Sembunyikan dari Toko' : 'Tampilkan di Toko'}
+                            title={isVisible ? 'Sembunyikan dari Website' : 'Tampilkan di Website'}
                           >
                             {isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                           </button>
@@ -2804,7 +2804,7 @@ export default function RakitWebPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm text-neutral-950 flex items-center gap-2">
-                        <span>11. Gambar Background Toko Kustom</span>
+                        <span>11. Gambar Background Website Kustom</span>
                         <span className="px-2 py-0.5 rounded-full text-[9px] bg-indigo-100 text-indigo-800 font-mono">
                           Galeri / Preset
                         </span>
@@ -2904,7 +2904,7 @@ export default function RakitWebPage() {
                         onChange={(e) => setBgOpacity(Number(e.target.value))}
                         className="w-full accent-neutral-950 cursor-pointer"
                       />
-                      <p className="text-[9px] text-neutral-400">Atur agar teks toko di atas foto tetap kontras dan mudah dibaca</p>
+                      <p className="text-[9px] text-neutral-400">Atur agar teks website di atas foto tetap kontras dan mudah dibaca</p>
                     </div>
 
                     <div className="space-y-1.5">
@@ -2934,7 +2934,7 @@ export default function RakitWebPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm text-neutral-950 flex items-center gap-2">
-                        <span>12. Kelola Menu & Unggah Foto Produk Toko</span>
+                        <span>12. Kelola Menu & Unggah Foto Katalog Website</span>
                         <span className="px-2 py-0.5 rounded-full text-[9px] bg-amber-100 text-amber-800 font-mono">
                           Foto Menu Bebas
                         </span>
@@ -3268,7 +3268,7 @@ export default function RakitWebPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-neutral-400">
-                    <span>Checkout Toko: {CHECKOUT_CHANNELS.find((c) => c.id === selectedCheckoutChannel)?.name.split('(')[0]}</span>
+                    <span>Metode Transaksi: {CHECKOUT_CHANNELS.find((c) => c.id === selectedCheckoutChannel)?.name.split('(')[0]}</span>
                     <span className="font-mono text-emerald-400 font-bold">Rp 0 (Termasuk)</span>
                   </div>
 
@@ -3389,7 +3389,7 @@ export default function RakitWebPage() {
                   <div className="flex items-center justify-between text-xs font-bold text-neutral-800 dark:text-neutral-200">
                     <span className="flex items-center gap-1.5">
                       <Sliders className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      <span>Atur Tampilan Toko Sesuka Anda:</span>
+                      <span>Atur Tampilan Website Sesuka Anda:</span>
                     </span>
                     <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                       ● Live Seketika
@@ -3793,7 +3793,7 @@ export default function RakitWebPage() {
                               'Konten halaman kustom siap diisi materi artikel, galeri, atau brosur penawaran Anda.'}
                           </p>
                           <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-[9px] opacity-70">
-                            Halaman ini dapat diedit kapan saja secara fleksibel melalui Dashboard Admin Toko Anda.
+                            Halaman ini dapat diedit kapan saja secara fleksibel melalui Dashboard Admin Website Anda.
                           </div>
                         </div>
                       )}
@@ -4305,12 +4305,12 @@ export default function RakitWebPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              alert(`Simulasi berhasil! Pesan order untuk "${previewSelectedProduct}" terkirim langsung ke nomor WhatsApp penjual.`);
+                              alert(`Simulasi berhasil! Pesan kontak untuk "${previewSelectedProduct}" terkirim langsung ke nomor WhatsApp bisnis.`);
                               setPreviewSelectedProduct(null);
                             }}
                             className="w-full py-2 rounded-xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-[10px] font-black cursor-pointer"
                           >
-                            Kirim Order Langsung ke Toko
+                            Hubungi Langsung Kontak Bisnis
                           </button>
                         </div>
                       </div>
@@ -5044,7 +5044,7 @@ export default function RakitWebPage() {
       <OnboardingModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        initialSlug="toko-rakitan"
+        initialSlug="website-rakitan"
         initialPlan="pro"
         initialLayoutConfig={{
           grid_columns_desktop: selectedGrid === 'list' ? 'list' : (parseInt(selectedGrid) as 2 | 3 | 4) || 3,

@@ -369,7 +369,7 @@ export function DeviceShowcase() {
           rel="noreferrer"
           className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-4 flex items-center gap-1"
         >
-          <span>{current.name} (Buka Toko Asli)</span>
+          <span>{current.name} (Buka Website Asli)</span>
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>

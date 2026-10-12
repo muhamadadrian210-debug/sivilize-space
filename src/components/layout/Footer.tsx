@@ -17,16 +17,17 @@ export function Footer() {
             </Link>
 
             <p className="text-neutral-400 leading-relaxed text-xs max-w-sm">
-              Infrastruktur WaaS mandiri untuk bisnis & ritel Indonesia. Menyediakan website siap pakai
-              dengan sistem transaksi mandiri di web, katalog dinamis, dan kontrol operasional penuh
-              dari SaaS tanpa komisi pihak ketiga.
+              Infrastruktur WaaS mandiri untuk bisnis & UMKM Indonesia. Seluruh proses sewa, aktivasi, dan pembayaran diselesaikan 100% mandiri di dalam website tanpa perantara WhatsApp.
             </p>
 
             <div className="p-3.5 rounded-xl bg-neutral-900/80 border border-neutral-800 font-mono text-[11px] text-neutral-300 space-y-1">
               <p><strong>Entitas:</strong> PT SIVILIZE CORP INDONESIA</p>
               <p><strong>NIB:</strong> 0207260103661 | <strong>KBLI:</strong> 62199</p>
               <p><strong>Domisili:</strong> Kota Kupang, Nusa Tenggara Timur (NTT)</p>
-              <p><strong>Email Resmi:</strong> <a href="mailto:sivilizecorpindonesia@gmail.com" className="text-emerald-400 hover:underline">sivilizecorpindonesia@gmail.com</a></p>
+              <p><strong>Saluran Pelaporan Bug/Aduan:</strong> <a href="mailto:sivilizecorpindonesia@gmail.com" className="text-emerald-400 hover:underline">sivilizecorpindonesia@gmail.com</a></p>
+              <p className="text-[10px] text-neutral-400 pt-1 border-t border-neutral-800/80 font-sans">
+                *Transaksi & sewa diselesaikan mandiri di web. Email hanya untuk pelaporan kendala teknis / legalitas.
+              </p>
             </div>
           </div>
 
@@ -48,7 +49,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/demo" className="hover:text-white transition-colors">
-                  Showcase Demo Toko
+                  Showcase Demo Website
                 </Link>
               </li>
               <li>

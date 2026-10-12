@@ -611,7 +611,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                 className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Kirim Pesanan ke WhatsApp Toko</span>
+                <span>Kirim Pesanan ke WhatsApp</span>
               </button>
             </div>
           </div>

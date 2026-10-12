@@ -115,7 +115,7 @@ export function OnboardingModal({
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMsg(data.error || 'Gagal mendaftarkan toko.');
+        setErrorMsg(data.error || 'Gagal mendaftarkan website.');
         setLoading(false);
         return;
       }
@@ -147,9 +147,9 @@ export function OnboardingModal({
   const handleCopySummary = () => {
     const text = `NOTA TRANSAKSI PEMBAYARAN RESMI PT SIVILIZE CORP INDONESIA
 No. Invoice: ${invoiceNo || 'INV-SC-2026-889102'}
-Toko: ${storeName} (https://${createdSlug || slug}.sivilizecorp.my.id)
+Website Bisnis: ${storeName} (https://${createdSlug || slug}.sivilizecorp.my.id)
 Tanggal: ${invoiceDate || new Date().toLocaleDateString('id-ID')}
-Paket Sewa: ${planTier === 'mikro' ? 'Paket Toko Mikro (1 Halaman)' : planTier === 'bisnis' ? 'Paket Toko Bisnis (4-5 Halaman)' : 'Paket Toko Pro (2-3 Halaman)'} (365 Hari)
+Paket Sewa: ${planTier === 'mikro' ? 'Paket Website Mikro (1 Halaman)' : planTier === 'bisnis' ? 'Paket Website Bisnis (4-5 Halaman)' : 'Paket Website Pro (2-3 Halaman)'} (365 Hari)
 Total: ${planTier === 'mikro' ? 'Rp 349.000' : planTier === 'bisnis' ? 'Rp 899.000' : 'Rp 599.000'} (LUNAS)
 Status Pembayaran: LUNAS & TERVERIFIKASI SAH MAYAR.ID
 NIB Perusahaan: 0207260103661 (KBLI: 62199)
@@ -176,7 +176,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
             </div>
             <div>
               <h3 className="font-extrabold text-sm text-white leading-tight">
-                {step === 4 ? 'Nota Pembayaran & Bukti Sewa Sah' : 'Klaim & Buat Toko Instan'}
+                {step === 4 ? 'Nota Pembayaran & Bukti Sewa Sah' : 'Klaim & Buat Website Instan'}
               </h3>
               <p className="text-[11px] text-slate-400">
                 {step === 4
@@ -203,12 +203,12 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
             </div>
           )}
 
-          {/* STEP 1: Nama Toko & Domain */}
+          {/* STEP 1: Nama Bisnis & Domain */}
           {step === 1 && (
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Nama Bisnis / Toko Anda
+                  Nama Bisnis / Brand Anda
                 </label>
                 <input
                   type="text"
@@ -242,7 +242,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     onChange={(e) =>
                       setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
                     }
-                    placeholder="namatoko"
+                    placeholder="namabisnis"
                     className="bg-transparent text-white font-mono outline-none flex-1 min-w-0 text-xs sm:text-sm"
                     required
                   />
@@ -306,7 +306,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     }`}
                   >
                     <span className="text-base">☕</span>
-                    <span className="text-[11px] font-bold">Katalog Toko</span>
+                    <span className="text-[11px] font-bold">Katalog Produk</span>
                     <span className="text-[9px] text-slate-400">FnB & Ritel</span>
                   </button>
 
@@ -353,7 +353,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {[
                     { id: 2, label: '2 Kolom (Foto Besar)' },
-                    { id: 3, label: '3 Kolom (Standar Toko)' },
+                    { id: 3, label: '3 Kolom (Standar Bisnis)' },
                     { id: 4, label: '4 Kolom (Katalog Padat)' },
                     { id: 'list', label: '1 Kolom (List Menu Resto)' },
                   ].map((g) => (
@@ -446,7 +446,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Lock className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Buat PIN Toko (6 Digit Angka)</span>
+                  <span>Buat PIN Keamanan Website (6 Digit Angka)</span>
                 </label>
                 <input
                   type="password"
@@ -491,7 +491,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 text-emerald-300" />
-                      <span>Aktifkan Toko Sekarang (60 Detik)</span>
+                      <span>Aktifkan Website Sekarang (60 Detik)</span>
                     </>
                   )}
                 </button>
@@ -511,7 +511,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                       Pembayaran & Sewa Berhasil Dikonfirmasi!
                     </strong>
                     <span className="text-[11px] text-emerald-300">
-                      Website toko Anda langsung live di Anycast Edge global.
+                      Website bisnis Anda langsung live di Anycast Edge global.
                     </span>
                   </div>
                 </div>
@@ -590,7 +590,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                 {/* Tenant & Website Details */}
                 <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-500">Nama Bisnis / Toko:</span>
+                    <span className="text-neutral-500">Nama Bisnis / Brand:</span>
                     <span className="font-bold text-neutral-900">{storeName}</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -600,7 +600,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-500">Nomor WhatsApp Toko:</span>
+                    <span className="text-neutral-500">Nomor Kontak Bisnis:</span>
                     <span className="font-mono font-medium text-neutral-800">{ownerPhone}</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -617,7 +617,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                         Sewa Infrastruktur Website WaaS ({planTier === 'mikro' ? 'Paket Mikro' : planTier === 'bisnis' ? 'Paket Bisnis' : 'Paket Pro'})
                       </strong>
                       <span className="text-[10px] text-neutral-500">
-                        Termasuk Anycast Edge Hosting, SSL Otomatis, Subdomain, & Panel Admin Toko
+                        Termasuk Anycast Edge Hosting, SSL Otomatis, Subdomain, & Panel Admin Website
                       </span>
                     </div>
                     <span className="font-mono font-bold text-neutral-950 text-right shrink-0 ml-2">
@@ -644,7 +644,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     <span>Jaminan Kepastian Hukum & Perlindungan Hak Penyewa</span>
                   </div>
                   <p>
-                    Nota digital ini merupakan bukti perikatan dan tanda terima pembayaran sah (e-Receipt) yang dilindungi oleh <strong>UU ITE No. 1 Tahun 2024</strong> dan <strong>PP No. 71 Tahun 2019 (PSTE)</strong>. Seluruh hak akses, domain toko, dan data katalog Anda dijamin aktif selama 365 hari kalender penuh.
+                    Nota digital ini merupakan bukti perikatan dan tanda terima pembayaran sah (e-Receipt) yang dilindungi oleh <strong>UU ITE No. 1 Tahun 2024</strong> dan <strong>PP No. 71 Tahun 2019 (PSTE)</strong>. Seluruh hak akses, domain website, dan data katalog Anda dijamin aktif selama 365 hari kalender penuh.
                   </p>
                   <p className="font-medium text-amber-950 pt-1 border-t border-amber-200/60">
                     <strong>PENTING:</strong> Jika timbul kendala teknis, downtime, atau jika pemilik/pengembang tidak dapat dihubungi melalui saluran biasa (menghilang), simpan dokumen nota ini dan laporkan langsung No. Invoice Anda ke email resmi korporasi: <a href="mailto:sivilizecorpindonesia@gmail.com" className="font-bold underline text-amber-950">sivilizecorpindonesia@gmail.com</a> untuk eskalasi pemulihan sistem dan jaminan operasional.
@@ -678,7 +678,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                   href="/dashboard"
                   className="flex-1 py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-neutral-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-[0.98]"
                 >
-                  <span>Masuk ke Dashboard Toko Anda</span>
+                  <span>Masuk ke Dashboard Website Anda</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
 

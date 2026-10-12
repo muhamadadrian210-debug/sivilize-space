@@ -16,7 +16,7 @@ export function Navbar({ onOpenOnboarding }: NavbarProps) {
 
   // Nav Links: Ramping, luas, dan tidak menumpuk
   const primaryLinks = [
-    { href: '/harga', label: 'Template Toko' },
+    { href: '/harga', label: 'Template Website' },
     { href: '/rakit', label: 'Rakit Custom', badge: 'Custom' },
     { href: '/demo', label: 'Preview Website' },
     { href: '/fitur', label: 'Fitur & SLA' },
@@ -192,7 +192,7 @@ export function Navbar({ onOpenOnboarding }: NavbarProps) {
                   }}
                   className="w-full py-2.5 px-3 rounded-xl bg-neutral-950 text-white text-center text-xs font-bold flex items-center justify-center gap-1.5"
                 >
-                  <span>Sewa Website Toko</span>
+                  <span>Sewa Website Bisnis</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               ) : (
@@ -201,7 +201,7 @@ export function Navbar({ onOpenOnboarding }: NavbarProps) {
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-2.5 px-3 rounded-xl bg-neutral-950 text-white text-center text-xs font-bold flex items-center justify-center gap-1.5"
                 >
-                  <span>Sewa Website Toko</span>
+                  <span>Sewa Website Bisnis</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               )}

@@ -1540,7 +1540,7 @@ export default function TenantDashboardPage() {
                   <span className="text-xs font-mono text-neutral-500 uppercase">Status Website:</span>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <strong className="text-sm text-neutral-950 font-bold">Aktif di Vercel Anycast Edge</strong>
+                    <strong className="text-sm text-neutral-950 font-bold">Aktif di Global Anycast Edge</strong>
                   </div>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold text-xs">

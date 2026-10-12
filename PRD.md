@@ -2,7 +2,7 @@
 ## SIVILIZESPACE (SIVILIZE SPACE) — STANDALONE MULTI-TENANT WAAS PLATFORM
 ### ENTERPRISE SECURITY EDITION: PURE VERCEL + FIREBASE / SUPABASE
 ### 🛡️ 20-LAYER FIREWALL ARCHITECTURE & 20 DECOY HONEYPOT SYSTEM (MICROSOFT-GRADE ZERO TRUST)
-**Platform Sewa Website & Toko Instan Mandiri untuk UMKM & Ritel Indonesia**  
+**Platform Sewa Website Bisnis Siap Pakai & Mandiri untuk UMKM & Pelaku Usaha Indonesia**  
 *Produk Resmi di bawah Divisi SiWeb Production — PT Sivilize Corp Indonesia*  
 *Nomor Induk Berusaha (NIB): 0207260103661 | Klasifikasi KBLI: 62199*
 

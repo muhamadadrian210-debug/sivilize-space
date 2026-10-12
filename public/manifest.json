@@ -1,7 +1,7 @@
 {
-  "name": "Sivilize Space — Platform Sewa Website & Toko Instan Mandiri",
+  "name": "Sivilize Space — Platform Sewa Website Bisnis Siap Pakai & Mandiri",
   "short_name": "Sivilize Space",
-  "description": "Sewa website toko mandiri siap pakai dalam 60 detik. Bebas komisi pihak ketiga, transaksi QRIS otomatis di web, infrastruktur Anycast Edge SLA 99.8%.",
+  "description": "Sewa website bisnis mandiri siap pakai dalam 60 detik. 100% selesai langsung di web, transaksi QRIS otomatis, Anycast Edge SLA 99.8%.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0D14",
@@ -16,23 +16,23 @@
   ],
   "shortcuts": [
     {
-      "name": "Sewa Website Toko",
+      "name": "Sewa Website Bisnis",
       "short_name": "Sewa Web",
-      "description": "Buka katalog dan pilih paket sewa website instan",
+      "description": "Buka katalog dan pilih paket sewa website bisnis siap pakai",
       "url": "/harga",
       "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     },
     {
       "name": "Studio Rakit Custom",
       "short_name": "Rakit Custom",
-      "description": "Rakit tampilan website sendiri secara leluasa",
+      "description": "Rakit tampilan website bisnis sendiri secara leluasa",
       "url": "/rakit",
       "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     },
     {
-      "name": "Showcase Demo Toko",
-      "short_name": "Demo Toko",
-      "description": "Lihat contoh website toko yang sudah live",
+      "name": "Showcase Demo Website",
+      "short_name": "Demo Web",
+      "description": "Lihat contoh website bisnis yang sudah live aktif",
       "url": "/demo",
       "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     }

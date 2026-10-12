@@ -1460,7 +1460,7 @@ export default function RakitWebPage() {
     {
       id: 'instant',
       name: 'Instant Zero-Lag Edge',
-      desc: 'Konten langsung mengudara tanpa skeleton (latensi Vercel Edge 0.03s).',
+      desc: 'Konten langsung mengudara tanpa skeleton (latensi Anycast Edge 0.03s).',
       price: 0,
     },
     {
@@ -1760,11 +1760,23 @@ export default function RakitWebPage() {
           </div>
         </section>
 
-        {/* WORKBENCH STUDIO RAKIT (DUAL COLUMN: KIRI KONFIGURATOR, KANAN NOTA & LIVE PREVIEW CANVAS) */}
-        <section className="py-10 max-w-7xl mx-auto px-4 sm:px-8">
+        {/* WORKBENCH STUDIO RAKIT (DUAL INDEPENDENT SCROLL: KIRI KONFIGURATOR, KANAN NOTA & PREVIEW) */}
+        <section className="py-6 sm:py-8 max-w-7xl mx-auto px-4 sm:px-8 pb-28 lg:pb-8">
+          {/* Dual Scroll Mode Indicator on Desktop */}
+          <div className="hidden lg:flex items-center justify-between text-xs font-mono text-neutral-500 mb-3 px-1">
+            <span className="flex items-center gap-1.5 font-bold text-neutral-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Scroll Panel 1: Konfigurasi Komponen Rakitan (Modul 0 - 12)</span>
+            </span>
+            <span className="flex items-center gap-1.5 font-bold text-neutral-700">
+              <span className="w-2 h-2 rounded-full bg-indigo-500" />
+              <span>Scroll Panel 2: Nota Rakitan BOM & Live Canvas Interaktif</span>
+            </span>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* KOLOM KIRI: LIBRARY MODUL KOMPONEN RAKITAN (7 KOLOM) */}
-            <div className="lg:col-span-7 space-y-8">
+            {/* KOLOM KIRI: LIBRARY MODUL KOMPONEN RAKITAN (7 KOLOM - INDEPENDENT SCROLL PANEL 1) */}
+            <div className="lg:col-span-7 space-y-8 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-3 custom-scrollbar">
               {/* LANGKAH 0: PILIH JENIS BISNIS ANDA (AUTO-ADAPT INDUSTRY ONBOARDING) */}
               <div className="p-6 rounded-3xl bg-white border-2 border-neutral-900 shadow-md space-y-4">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3 flex-wrap gap-2">
@@ -2796,7 +2808,7 @@ export default function RakitWebPage() {
                 </div>
               </div>
 
-              {/* MODUL 11: GAMBAR LATAR BELAKANG TOKO (BACKGROUND & GALERI) */}
+              {/* MODUL 11: GAMBAR LATAR BELAKANG WEBSITE (BACKGROUND & GALERI) */}
               <div className="p-6 rounded-3xl bg-white border border-neutral-200 shadow-xs space-y-5">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div className="flex items-center gap-2.5">
@@ -2926,7 +2938,7 @@ export default function RakitWebPage() {
                   </div>
                 )}
               </div>
-              {/* MODUL 12: KELOLA MENU & UNGGAH FOTO PRODUK TOKO (BEBAS PASANG FOTO MENU) */}
+              {/* MODUL 12: KELOLA MENU & UNGGAH FOTO PRODUK WEBSITE (BEBAS PASANG FOTO MENU) */}
               <div className="p-6 rounded-3xl bg-white border border-neutral-200 shadow-xs space-y-5">
                 <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                   <div className="flex items-center gap-2.5">
@@ -3189,8 +3201,11 @@ export default function RakitWebPage() {
               </div>
             </div>
 
-            {/* KOLOM KANAN: STICKY NOTA KALKULASI & INTERACTIVE LIVE PREVIEW CANVAS (5 KOLOM) */}
-            <div className="lg:col-span-5 sticky top-20 space-y-4">
+            {/* KOLOM KANAN: NOTA KALKULASI & INTERACTIVE LIVE PREVIEW CANVAS (5 KOLOM - INDEPENDENT SCROLL PANEL 2) */}
+            <div
+              id="nota-rakitan-section"
+              className="lg:col-span-5 space-y-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-2 custom-scrollbar"
+            >
               {/* Box Rincian Nota & Tombol Eksekusi */}
               <div className="rounded-3xl bg-neutral-950 text-white p-5 sm:p-6 shadow-xl space-y-5">
                 <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -4342,6 +4357,36 @@ export default function RakitWebPage() {
             </div>
           </div>
         </section>
+
+        {/* MOBILE & TABLET STICKY BOTTOM ACTION BAR (RAPI, INSTAN & BEBAS BINGUNG) */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-neutral-950/95 backdrop-blur-md border-t border-neutral-800 p-3 sm:p-4 px-4 sm:px-6 flex items-center justify-between shadow-2xl">
+          <div className="space-y-0.5">
+            <span className="text-[10px] text-neutral-400 font-mono uppercase block">Total Sewa (1 Thn):</span>
+            <span className="text-base sm:text-lg font-black font-mono text-emerald-400">
+              {formatRupiah(calculatedTotal)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('nota-rakitan-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-3 sm:px-4 py-2 rounded-xl bg-neutral-800 text-neutral-200 text-xs font-bold hover:bg-neutral-700 cursor-pointer transition-colors"
+            >
+              Lihat Nota BOM
+            </button>
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="px-4 sm:px-5 py-2 rounded-xl bg-white text-neutral-950 text-xs font-black hover:bg-neutral-100 cursor-pointer transition-transform active:scale-95 shadow-md flex items-center gap-1.5"
+            >
+              <span>Sewa Sekarang</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </main>
 
       <Footer />

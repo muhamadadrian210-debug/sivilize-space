@@ -142,7 +142,7 @@ export function Footer() {
         <div className="pt-8 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-neutral-500 text-[11px] gap-4">
           <p>© 2026 PT Sivilize Corp Indonesia. Seluruh Hak Cipta Dilindungi Undang-Undang.</p>
           <p className="font-mono text-neutral-500">
-            Arsitektur Standalone Multi-Tenant • Vercel Anycast Edge • Singapore Supabase PostgreSQL
+            Arsitektur Standalone Multi-Tenant • Global Anycast Edge SLA 99.8% • Singapore Enterprise Supabase
           </p>
         </div>
       </div>

@@ -121,7 +121,7 @@ export default function HargaPage() {
                 <ul className="space-y-3 text-xs text-neutral-700 mb-8">
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Subdomain resmi: <strong>namatoko.sivilizecorp.my.id</strong></span>
+                    <span>Subdomain resmi: <strong>namabisnis.sivilizecorp.my.id</strong></span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -129,7 +129,7 @@ export default function HargaPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Keranjang & Pembayaran Mandiri di Web</span>
+                    <span>Pemesanan & Pembayaran Mandiri di Web</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

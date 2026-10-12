@@ -21,7 +21,7 @@ Banyak pengusaha di Indonesia menghadapi masalah besar ketika ingin memiliki web
 Di Sivilize Space, Anda tidak perlu membeli website mahal. Anda cukup **menyewa website bisnis resmi yang sudah jadi**, siap pakai, dan langsung aktif mengudara dalam waktu **60 detik** dengan biaya sewa tahunan yang sangat terjangkau, transparan, dan tanpa biaya tersembunyi.
 
 > 💡 **PENTING DIINGAT:**  
-> Sivilize Space berfokus murni pada **Jasa Sewa Website Bisnis & Profil Mandiri**. Platform ini bukan sewa toko online ritel yang memusingkan operasional kurir pengiriman barang, retur paket, atau komplain ekspedisi. Website Anda berfungsi sebagai etalase prestisius, katalog resmi, dan pusat kontak bisnis yang dapat Anda kelola secara mandiri kapan saja.
+> Sivilize Space berfokus murni pada **Jasa Sewa Website Bisnis & Profil Mandiri**. Layanan ini dirancang khusus untuk membangun kredibilitas brand, portofolio profesional, dan kehadiran digital resmi. Website Anda berfungsi sebagai etalase prestisius, katalog penawaran resmi, dan pusat kontak bisnis yang dapat Anda kelola secara mandiri kapan saja.
 
 ---
 
@@ -88,8 +88,8 @@ Untuk kenyamanan Anda saat merakit website di komputer/laptop:
 ## 📱 Portal Kelola Website (Client Dashboard Mandiri)
 
 Setelah website Anda aktif, Anda memiliki akses penuh ke Dashboard Pengelola yang dapat dibuka dengan mudah lewat browser di HP Anda:
-- **Ubah Informasi Kontak & Alamat**: Perbarui nomor WhatsApp, alamat toko/kantor fisik, dan jam buka operasional kapan pun Anda mau.
-- **Kelola Katalog & Layanan**: Tambah produk baru, ganti harga, ubah foto menu makanan/layanan, atau sembunyikan barang yang sedang habis.
+- **Ubah Informasi Kontak & Alamat**: Perbarui nomor WhatsApp, alamat kantor atau lokasi usaha fisik, dan jam buka operasional kapan pun Anda mau.
+- **Kelola Katalog & Layanan**: Tambah produk baru, ganti harga, ubah foto menu makanan/layanan, atau sembunyikan penawaran yang sedang nonaktif.
 - **Ganti Tema & Warna**: Ingin mengubah suasana tampilan website menyambut promo khusus? Anda dapat mengganti tema warna tampilan seketika dengan 1 kali klik.
 - **Perpanjang Masa Sewa Mandiri**: Informasi sisa hari masa sewa ditampilkan transparan. Anda dapat memperpanjang masa aktif website kapan saja secara mandiri melalui QRIS resmi.
 

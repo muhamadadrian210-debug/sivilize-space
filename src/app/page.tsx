@@ -249,7 +249,7 @@ export default function LandingPage() {
                 </span>
                 <h3 className="text-lg font-bold text-neutral-950 mt-3 mb-1">Kedai Kopi Senja</h3>
                 <p className="text-xs text-neutral-600 mb-4 line-clamp-2">
-                  Katalog single origin Flores Bajawa & pastry dengan sistem keranjang belanja mandiri di web.
+                  Katalog single origin Flores Bajawa & pastry dengan sistem pemesanan menu mandiri di web.
                 </p>
                 <p className="font-mono text-xs text-neutral-400 mb-4">kopisenja.sivilizecorp.my.id</p>
               </div>

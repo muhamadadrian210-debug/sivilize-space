@@ -92,13 +92,13 @@ export default function DemoPage() {
         <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-8 border-t border-neutral-200">
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-2">
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-neutral-500">
-              UJI COBA TOKO AKTIF SECARA LANGSUNG
+              UJI COBA WEBSITE AKTIF SECARA LANGSUNG
             </span>
             <h3 className="text-2xl sm:text-3xl font-black text-neutral-950">
-              Buka Website Toko Asli di Tab Baru
+              Buka Website Bisnis Asli di Tab Baru
             </h3>
             <p className="text-xs sm:text-sm text-neutral-600">
-              Setiap website di bawah ini live di sub-domain independen dengan database produk dan alur transaksi mandiri.
+              Setiap website di bawah ini live di sub-domain independen dengan profil usaha dan alur transaksi mandiri.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export default function DemoPage() {
                     rel="noreferrer"
                     className="w-full py-2.5 px-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs"
                   >
-                    <span>Buka Toko Asli (Tab Baru)</span>
+                    <span>Buka Website Asli (Tab Baru)</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
 

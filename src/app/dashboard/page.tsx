@@ -1345,7 +1345,7 @@ export default function TenantDashboardPage() {
                     Halaman Beranda & Katalog Utama (Paket Bawaan)
                   </h4>
                   <p className="text-xs text-neutral-500">
-                    Termasuk Beranda, Katalog Produk Dinamis, Keranjang Web, dan Checkout Mandiri
+                    Termasuk Beranda, Profil Usaha, Katalog Layanan, dan Form Pemesanan Mandiri
                   </p>
                 </div>
               </div>

@@ -243,7 +243,7 @@ export function SaaSOperatingSystemShowcase() {
             <div className="border-b border-neutral-100 pb-3 flex items-center justify-between">
               <div>
                 <h4 className="font-extrabold text-sm text-neutral-900">
-                  Keranjang & Checkout Mandiri
+                  Pemesanan & Transaksi Mandiri di Web
                 </h4>
                 <p className="text-xs text-neutral-500">Website: kopisenja.sivilizecorp.my.id</p>
               </div>

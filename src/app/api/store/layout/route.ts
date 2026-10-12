@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
     if (!store_id || !layout_config) {
       return NextResponse.json(
-        { error: 'ID Toko dan konfigurasi layout wajib diisi.' },
+        { error: 'ID Website dan konfigurasi layout wajib diisi.' },
         { status: 400 }
       );
     }
@@ -28,14 +28,14 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('Error updating store layout:', error);
       return NextResponse.json(
-        { error: 'Gagal menyimpan tata letak toko.' },
+        { error: 'Gagal menyimpan tata letak website.' },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: '✓ Tata letak & grid toko berhasil diperbarui!',
+      message: '✓ Tata letak & grid website berhasil diperbarui!',
       store: updatedStore,
     });
   } catch (err: unknown) {

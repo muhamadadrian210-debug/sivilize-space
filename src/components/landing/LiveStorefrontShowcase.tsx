@@ -245,7 +245,7 @@ export function LiveStorefrontShowcase({ onOpenOnboarding }: LiveStorefrontShowc
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-xs font-mono font-semibold text-neutral-800">
             <Eye className="w-3.5 h-3.5 text-neutral-950" />
-            <span>BUKAN BROSUR TIRUAN • LIVE PREVIEW STOREFRONT</span>
+            <span>BUKAN BROSUR TIRUAN • LIVE PREVIEW WEBSITE ASLI</span>
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 leading-tight">

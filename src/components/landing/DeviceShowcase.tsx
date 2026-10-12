@@ -166,7 +166,7 @@ export function DeviceShowcase() {
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* 1. Selector Tab Toko */}
+      {/* 1. Selector Tab Website Bisnis */}
       <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#0d131f] border border-white/[0.08] mb-6 shadow-xl w-full max-w-sm justify-between">
         <button
           type="button"

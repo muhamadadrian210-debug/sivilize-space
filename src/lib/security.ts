@@ -46,7 +46,7 @@ export function checkProhibitedContent(text: string): { isViolating: boolean; ma
   return { isViolating: false };
 }
 
-// Zod Schema untuk Update Profil Toko (FW 09: Strip Unknown Keys)
+// Zod Schema untuk Update Profil Website Bisnis (FW 09: Strip Unknown Keys)
 export const updateStoreSchema = z.object({
   id: z.string().uuid(),
   store_name: z.string().min(2).max(100),

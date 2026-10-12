@@ -6,7 +6,7 @@ import type { StoreSectionKey } from '@/types/database';
 import { z } from 'zod';
 
 const registerStoreSchema = z.object({
-  store_name: z.string().min(2, 'Nama toko minimal 2 karakter').max(80),
+  store_name: z.string().min(2, 'Nama website minimal 2 karakter').max(80),
   slug: z.string().min(3).max(30),
   category: z.string().min(2).max(50),
   template_type: z.enum(['katalog', 'layanan', 'profil']).default('katalog'),
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         },
       ]);
       return NextResponse.json(
-        { error: 'Nama toko melanggar UU ITE (terdeteksi indikasi konten terlarang).' },
+        { error: 'Nama website melanggar UU ITE (terdeteksi indikasi konten terlarang).' },
         { status: 400 }
       );
     }
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     if (existingPhone) {
       return NextResponse.json(
         {
-          error: `Nomor WhatsApp ${cleanPhone} sudah memiliki toko aktif (${existingPhone.slug}). Silakan login di dashboard.`,
+          error: `Nomor WhatsApp ${cleanPhone} sudah memiliki website aktif (${existingPhone.slug}). Silakan login di dashboard.`,
         },
         { status: 409 }
       );
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    // 6. Insert toko baru
+    // 6. Insert website baru
     const { data: newStore, error: insertError } = await supabaseAdmin
       .from('stores')
       .insert([
@@ -172,12 +172,12 @@ export async function POST(req: NextRequest) {
     if (insertError || !newStore) {
       console.error('Error insert store:', insertError);
       return NextResponse.json(
-        { error: 'Gagal membuat toko di database. Hubungi admin.' },
+        { error: 'Gagal membuat website di database. Hubungi admin.' },
         { status: 500 }
       );
     }
 
-    // 7. Insert starter products agar toko langsung terisi rapi
+    // 7. Insert starter products agar website langsung terisi rapi
     await supabaseAdmin.from('products').insert([
       {
         store_id: newStore.id,

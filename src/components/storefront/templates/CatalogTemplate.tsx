@@ -531,7 +531,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
               onClick={() => setIsCartOpen(true)}
               className="px-4 py-2.5 rounded-xl bg-white text-[var(--theme-accent)] font-extrabold text-xs flex items-center gap-1.5 shadow-sm hover:bg-slate-100 transition-colors cursor-pointer"
             >
-              <span>Lihat Keranjang</span>
+              <span>Lihat Rincian Pesanan</span>
             </button>
           </div>
         </div>
@@ -544,7 +544,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
             <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border)] mb-3">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-[var(--theme-accent)]" />
-                <h3 className="font-black text-base">Keranjang Pesanan</h3>
+                <h3 className="font-black text-base">Rincian Pesanan Mandiri</h3>
               </div>
               <button
                 onClick={() => setIsCartOpen(false)}

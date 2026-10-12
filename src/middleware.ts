@@ -105,7 +105,7 @@ export default function middleware(req: NextRequest) {
   }
 
   // 5. Kasus Custom Domain Pribadi Klien (Paket Pro/Bisnis Tahunan)
-  // Contoh: kopisenjakupang.my.id atau tokoanda.com
+  // Contoh: kopisenjakupang.my.id atau bisnisanda.com
   const customDomainRewriteUrl = new URL(
     `/toko-domain/${currentHost}${url.pathname === '/' ? '' : url.pathname}${url.search}`,
     req.url

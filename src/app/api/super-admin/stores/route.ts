@@ -4,7 +4,7 @@ import type { Store } from '@/types/database';
 
 export async function GET(req: NextRequest) {
   try {
-    // 1. Ambil seluruh data toko
+    // 1. Ambil seluruh data website
     const { data: stores, error: storesError } = await supabaseAdmin
       .from('stores')
       .select('*')
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Store ID wajib disertakan.' }, { status: 400 });
     }
 
-    // Aksi 1: Emergency Kill-Switch (1-Detik Takedown Toko Pelanggar)
+    // Aksi 1: Emergency Kill-Switch (1-Detik Takedown Website Pelanggar)
     if (action === 'toggle_kill_switch') {
       const { data: currentStore } = await supabaseAdmin
         .from('stores')
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (!currentStore) {
-        return NextResponse.json({ error: 'Toko tidak ditemukan.' }, { status: 404 });
+        return NextResponse.json({ error: 'Website tidak ditemukan.' }, { status: 404 });
       }
 
       const nextStatus = !currentStore.is_active;

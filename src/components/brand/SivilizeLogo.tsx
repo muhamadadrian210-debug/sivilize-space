@@ -19,7 +19,7 @@ export function SivilizeLogo({
 }: SivilizeLogoProps) {
   // SVG Icon Mark: Monolithic Architectural 'S' Portal
   // Makna: Dua blok fondasi modular saling mengunci membentuk huruf 'S' (Sivilize).
-  // Melambangkan stabilitas infrastruktur server, ruang toko mandiri (Space),
+  // Melambangkan stabilitas infrastruktur server, ruang website bisnis mandiri (Space),
   // dan transaksi langsung tanpa perantara pihak ketiga.
   const iconMark = (
     <svg

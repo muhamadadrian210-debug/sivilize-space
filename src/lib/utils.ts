@@ -31,7 +31,7 @@ export function normalizeWhatsAppPhone(phone: string): string {
 }
 
 /**
- * Validasi format slug toko (Micro-Spec 9 & Database Constraint)
+ * Validasi format slug website bisnis (Micro-Spec 9 & Database Constraint)
  * Wajib: huruf kecil, angka, strip tunggal di tengah, panjang 3-30 karakter
  */
 export function isValidSlug(slug: string): boolean {

@@ -28,27 +28,27 @@ export default function FiturPage() {
       tag: 'Core WaaS',
     },
     {
-      icon: <ShoppingBag className="w-6 h-6 text-neutral-900" />,
-      title: 'Katalog & Transaksi Langsung di Web',
-      desc: 'Pelanggan memilih produk, menentukan varian, memasukkan ke keranjang belanja, dan menyelesaikan checkout langsung di website toko Anda. Tanpa perlu chat manual bolak-balik.',
-      tag: 'Web Storefront',
+      icon: <Layers className="w-6 h-6 text-neutral-900" />,
+      title: 'Katalog Profil & Layanan Mandiri di Web',
+      desc: 'Pengunjung melihat profil usaha, portofolio, katalog penawaran, dan melakukan pemesanan langsung di website bisnis Anda. 100% mandiri tanpa repot chat manual bolak-balik.',
+      tag: 'Web Mandiri',
     },
     {
       icon: <CreditCard className="w-6 h-6 text-neutral-900" />,
       title: 'Pembayaran QRIS & Bank Terpadu',
-      desc: 'Integrasi pembayaran QRIS Dinamis dan Virtual Account otomatis. Uang penjualan langsung masuk 100% ke rekening Anda dengan 0% potongan komisi penjualan pihak ketiga.',
+      desc: 'Integrasi pembayaran QRIS Dinamis dan Virtual Account otomatis. Uang transaksi langsung masuk 100% ke rekening Anda dengan 0% potongan komisi pihak ketiga.',
       tag: '0% Komisi',
     },
     {
       icon: <Smartphone className="w-6 h-6 text-neutral-900" />,
-      title: 'Pusat Kendali Merchant di SaaS',
-      desc: 'Seluruh operasional dikendalikan dari satu dashboard browser di ponsel atau laptop. Ubah harga dalam 5 detik, aktifkan tombol stok habis, dan upload foto WebP terkompresi otomatis.',
+      title: 'Pusat Kendali Pengelola di SaaS',
+      desc: 'Seluruh operasional dikendalikan dari satu dashboard browser di ponsel atau laptop. Ubah informasi kontak dalam 5 detik, perbarui katalog layanan, dan upload foto WebP terkompresi otomatis.',
       tag: 'Cloud Dashboard',
     },
     {
       icon: <RotateCcw className="w-6 h-6 text-neutral-900" />,
       title: 'Invoice Digital Otomatis',
-      desc: 'Setiap transaksi yang lunas langsung menerbitkan invoice digital resmi dengan nomor referensi unik, mencatat rincian belanja dan waktu pembayaran secara akurat di database.',
+      desc: 'Setiap transaksi yang lunas langsung menerbitkan invoice digital resmi dengan nomor referensi unik, mencatat rincian layanan dan waktu pembayaran secara akurat di database.',
       tag: 'Automated Record',
     },
     {
@@ -71,11 +71,11 @@ export default function FiturPage() {
               Arsitektur & Kemampuan Sistem
             </span>
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 mt-4 leading-tight">
-              Seluruh Operasional Toko Berjalan di Dalam SaaS SivilizeSpace.
+              Seluruh Operasional Website Berjalan di Dalam SaaS SivilizeSpace.
             </h1>
             <p className="mt-4 text-sm sm:text-base text-neutral-600 max-w-2xl mx-auto leading-relaxed">
               Bukan sekadar bio-link atau etalase gambar mati. SivilizeSpace adalah platform
-              Website-as-a-Service (WaaS) lengkap di mana Anda menyewa website, mengelola stok,
+              Website-as-a-Service (WaaS) lengkap di mana Anda menyewa website bisnis, mengelola katalog,
               menerima transaksi pelanggan, dan mencatat invoice secara mandiri di web.
             </p>
           </div>
@@ -120,9 +120,9 @@ export default function FiturPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="p-6 rounded-2xl bg-neutral-800/80 border border-neutral-700 space-y-3">
                 <span className="text-2xl font-black text-neutral-400 font-mono">01</span>
-                <h4 className="font-bold text-base text-white">Sewa & Aktifkan Toko</h4>
+                <h4 className="font-bold text-base text-white">Sewa & Aktifkan Website</h4>
                 <p className="text-xs text-neutral-300 leading-relaxed">
-                  Pilih paket dan nama subdomain. Sistem Anycast Edge langsung memvalidasi dan mengaktifkan website toko Anda dalam 60 detik.
+                  Pilih paket dan nama subdomain. Sistem Anycast Edge langsung memvalidasi dan mengaktifkan website bisnis Anda dalam 60 detik.
                 </p>
               </div>
 
@@ -130,7 +130,7 @@ export default function FiturPage() {
                 <span className="text-2xl font-black text-neutral-400 font-mono">02</span>
                 <h4 className="font-bold text-base text-white">Kelola di SaaS Portal</h4>
                 <p className="text-xs text-neutral-300 leading-relaxed">
-                  Login lewat ponsel Anda untuk menambah menu makanan, stok baju, atau pricelist layanan lengkap dengan foto beresolusi tinggi.
+                  Login lewat ponsel Anda untuk memperbarui profil, mengubah info kontak, atau pricelist layanan lengkap dengan foto beresolusi tinggi.
                 </p>
               </div>
 
@@ -138,7 +138,7 @@ export default function FiturPage() {
                 <span className="text-2xl font-black text-neutral-400 font-mono">03</span>
                 <h4 className="font-bold text-base text-white">Transaksi & Invoice Web</h4>
                 <p className="text-xs text-neutral-300 leading-relaxed">
-                  Pelanggan memesan mandiri di web, membayar via QRIS, dan menerima invoice resmi otomatis tanpa menyita waktu admin toko Anda.
+                  Pengunjung bertransaksi mandiri di web, membayar via QRIS, dan menerima invoice resmi otomatis tanpa menyita waktu admin bisnis Anda.
                 </p>
               </div>
             </div>

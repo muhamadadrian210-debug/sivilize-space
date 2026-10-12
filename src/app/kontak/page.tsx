@@ -35,7 +35,7 @@ export default function KontakPage() {
             </h1>
             <p className="mt-4 text-sm sm:text-base text-neutral-600 max-w-2xl mx-auto leading-relaxed">
               Punya pertanyaan seputar integrasi domain, kapasitas katalog, atau ingin konsultasi
-              sebelum menyewa website toko? Tim PT Sivilize Corp Indonesia siap membantu Anda.
+              sebelum menyewa website bisnis? Tim PT Sivilize Corp Indonesia siap membantu Anda.
             </p>
           </div>
         </section>

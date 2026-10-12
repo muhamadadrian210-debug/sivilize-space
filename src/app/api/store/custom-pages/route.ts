@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       .single();
 
   if (error || !store) {
-    return NextResponse.json({ error: 'Toko tidak ditemukan.' }, { status: 404 });
+    return NextResponse.json({ error: 'Website tidak ditemukan.' }, { status: 404 });
   }
 
   const existingPages = (store.custom_pages || []) as CustomPage[];
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   // Cek apakah slug halaman sudah ada
   if (existingPages.some((p) => p.slug === slug)) {
     return NextResponse.json(
-      { error: `Halaman dengan alamat /${slug} sudah ada di toko ini.` },
+      { error: `Halaman dengan alamat /${slug} sudah ada di website ini.` },
       { status: 409 }
     );
   }
@@ -118,7 +118,7 @@ export async function PUT(req: NextRequest) {
     const { store_id, page_id, title, content, is_published } = body;
 
     if (!store_id || !page_id) {
-      return NextResponse.json({ error: 'ID Toko dan Halaman wajib diisi.' }, { status: 400 });
+      return NextResponse.json({ error: 'ID Website dan Halaman wajib diisi.' }, { status: 400 });
     }
 
     const { data: store } = await supabaseAdmin
@@ -128,7 +128,7 @@ export async function PUT(req: NextRequest) {
       .single();
 
     if (!store) {
-      return NextResponse.json({ error: 'Toko tidak ditemukan.' }, { status: 404 });
+      return NextResponse.json({ error: 'Website tidak ditemukan.' }, { status: 404 });
     }
 
     const existingPages = (store.custom_pages || []) as CustomPage[];

@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAFAFA;
+  --foreground: #0A0D14;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* 5 DESIGN TOKENS (PRD BAB XII.2) */
+[data-theme="warm-cafe"] {
+  --theme-bg: #FFFBEB;
+  --theme-card: #FEF3C7;
+  --theme-text: #451A03;
+  --theme-muted: #92400E;
+  --theme-accent: #78350F;
+  --theme-border: #FDE68A;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="midnight-distro"] {
+  --theme-bg: #0F172A;
+  --theme-card: #1E293B;
+  --theme-text: #F8FAFC;
+  --theme-muted: #94A3B8;
+  --theme-accent: #38BDF8;
+  --theme-border: #334155;
+}
+
+[data-theme="fresh-herbal"] {
+  --theme-bg: #F0FDF4;
+  --theme-card: #DCFCE7;
+  --theme-text: #14532D;
+  --theme-muted: #166534;
+  --theme-accent: #16A34A;
+  --theme-border: #BBF7D0;
+}
+
+[data-theme="pastel-beauty"] {
+  --theme-bg: #FDF2F8;
+  --theme-card: #FCE7F3;
+  --theme-text: #701A75;
+  --theme-muted: #9D174D;
+  --theme-accent: #DB2777;
+  --theme-border: #FBCFE8;
+}
+
+[data-theme="corporate-clean"] {
+  --theme-bg: #FFFFFF;
+  --theme-card: #F8FAFC;
+  --theme-text: #0F172A;
+  --theme-muted: #475569;
+  --theme-accent: #1E40AF;
+  --theme-border: #E2E8F0;
+}
+
+/* Micro-Spec 11: Ergonomi Mobile 100dvh */
+.mobile-dvh {
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  overflow-x: hidden;
 }

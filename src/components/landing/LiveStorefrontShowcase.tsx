@@ -25,9 +25,13 @@ import type { PlanTier } from '@/types/database';
 
 interface LiveStorefrontShowcaseProps {
   onOpenOnboarding?: (slug?: string, plan?: PlanTier) => void;
+  hideHeader?: boolean;
 }
 
-export function LiveStorefrontShowcase({ onOpenOnboarding }: LiveStorefrontShowcaseProps) {
+export function LiveStorefrontShowcase({
+  onOpenOnboarding,
+  hideHeader = false,
+}: LiveStorefrontShowcaseProps) {
   // Mode: Template vs Custom Rakitan (Default Mode Custom sesuai arahan user)
   const [activeCategory, setActiveCategory] = useState<'template' | 'custom'>('custom');
   // Selected Store ID
@@ -242,54 +246,90 @@ export function LiveStorefrontShowcase({ onOpenOnboarding }: LiveStorefrontShowc
     <section className="py-16 sm:py-24 bg-white border-b border-neutral-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-xs font-mono font-semibold text-neutral-800">
-            <Eye className="w-3.5 h-3.5 text-neutral-950" />
-            <span>BUKAN BROSUR TIRUAN • LIVE PREVIEW WEBSITE ASLI</span>
+        {!hideHeader ? (
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-xs font-mono font-semibold text-neutral-800">
+              <Eye className="w-3.5 h-3.5 text-neutral-950" />
+              <span>BUKAN BROSUR TIRUAN • LIVE PREVIEW WEBSITE ASLI</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 leading-tight">
+              Lihat Persis Seperti Apa Website Bisnis Anda.
+            </h2>
+
+            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
+              Pilih antara <strong>Template Siap Pakai (Aktif 60 Detik)</strong> atau <strong>Hasil Rakitan Custom (Bebas Rombak)</strong>.
+              Semua website di bawah ini berjalan di atas infrastruktur Anycast Edge kami, siap tayang profesional untuk bisnis Anda tanpa potongan komisi!
+            </p>
+
+            {/* Master Category Toggle: Template vs Custom */}
+            <div className="inline-flex p-1.5 rounded-2xl bg-neutral-100 border border-neutral-200 gap-1.5 mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveCategory('template');
+                  setSelectedStoreId('kopi-senja');
+                }}
+                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                  activeCategory === 'template'
+                    ? 'bg-neutral-950 text-white shadow-xs'
+                    : 'text-neutral-600 hover:text-neutral-950'
+                }`}
+              >
+                ✨ 1. Koleksi Template Jadi (Mulai Rp 349k/thn)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveCategory('custom');
+                  setSelectedStoreId('atelier-paris');
+                }}
+                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                  activeCategory === 'custom'
+                    ? 'bg-neutral-950 text-white shadow-xs'
+                    : 'text-neutral-600 hover:text-neutral-950'
+                }`}
+              >
+                ⚡ 2. Hasil Rakitan Custom (Mulai Rp 449k/thn)
+              </button>
+            </div>
           </div>
+        ) : (
+          <div className="flex justify-center -mt-2">
+            <div className="inline-flex p-1.5 rounded-2xl bg-neutral-100 border border-neutral-200 gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveCategory('template');
+                  setSelectedStoreId('kopi-senja');
+                }}
+                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                  activeCategory === 'template'
+                    ? 'bg-neutral-950 text-white shadow-xs'
+                    : 'text-neutral-600 hover:text-neutral-950'
+                }`}
+              >
+                ✨ 1. Koleksi Template Jadi (Mulai Rp 349k/thn)
+              </button>
 
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 leading-tight">
-            Lihat Persis Seperti Apa Website Bisnis Anda.
-          </h2>
-
-          <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
-            Pilih antara <strong>Template Siap Pakai (Aktif 60 Detik)</strong> atau <strong>Hasil Rakitan Custom (Bebas Rombak)</strong>.
-            Semua website di bawah ini berjalan di atas infrastruktur Anycast Edge kami, siap tayang profesional untuk bisnis Anda tanpa potongan komisi!
-          </p>
-
-          {/* Master Category Toggle: Template vs Custom */}
-          <div className="inline-flex p-1.5 rounded-2xl bg-neutral-100 border border-neutral-200 gap-1.5 mt-4">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveCategory('template');
-                setSelectedStoreId('kopi-senja');
-              }}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
-                activeCategory === 'template'
-                  ? 'bg-neutral-950 text-white shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-950'
-              }`}
-            >
-              ✨ 1. Koleksi Template Jadi (Mulai Rp 349k/thn)
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setActiveCategory('custom');
-                setSelectedStoreId('atelier-paris');
-              }}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
-                activeCategory === 'custom'
-                  ? 'bg-neutral-950 text-white shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-950'
-              }`}
-            >
-              ⚡ 2. Hasil Rakitan Custom (Mulai Rp 449k/thn)
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveCategory('custom');
+                  setSelectedStoreId('atelier-paris');
+                }}
+                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+                  activeCategory === 'custom'
+                    ? 'bg-neutral-950 text-white shadow-xs'
+                    : 'text-neutral-600 hover:text-neutral-950'
+                }`}
+              >
+                ⚡ 2. Hasil Rakitan Custom (Mulai Rp 449k/thn)
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* WORKBENCH SHOWCASE: KIRI PILIHAN WEBSITE, KANAN CANVAS BROWSER NYATA */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

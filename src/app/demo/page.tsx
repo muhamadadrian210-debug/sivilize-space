@@ -86,7 +86,7 @@ export default function DemoPage() {
         </section>
 
         {/* 1. THE INTERACTIVE LIVE STOREFRONT SHOWCASE BENCH */}
-        <LiveStorefrontShowcase onOpenOnboarding={(slug, plan) => handleOpenOnboarding(slug, plan)} />
+        <LiveStorefrontShowcase hideHeader onOpenOnboarding={(slug, plan) => handleOpenOnboarding(slug, plan)} />
 
         {/* 2. DIRECT TEST-DRIVE CARDS: BUKA DI TAB BARU */}
         <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-8 border-t border-neutral-200">

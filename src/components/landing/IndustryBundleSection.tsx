@@ -440,25 +440,21 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
   const IconComponent = currentBundle.icon;
 
   return (
-    <section className="py-20 bg-neutral-950 text-neutral-100 border-b border-neutral-800 relative overflow-hidden">
-      {/* Glow background effects */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+    <section className="py-20 bg-neutral-50/70 border-b border-neutral-200/80 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs font-mono font-semibold text-emerald-400 mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>SOLUSI SPESIFIK BERDASARKAN BIDANG USAHA ANDA</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200 text-xs font-mono font-semibold text-neutral-800 shadow-2xs mb-4">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>SOLUSI SPESIFIK BERDASARKAN BIDANG USAHA</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Satu Sewa Website, Langsung Dapat Ekosistem Kasir Terlengkap
+          <h2 className="text-3xl sm:text-5xl font-black text-neutral-950 tracking-tight leading-tight">
+            Satu Sewa Website, Langsung Dapat Ekosistem Kasir Terlengkap.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-neutral-400 leading-relaxed">
-            Tidak perlu bayar banyak software terpisah! Setiap paket sewa website di Sivilize Space sudah
-            <span className="text-white font-bold"> otomatis meng-include aplikasi kasir SiKasir POS</span> dan
-            <span className="text-amber-400 font-bold"> Sivilize Dine Lite (khusus F&B)</span> dengan sinkronisasi stok 2-arah seketika.
+          <p className="mt-4 text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto">
+            Tidak perlu berlangganan banyak software terpisah. Setiap paket sewa website di Sivilize Space sudah
+            termasuk aplikasi kasir <strong className="text-neutral-900 font-semibold">SiKasir POS</strong> dan{' '}
+            <strong className="text-neutral-900 font-semibold">Sivilize Dine Lite (khusus F&B)</strong> dengan sinkronisasi stok 2-arah seketika.
           </p>
         </div>
 
@@ -471,15 +467,21 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
                 key={bundle.id}
                 type="button"
                 onClick={() => setSelectedIndustryId(bundle.id)}
-                className={`px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 shrink-0 border ${
+                className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 shrink-0 border ${
                   isSelected
-                    ? 'bg-white text-neutral-950 border-white shadow-lg shadow-white/10 scale-105'
-                    : 'bg-neutral-900/80 text-neutral-400 border-neutral-800 hover:text-white hover:border-neutral-700'
+                    ? 'bg-neutral-950 text-white border-neutral-950 shadow-xs'
+                    : 'bg-white text-neutral-700 border-neutral-200/90 hover:text-neutral-950 hover:bg-neutral-100/70'
                 }`}
               >
                 <span>{bundle.shortName}</span>
                 {bundle.includesDineLite && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-mono font-bold">
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      isSelected
+                        ? 'bg-neutral-800 text-amber-300'
+                        : 'bg-amber-100 text-amber-800 border border-amber-200/80'
+                    }`}
+                  >
                     +Dine Lite
                   </span>
                 )}
@@ -489,48 +491,48 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
         </div>
 
         {/* ACTIVE INDUSTRY SHOWCASE CARD */}
-        <div className="mt-8 rounded-3xl bg-neutral-900/90 border border-neutral-800 p-6 sm:p-10 shadow-2xl backdrop-blur-sm">
+        <div className="mt-8 rounded-3xl bg-white border border-neutral-200/90 p-6 sm:p-10 shadow-xs">
           {/* Top Banner Row */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-8 border-b border-neutral-800 gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-8 border-b border-neutral-200 gap-6">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-neutral-800 border border-neutral-700 flex items-center justify-center shrink-0 shadow-inner">
-                <IconComponent className="w-7 h-7 text-white" />
+              <div className="w-14 h-14 rounded-2xl bg-neutral-100 border border-neutral-200 flex items-center justify-center shrink-0">
+                <IconComponent className="w-7 h-7 text-neutral-900" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 uppercase">
+                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-medium bg-neutral-100 text-neutral-700 border border-neutral-200 uppercase">
                     {currentBundle.badge}
                   </span>
                   {currentBundle.includesDineLite && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                      ★ Self-Order QR Meja Aktif
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                      Self-Order QR Meja Aktif
                     </span>
                   )}
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                <h3 className="text-2xl sm:text-3xl font-black text-neutral-950 tracking-tight">
                   {currentBundle.name}
                 </h3>
-                <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+                <p className="text-xs sm:text-sm text-neutral-600 mt-1">
                   {currentBundle.tagline}
                 </p>
               </div>
             </div>
 
             {/* Quick Price & CTA Pill */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-neutral-950 p-4 rounded-2xl border border-neutral-800 shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-neutral-50 p-4 rounded-2xl border border-neutral-200 shrink-0">
               <div>
-                <div className="text-[11px] text-neutral-400 uppercase font-mono">Biaya Sewa Terpadu:</div>
+                <div className="text-[11px] text-neutral-500 uppercase font-mono">Biaya Sewa Terpadu:</div>
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-2xl font-black text-white font-mono">{currentBundle.annualPrice}</span>
-                  <span className="text-xs text-neutral-400 font-mono">/ tahun</span>
+                  <span className="text-2xl font-black text-neutral-950 font-mono">{currentBundle.annualPrice}</span>
+                  <span className="text-xs text-neutral-500 font-mono">/ tahun</span>
                 </div>
-                <div className="text-[10px] text-emerald-400 font-medium">{currentBundle.annualSavings}</div>
+                <div className="text-[10px] text-emerald-700 font-medium">{currentBundle.annualSavings}</div>
               </div>
 
               <button
                 type="button"
                 onClick={() => onSelectBundle(currentBundle)}
-                className="px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black text-xs sm:text-sm tracking-tight transition-transform active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                className="px-6 py-3.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs sm:text-sm tracking-tight transition-transform active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 shadow-xs whitespace-nowrap"
               >
                 <span>Sewa Paket {currentBundle.shortName.split(' ')[1] || 'Ini'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -539,19 +541,19 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
           </div>
 
           {/* INCLUDED APPLICATIONS GRID (WHAT YOU GET) */}
-          <div className="py-8 border-b border-neutral-800">
+          <div className="py-8 border-b border-neutral-200">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
                   APLIKASI YANG SUDAH TERMASUK (100% INCLUDED)
                 </span>
-                <h4 className="text-lg font-bold text-white mt-0.5">
+                <h4 className="text-lg font-bold text-neutral-950 mt-0.5">
                   Semua Terhubung Langsung Tanpa Perlu Koding
                 </h4>
               </div>
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-neutral-950 border border-neutral-800 text-[11px] font-mono text-neutral-300">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>1 Kode Lisensi Ekosistem: <strong className="text-white">{currentBundle.licenseExample}</strong></span>
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-50 border border-neutral-200 text-[11px] font-mono text-neutral-700">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>1 Kode Lisensi Ekosistem: <strong className="text-neutral-950 font-semibold">{currentBundle.licenseExample}</strong></span>
               </div>
             </div>
 
@@ -559,23 +561,23 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
               {currentBundle.includedApps.map((app, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-2xl bg-neutral-950 border border-neutral-800/90 flex flex-col justify-between relative group hover:border-neutral-700 transition-colors"
+                  className="p-5 rounded-2xl bg-neutral-50/80 border border-neutral-200/90 flex flex-col justify-between relative group hover:border-neutral-300 hover:bg-neutral-50 transition-all"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-800 text-neutral-300">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-white text-neutral-700 border border-neutral-200">
                         {app.tag}
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                         <span>SUDAH TERMASUK</span>
                       </span>
                     </div>
-                    <h5 className="text-base font-bold text-white mb-2">{app.name}</h5>
-                    <p className="text-xs text-neutral-400 leading-relaxed mb-4">{app.desc}</p>
+                    <h5 className="text-base font-bold text-neutral-950 mb-1.5">{app.name}</h5>
+                    <p className="text-xs text-neutral-600 leading-relaxed mb-4">{app.desc}</p>
                   </div>
-                  <div className="pt-3 border-t border-neutral-800/80 text-[11px] font-semibold text-emerald-300 flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <div className="pt-3 border-t border-neutral-200 text-[11px] font-medium text-neutral-800 flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
                     <span>{app.highlight}</span>
                   </div>
                 </div>
@@ -587,13 +589,13 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
           <div className="pt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Left: Spesifikasi Khusus Usaha Ini */}
             <div className="space-y-4">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-400 block">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500 block">
                 FITUR UNGGULAN SPESIFIK INDUSTRI
               </span>
-              <ul className="space-y-3 text-xs sm:text-sm text-neutral-300">
+              <ul className="space-y-3 text-xs sm:text-sm text-neutral-700">
                 {currentBundle.industryFeatures.map((feat, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                    <span className="w-5 h-5 rounded-md bg-neutral-100 text-neutral-900 border border-neutral-200 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
                       ✓
                     </span>
                     <span className="leading-relaxed">{feat}</span>
@@ -601,9 +603,9 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
                 ))}
               </ul>
 
-              <div className="p-4 rounded-2xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-400 space-y-1 mt-4">
-                <div className="font-bold text-white flex items-center gap-1.5">
-                  <RotateCcw className="w-4 h-4 text-emerald-400" />
+              <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-600 space-y-1 mt-4">
+                <div className="font-bold text-neutral-950 flex items-center gap-1.5">
+                  <RotateCcw className="w-4 h-4 text-emerald-600" />
                   <span>Sinkronisasi Stok 2-Arah Tanpa Delay</span>
                 </div>
                 <p>
@@ -613,35 +615,35 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
             </div>
 
             {/* Right: Alur Kerja Nyata di Toko Anda */}
-            <div className="space-y-4 bg-neutral-950 p-6 rounded-2xl border border-neutral-800">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-400 block">
+            <div className="space-y-4 bg-neutral-50 p-6 rounded-2xl border border-neutral-200">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500 block">
                 SIMULASI ALUR OPERASIONAL NYATA
               </span>
 
               <div className="space-y-4">
                 {currentBundle.workflowSteps.map((wf, idx) => (
                   <div key={idx} className="flex items-start gap-3.5">
-                    <div className="w-7 h-7 rounded-lg bg-neutral-800 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-neutral-950 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0">
                       {wf.step}
                     </div>
                     <div>
-                      <h6 className="text-xs sm:text-sm font-bold text-white">{wf.title}</h6>
-                      <p className="text-xs text-neutral-400 mt-0.5 leading-relaxed">{wf.desc}</p>
+                      <h6 className="text-xs sm:text-sm font-bold text-neutral-950">{wf.title}</h6>
+                      <p className="text-xs text-neutral-600 mt-0.5 leading-relaxed">{wf.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Bottom CTA Inside Box */}
-              <div className="pt-4 border-t border-neutral-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-neutral-200 flex items-center justify-between">
                 <div>
                   <div className="text-[10px] text-neutral-500 uppercase font-mono">Status Pembayaran:</div>
-                  <div className="text-xs font-bold text-emerald-400">Dashboard Otomatis Aktif Seketika</div>
+                  <div className="text-xs font-bold text-emerald-700">Dashboard Otomatis Aktif Seketika</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => onSelectBundle(currentBundle)}
-                  className="px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-bold text-xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                  className="px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs cursor-pointer flex items-center gap-1.5 transition-colors shadow-xs"
                 >
                   <span>Mulai Sewa Sekarang</span>
                   <ArrowRight className="w-3.5 h-3.5" />

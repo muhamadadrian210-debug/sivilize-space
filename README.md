@@ -1,5 +1,5 @@
 # 🏛️ SIVILIZE SPACE
-### Platform Sewa Website Bisnis Siap Pakai & Mandiri No. 1 di Indonesia
+### Platform Ekosistem Sewa Website Bisnis (WaaS) & Kasir Pintar Mandiri No. 1 di Indonesia
 **Produk Resmi Divisi SiWeb Production — PT Sivilize Corp Indonesia**  
 *Nomor Induk Berusaha (NIB): 0207260103661 | Klasifikasi KBLI: 62199 (Aktivitas Pemrograman & Layanan Web Mandiri)*  
 *Alamat Kantor Pusat: Kota Kupang, Nusa Tenggara Timur, Indonesia*  
@@ -7,117 +7,218 @@
 
 ---
 
-## 🌟 Apa Itu Sivilize Space?
+## 🌟 Tentang Sivilize Space
 
-**Sivilize Space** adalah platform penyedia layanan sewa website bisnis siap pakai dan mandiri (*Website-as-a-Service / WaaS*) yang hadir untuk merevolusi cara para pelaku usaha, UMKM, penyedia jasa, dan korporasi di Indonesia dalam memiliki identitas digital profesional.
+**Sivilize Space** adalah platform *Website-as-a-Service (WaaS)* terpadu yang dirancang khusus untuk merevolusi digitalisasi UMKM dan korporasi di Indonesia. Tidak hanya menyediakan website bisnis siap pakai berkecepatan tinggi, Sivilize Space mengintegrasikan ekosistem operasional lengkap yang mencakup:
 
-Banyak pengusaha di Indonesia menghadapi masalah besar ketika ingin memiliki website:
-1. **Jasa Pembuatan Web Terlalu Mahal**: Bikin website ke agensi atau programmer sering dipatok jutaan hingga belasan juta rupiah di muka.
-2. **Waktu Pengerjaan Sangat Lama**: Proses pembuatan bisa berminggu-minggu hingga berbulan-bulan.
-3. **Ketergantungan Teknis**: Setiap kali ingin ganti nomor telepon, mengubah harga menu, atau memperbarui foto layanan, pemilik usaha harus membayar biaya perawatan tambahan ke pihak ketiga.
-4. **Terjebak Potongan Komisi Marketplace**: Berjualan di aplikasi pihak ketiga sering kali dipotong komisi besar per transaksi, bersaing dengan ribuan kompetitor banting harga, dan akun bisa diblokir sewaktu-waktu.
-
-**Sivilize Space mematahkan semua masalah tersebut.**  
-Di Sivilize Space, Anda tidak perlu membeli website mahal. Anda cukup **menyewa website bisnis resmi yang sudah jadi**, siap pakai, dan langsung aktif mengudara dalam waktu **60 detik** dengan biaya sewa tahunan yang sangat terjangkau, transparan, dan tanpa biaya tersembunyi.
-
-> 💡 **PENTING DIINGAT:**  
-> Sivilize Space berfokus murni pada **Jasa Sewa Website Bisnis & Profil Mandiri**. Layanan ini dirancang khusus untuk membangun kredibilitas brand, portofolio profesional, dan kehadiran digital resmi. Website Anda berfungsi sebagai etalase prestisius, katalog penawaran resmi, dan pusat kontak bisnis yang dapat Anda kelola secara mandiri kapan saja.
+1. **Website Bisnis Mandiri (Sivilize Space)**: Etalase online berestetika premium, profil resmi, dan katalog produk dengan integrasi pembayaran QRIS Dinamis.
+2. **Aplikasi Kasir POS (SiKasir POS)**: Aplikasi kasir online/offline terpadu dengan Kitchen Display System (KDS), kalkulasi resep bahan baku, struk bluetooth, dan modul industri spesifik.
+3. **Self-Order Meja Tamu QR (Sivilize Dine Lite)**: Khusus industri F&B, tamu cukup scan QR di meja resto untuk memesan mandiri, tersambung 2-arah seketika dengan kasir.
+4. **AI Copilot & Guided Tour (Google Gemini 2.5 Flash)**: Asisten AI cerdas 24/7 dan pemandu interaktif langkah demi langkah yang memberikan bimbingan sesuai kategori bisnis Anda.
 
 ---
 
-## ⚡ Prinsip Utama: 100% Selesai Mandiri Langsung di Website
+## ⚡ Fitur Utama & Pembaruan Terkini
 
-Di Sivilize Space, seluruh kebutuhan Anda diselesaikan secara **100% mandiri langsung di dalam website**, tanpa perlu repot chat manual ke WhatsApp admin atau kirim bukti transfer lewat email.
+### 1. 🎯 Segmentasi Industri & Bundling Ekosistem (Pill Bar)
+Halaman depan kini dilengkapi dengan selektor industri interaktif (*Segmented Pill Bar*) yang mencakup 6 sektor usaha utama dengan fasilitas lengkap yang sudah termasuk (*included*):
 
-### Alur Mudah 4 Langkah:
-1. **Pilih atau Rakit Tampilan Website**: Buka katalog template siap pakai atau masuk ke Studio Rakit untuk menentukan tampilan yang sesuai dengan karakter bisnis Anda.
-2. **Klaim Nama Alamat Website**: Tentukan alamat subdomain Anda (misalnya: `namabisnis.sivilizecorp.my.id`) atau hubungkan nama domain pribadi Anda sendiri (`www.namabisnis.com`).
-3. **Pembayaran Otomatis Lewat QRIS**: Lakukan pembayaran sewa langsung di layar website menggunakan QRIS Dinamis Resmi. Anda cukup membuka aplikasi m-Banking (BCA, Mandiri, BRI, BNI, dll) atau e-Wallet (GoPay, OVO, Dana, ShopeePay) dan scan QR yang muncul. Transaksi terverifikasi otomatis dalam 3 detik!
-4. **Terbit Nota Resmi & Website Langsung Aktif**: Setelah pembayaran berhasil, nota pembayaran resmi ber-QR Code dengan nomor NIB PT Sivilize Corp Indonesia langsung muncul di layar untuk diunduh sebagai bukti legal. Website bisnis Anda dan Dashboard Pengelola langsung aktif saat itu juga!
-
----
-
-## 📧 Kebijakan Email Resmi Perusahaan
-
-Email resmi perusahaan: **`sivilizecorpindonesia@gmail.com`**
-
-> ⚠️ **ATURAN PENGGUNAAN EMAIL:**  
-> Seluruh transaksi sewa website, aktivasi subdomain, dan perpanjangan langganan **WAJIB dilakukan langsung melalui sistem website Sivilize Space**.  
-> Email di atas dialokasikan **KHUSUS HANYA UNTUK:**
-> - Pelaporan adanya kesalahan sistem (*bug report*).
-> - Aduan kendala teknis darurat.
-> - Keperluan audit legalitas dan kontak darurat hukum konsumen.
-> - Pelaporan jika founder atau tim pengembang tidak dapat dihubungi.
+| Kategori Usaha | Fasilitas Ekosistem Termasuk | Fitur Spesifik Industri |
+| :--- | :--- | :--- |
+| **☕ Kuliner & Kafe (F&B)** | Website + **SiKasir POS** + **Sivilize Dine Lite** | QR Self-Order Meja, Kitchen Display (KDS), Resep Bahan Baku |
+| **🛒 Retail & Minimarket** | Website + **SiKasir POS** | Scan Barcode Produk, Struk Bluetooth, Level Stok Minimum |
+| **🔧 Bengkel & Otomotif** | Website + **SiKasir POS** | Pelacakan Nomor Polisi (Nopol), Riwayat Servis, Komisi Mekanik |
+| **🧺 Laundry Kiloan/Satuan**| Website + **SiKasir POS** | Manajemen Rak Cucian, Status Cuci-Kering-Setrika, Notif WA |
+| **✂️ Barbershop & Salon** | Website + **SiKasir POS** | Pilihan Kapster/Stylist, Komisi Staf, Jadwal Booking |
+| **💊 Apotek & Toko Obat** | Website + **SiKasir POS** | Input Resep Dokter, Peringatan Kedaluwarsa Obat, Batch No. |
 
 ---
 
-## 🛠️ Dua Jalur Layanan Resmi di Sivilize Space
-
-Sivilize Space menyediakan 2 jalur kemudahan bagi Anda untuk memiliki website bisnis:
-
-### 1. Jalur Sewa Template Jadi (Mulai Rp 349.000 / Tahun)
-Sangat ideal bagi Anda yang ingin langsung memiliki website rapi dalam waktu kurang dari 1 menit tanpa perlu repot mengatur desain.
-Pilihan kategori industri yang tersedia meliputi:
-- ☕ **Kafe & Kuliner Resto**: Lengkap dengan katalog menu makanan-minuman, foto beresolusi tinggi, jam operasional, dan lokasi Google Maps.
-- 🔧 **Bengkel & Otomotif**: Menampilkan daftar jasa servis, tune-up, ganti oli, dan daftar harga transparan.
-- 👕 **Distro & Fashion Streetwear**: Tampilan berestetika modern dengan katalog produk pakaian, lookbook gaya, dan panduan ukuran.
-- 🧺 **Laundry Kiloan & Satuan**: Daftar harga cuci kilat, paket setrika uap, dan informasi layanan jemput pakaian.
-- ✂️ **Barbershop & Grooming Salon**: Etalase gaya potong rambut pria/wanita, paket perawatan, dan profil kapster ahli.
-- 🌿 **Klinik Herbal, Apotek & Skincare**: Menampilkan sertifikasi izin edar BPOM, khasiat produk, dan formulir konsultasi sehat.
-
-### 2. Jalur Studio Rakit Custom Sendiri (Mulai Rp 449.000 / Tahun)
-Dirancang khusus bagi Anda yang menyukai kebebasan total, seperti halnya seorang profesional yang merakit komputernya sendiri komponen demi komponen:
-- **8 Pilihan Tipografi & Font Bisnis**: Mulai dari *Plus Jakarta Sans*, *Inter Display*, *Outfit Geometric*, hingga *Playfair Display*.
-- **5 Variasi Permukaan Kaca Elegan (Surface Style)**: Efek kaca mewah *Frosted Glass* (blur lembut), *Deep Smoked Glass* (kaca gelap ala Apple), *Solid Crisp*, hingga *Zero Border Flat*.
-- **Pilihan Struktur Kolom Katalog**: 1 kolom baris daftar menu, 2 kolom, 3 kolom standar bisnis, 4 kolom padat inventaris, hingga tata letak asimetris ala Pinterest.
-- **Tata Letak Header & Navigasi**: *Full-Width Sticky*, *Floating Island Glass*, *Minimalist Centered Logo*, hingga *Slim Topbar Contact*.
-- **Fitur Multi-Halaman Kustom**: Tambahkan halaman baru tanpa batas (misalnya: Profil Perusahaan, Menu Spesial, Portofolio Karya, Syarat & Ketentuan).
-- **Efek Pemuatan Halaman (Loading Effect)**: *Instant Zero-Lag Edge*, *Shimmer Skeleton Loading*, *Top Progress Bar*, atau *Brand Logo Pulse*.
+### 2. ⚡ Auto-Provisioning & Aktivasi Lisensi 1-Klik
+- **Tanpa Registrasi Ulang:** Setelah pelanggan menyelesaikan pembayaran sewa via QRIS, database toko langsung terbuat secara otomatis di Cloud Database Supabase dengan masa aktif 365 hari (tahunan).
+- **Auto-Login:** Sesi toko langsung aktif seketika di peramban, mengarahkan pemilik usaha langsung ke Dashboard tanpa perlu mengisi formulir pendaftaran manual dari awal.
+- **Kode Lisensi Ekosistem:** Diterbitkan otomatis untuk setiap toko (contoh: `SIV-FNB-365D`, `SIV-RETAIL-365D`, `SIV-BENGKEL-365D`).
+- **Aktivasi Instan Kasir:** Cukup masukkan kode lisensi pada aplikasi **SiKasir POS** atau **Sivilize Dine Lite**, aplikasi langsung aktif sebagai Admin tanpa registrasi manual.
 
 ---
 
-## 🖥️ Inovasi Studio Rakit: Sistem Dual Scroll Mandiri
-
-Untuk kenyamanan Anda saat merakit website di komputer/laptop:
-- **Scroll Panel 1 (Kiri)**: Berisi seluruh modul konfigurasi komponen rakitan (Modul 0 sampai Modul 12). Anda dapat menggulir ke atas dan ke bawah untuk memilih font, layout, gambar latar, dan warna tanpa mengganggu tampilan hasil di sebelah kanan.
-- **Scroll Panel 2 (Kanan)**: Berisi **Nota Rakitan Website (BOM)** dan **Interactive Live Canvas**. Anda dapat menggulir panel kanan secara terpisah langsung ke bagian bawah untuk menguji simulasi tampilan mobile/tablet/desktop **tanpa harus menggulir modul kiri sampai habis**.
-- **Kenyamanan di Ponsel & Tablet**: Pada layar HP dan tablet, tata letak otomatis beradaptasi secara elegan dalam satu alur yang rapi tanpa ada bagian yang terpotong. Dilengkapi tombol aksi melayang di bagian bawah layar yang selalu menampilkan total biaya sewa secara *real-time* dan tombol pintas untuk langsung memeriksa nota atau menyewa seketika.
+### 3. 🤖 AI Copilot & AI Tour Guide (Google Gemini 2.5 Flash)
+- **Sivilize AI Copilot (Chatbot Assistant 24/7):** Asisten AI mengambang di pojok kanan bawah dashboard toko, siap menjawab pertanyaan seputar pengelolaan katalog, kustomisasi tata letak, integrasi kasir, dan custom domain.
+- **Sivilize AI Tour Guide (Interactive Guided Tour):** Tur interaktif 5 langkah memandu merchant menjelajahi pusat kendali toko. Dilengkapi bimbingan kontekstual cerdas spesifik untuk kategori usaha merchant dan fitur **Tanya AI Tour Guide** interaktif.
+- **Zero-Downtime Fallback:** Jika koneksi API AI sedang offline atau kuota habis, sistem cerdas lokal otomatis mengambil alih tanpa menampilkan pesan error kepada merchant.
 
 ---
 
-## 📱 Portal Kelola Website (Client Dashboard Mandiri)
+### 4. 🛡️ Multi-Layer Cyber Security & Defense Engine
+Sivilize Space menerapkan arsitektur keamanan berlapis kelas *Enterprise Zero-Trust*:
 
-Setelah website Anda aktif, Anda memiliki akses penuh ke Dashboard Pengelola yang dapat dibuka dengan mudah lewat browser di HP Anda:
-- **Ubah Informasi Kontak & Alamat**: Perbarui nomor WhatsApp, alamat kantor atau lokasi usaha fisik, dan jam buka operasional kapan pun Anda mau.
-- **Kelola Katalog & Layanan**: Tambah produk baru, ganti harga, ubah foto menu makanan/layanan, atau sembunyikan penawaran yang sedang nonaktif.
-- **Ganti Tema & Warna**: Ingin mengubah suasana tampilan website menyambut promo khusus? Anda dapat mengganti tema warna tampilan seketika dengan 1 kali klik.
-- **Perpanjang Masa Sewa Mandiri**: Informasi sisa hari masa sewa ditampilkan transparan. Anda dapat memperpanjang masa aktif website kapan saja secara mandiri melalui QRIS resmi.
+```text
+[ REQUEST INTERNET ]
+        │
+        ├── 🛡️ Layer 1: Geo-Blocking (Membatasi request bot dari negara berbahaya)
+        │
+        ├── ⏱️ Layer 2: Sliding-Window IP Rate Limiter (Mencegah flood & API quota abuse)
+        │
+        ├── 📱 Layer 3: Client Device Fingerprinting (Hardware hash WebGL/Canvas SHA-256)
+        │
+        ├── 🚫 Layer 4: Multi-Layer Blacklist (Blokir by Device, IP, Phone, Country)
+        │
+        ├── 🔒 Layer 5: Anti-Brute Force Lockout (5x salah PIN = Lockout 15 Menit HTTP 429)
+        │
+        ├── 🍯 Layer 6: Zero-Opacity Honeypot & Tarpit Delay (Membuat bot scraper hang)
+        │
+        ├── 🔍 Layer 7: Semantic Anti-Judol & Anti-Pinjol Filter (Regex content scanner)
+        │
+        └── 🖼️ Layer 8: Binary Magic Bytes Inspection (Validasi asli WebP, JPEG, PNG)
+        │
+        ▼
+[ DASHBOARD & DATABASE SUPABASE ]
+```
+
+#### Kuota Rate Limiter:
+- `/api/ai/chat`: Maksimal **12 request / menit / IP** (Menjaga batas Free Tier Gemini 15 RPM).
+- `/api/store/register`: Maksimal **5 pendaftaran / 10 menit / IP** (Mencegah spam tabel toko).
+- `/api/auth/login`: Maksimal **10 login / menit / IP** (Mencegah network DDoS flood).
+- `/api/upload`: Maksimal **15 upload / menit / IP** (Mencegah pengurasan Supabase Storage).
 
 ---
 
-## 🛡️ Jaminan Legalitas Hukum & Perlindungan Konsumen
-
-PT Sivilize Corp Indonesia menjamin operasional layanan ini 100% legal, patuh hukum, dan terlindungi undang-undang Republik Indonesia:
-1. **Badan Usaha Resmi**: Terdaftar di Kementerian Investasi / BKPM dengan Nomor Induk Berusaha (NIB) **0207260103661**.
-2. **Kepatuhan Regulasi Digital**: Tunduk pada Undang-Undang Informasi dan Transaksi Elektronik (UU ITE No. 1/2024) serta Peraturan Pemerintah Nomor 71 Tahun 2019 tentang Penyelenggaraan Sistem dan Transaksi Elektronik (PSTE).
-3. **Kuitansi / Nota Pembayaran Sah**: Setiap transaksi sewa menghasilkan dokumen e-Receipt resmi berstempel digital dengan nomor referensi pembayaran unik yang dapat dijadikan bukti pertanggungjawaban hukum, pembukuan keuangan, dan pelaporan perpajakan usaha Anda.
+### 5. 🔑 Autentikasi Fleksibel
+- **WhatsApp + PIN 6-Digit (Utama):** Standar terbaik bagi pelaku UMKM di Indonesia, tanpa perlu mengingat password panjang dan langsung terhubung dengan nomor notifikasi WhatsApp.
+- **Masuk dengan Akun Google / Gmail (Alternatif):** Tombol 1-klik bagi pengguna korporat/modern untuk menghubungkan akun Google dengan verifikasi toko.
 
 ---
 
-## 🚀 Keandalan Server & Kualitas Infrastruktur
+### 6. 💓 Automated Zero-Sleep Keep-Alive Engine
+Mencegah database Supabase Free Tier tertidur (*inactivity pause* setelah 7 hari idle) dan memanaskan Vercel Serverless Function agar bebas *cold-start*:
 
-Website bisnis Anda beroperasi di atas infrastruktur server kelas dunia:
-- **Jaringan Global Anycast Edge**: Konten website Anda didistribusikan dari titik server terdekat dengan pengunjung, menghasilkan kecepatan muat super cepat dalam **0.03 detik**.
-- **Jaminan SLA Ketersediaan 99.8%**: Website Anda dipastikan terus menyala, aktif mengudara, dan dapat diakses oleh pelanggan Anda 24 jam sehari, 7 hari seminggu, sepanjang tahun.
-- **Sistem Keamanan Berlapis**: Dilindungi sistem firewall otomatis dan honeypot keamanan untuk mencegah peretasan, serangan spam, dan gangguan bot berbahaya.
+1. **Vercel Cron (`vercel.json`):** Menembak `/api/keep-alive` otomatis setiap 12 jam via Edge Network.
+2. **GitHub Actions Bot (`.github/workflows/keep-alive.yml`):** Runner cloud eksternal gratis yang menembak Vercel dan Supabase REST API langsung setiap 6 jam (`cron: '0 */6 * * *'`).
+3. **Diagnostic Endpoint (`/api/keep-alive`):** Melakukan kueri nyata ke tabel toko dan mencatat latensi Supabase Singapore (`ap-southeast-1`).
+4. **Local Daemon Script (`scripts/keep-alive-daemon.mjs`):** Script mandiri untuk pengujian atau eksekusi berkala via Node.js/PM2.
 
 ---
 
-## 💬 Hubungi Kami untuk Pelaporan
+## 🏗️ Tech Stack & Arsitektur
 
-Jika Anda menemukan bug teknis, memiliki laporan kendala sistem, atau membutuhkan bantuan klarifikasi hukum:
-- **Email Pelaporan Resmi**: [sivilizecorpindonesia@gmail.com](mailto:sivilizecorpindonesia@gmail.com)
-- **Badan Hukum Penyelenggara**: PT Sivilize Corp Indonesia
-- **Platform Utama**: [Sivilize Space](https://sivilizespace.vercel.app)
+- **Framework:** [Next.js 16.4.0](https://nextjs.org/) (App Router, Turbopack Engine)
+- **Library UI:** [React 19.3.0](https://react.dev/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) & Lucide React Icons
+- **Database & Storage:** [Supabase PostgreSQL Cloud](https://supabase.com/) & Supabase Storage (Kompresi WebP otomatis <150KB)
+- **AI Engine:** [Google Gemini 2.5 Flash](https://aistudio.google.com/) via Google AI Studio API
+- **Infrastruktur Hosting:** Vercel Anycast Edge Engine (DNS Record A: `76.76.21.21`, CNAME: `cname.vercel-dns.com`)
+- **Validasi Data:** Zod Schema Validation
 
-*© 2026 PT Sivilize Corp Indonesia. Seluruh Hak Cipta Dilindungi Undang-Undang.*
+---
+
+## 📂 Struktur Repositori
+
+```text
+sivilize-space/
+├── .github/
+│   └── workflows/
+│       └── keep-alive.yml         # GitHub Actions zero-sleep cron bot
+├── public/                        # Aset statis & logo
+├── scripts/
+│   ├── keep-alive-daemon.mjs      # Script pulse keep-alive Supabase & Vercel
+│   └── seed.mjs                   # Database seeder
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── ai/chat/           # Gemini 2.5 Flash AI Copilot & Tour Guide
+│   │   │   ├── auth/login/        # Login WA + PIN, Google Auth, Brute-Force lockout
+│   │   │   ├── keep-alive/        # Anti-sleep diagnostic heartbeat endpoint
+│   │   │   ├── store/register/    # Auto-provisioning & penerbitan lisensi
+│   │   │   └── upload/            # Magic bytes image upload engine
+│   │   ├── dashboard/             # Dashboard pengelola toko & lisensi ekosistem
+│   │   └── page.tsx               # Landing page & Segmented Pill Bar industri
+│   ├── components/
+│   │   ├── dashboard/
+│   │   │   ├── AIChatbotAssistant.tsx # Widget AI Copilot
+│   │   │   └── AIGuidedTour.tsx       # Modal AI Tour Guide Gemini
+│   │   └── landing/
+│   │       ├── IndustryBundleSection.tsx # Pill Bar 6 industri & bundling kasir
+│   │       └── OnboardingModal.tsx       # Form sewa & auto-provisioning
+│   ├── lib/
+│   │   ├── blacklist.ts           # Engine pencekalan Device, IP, Phone, Country
+│   │   ├── device-fingerprint.ts  # Client-side hardware hash generator
+│   │   ├── rate-limiter.ts        # Sliding-window in-memory API rate limiter
+│   │   ├── security.ts            # Anti-judol & zod validation schema
+│   │   └── supabase.ts            # Client Supabase PostgreSQL
+│   └── types/
+│       └── database.ts            # TypeScript interfaces & database models
+├── vercel.json                    # Konfigurasi Vercel Cron jobs
+├── .env.example                   # Template variabel lingkungan
+└── README.md                      # Dokumentasi resmi
+```
+
+---
+
+## 🚀 Panduan Memulai (Local Development)
+
+### 1. Kloning Repositori
+```bash
+git clone https://github.com/muhamadadrian210-debug/sivilize-space.git
+cd sivilize-space
+```
+
+### 2. Pasang Dependensi
+```bash
+npm install
+```
+
+### 3. Konfigurasi Environment Variables
+Salin file `.env.example` menjadi `.env.local`:
+```bash
+cp .env.example .env.local
+```
+
+Lengkapi isinya di `.env.local`:
+```env
+# Supabase PostgreSQL Cloud
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Multi-Tenant Base Domain
+NEXT_PUBLIC_BASE_DOMAIN=sivilizecorp.my.id
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Google Gemini AI Studio (100% Gratis - aistudio.google.com)
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+### 4. Jalankan Server Development
+```bash
+npm run dev
+```
+Buka peramban Anda di `http://localhost:3000`.
+
+### 5. Validasi Build Produksi
+```bash
+npm run build
+```
+
+---
+
+## 🌐 Panduan Custom Domain Klien
+
+Untuk klien paket Tahunan yang menggunakan domain pribadi (contoh: `www.bisnisanda.com`):
+1. Buka dashboard DNS registrar domain (Niagahoster, DomaiNesia, Cloudflare, dll).
+2. Tambahkan DNS Record berikut:
+   - **Type A**: `@` ➔ `76.76.21.21`
+   - **CNAME**: `www` ➔ `cname.vercel-dns.com`
+3. Sertifikat SSL HTTPS akan terbit dan aktif secara otomatis dalam 5-15 menit melalui Vercel Edge.
+
+---
+
+## ⚖️ Kepatuhan Hukum & Legalitas
+
+PT Sivilize Corp Indonesia menjamin seluruh operasional platform ini patuh terhadap peraturan perundang-undangan Republik Indonesia:
+- **NIB:** 0207260103661
+- **KBLI:** 62199 (Aktivitas Pemrograman Komputer Lainnya)
+- **UU ITE & PDP:** Seluruh data transaksi dan informasi merchant dienkripsi dengan standar isolasi tenant ketat.
+- **Zero-Tolerance:** Platform ini secara aktif memindai dan memblokir segala bentuk sindikat judi online (*judol*), pinjaman online ilegal (*pinjol*), dan aktivitas terlarang lainnya.
+
+---
+© 2026 PT Sivilize Corp Indonesia. Seluruh hak cipta dilindungi undang-undang.

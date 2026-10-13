@@ -1,0 +1,36 @@
+name: Supabase & Vercel Zero-Sleep Keep-Alive Bot
+
+on:
+  schedule:
+    # Berjalan otomatis setiap 6 jam (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Memungkinkan tombol 'Run workflow' manual kapan saja
+
+jobs:
+  keep-alive-pulse:
+    name: Ping Supabase & Vercel Heartbeat
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 1. Tembak Endpoint Vercel Keep-Alive
+        run: |
+          echo "🚀 Menembak endpoint Vercel Serverless Sivilize Space..."
+          TARGET_URL="${{ secrets.PRODUCTION_APP_URL || 'https://sivilizecorp.my.id' }}/api/keep-alive"
+          
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}\nTIME_TOTAL:%{time_total}s" "$TARGET_URL" || true)
+          echo "$RESPONSE"
+
+      - name: 2. Tembak Langsung Supabase PostgreSQL Cloud
+        run: |
+          echo "⚡ Menembak Supabase REST API langsung agar database tidak tertidur..."
+          SUPABASE_URL="https://keloadmjbnhjiplfarvs.supabase.co/rest/v1/stores?select=count&limit=1"
+          ANON_KEY="sb_publishable_XQng0L6FrVdXPSO9Smae9Q_DuVEg957"
+          
+          SUPABASE_RES=$(curl -s -w "\nHTTP_STATUS:%{http_code}\nTIME_TOTAL:%{time_total}s" \
+            -H "apikey: $ANON_KEY" \
+            -H "Authorization: Bearer $ANON_KEY" \
+            "$SUPABASE_URL" || true)
+            
+          echo "$SUPABASE_RES"
+          echo "✅ Sukses: Supabase Cloud dan Vercel Edge Serverless aktif dan siap melayani pengunjung!"

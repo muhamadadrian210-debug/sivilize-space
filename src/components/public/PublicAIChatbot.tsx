@@ -177,6 +177,15 @@ export function PublicAIChatbot() {
     }
   };
 
+  const stripAsterisks = (text: string) => {
+    if (!text) return '';
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/^\s*\*\s+/gm, '• ')
+      .replace(/\*/g, '');
+  };
+
   const handleStartTour = (stepIndex = 0) => {
     setIsTourActive(true);
     setCurrentTourStep(stepIndex);
@@ -185,7 +194,7 @@ export function PublicAIChatbot() {
     const tourMessage: ChatMessage = {
       id: `tour-step-${stepIndex}-${Date.now()}`,
       sender: 'ai',
-      text: `🧭 **${step.title}**\n\n${step.description}\n\n✨ *${step.highlight}*\n\nAnda bisa tanyakan apa saja terkait poin ini, atau klik langkah berikutnya!`,
+      text: `🧭 ${step.title}\n\n${step.description}\n\n• Keunggulan: ${step.highlight}\n\nAnda bisa tanyakan apa saja terkait poin ini, atau klik tombol Lanjut!`,
       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
     };
 
@@ -203,7 +212,7 @@ export function PublicAIChatbot() {
         {
           id: `tour-complete-${Date.now()}`,
           sender: 'ai',
-          text: '🎉 **Tur Platform Selesai!**\n\nAnda sekarang sudah memahami seluruh ekosistem Sivilize Space. Siap meluncurkan website bisnis Anda dalam 60 detik? Silakan tanyakan apa saja atau mulai sewa langsung!',
+          text: 'Tur Platform Selesai!\n\nAnda sekarang sudah memahami seluruh ekosistem Sivilize Space. Siap meluncurkan website bisnis Anda dalam 60 detik? Silakan tanyakan apa saja atau mulai sewa langsung!',
           time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -327,7 +336,7 @@ export function PublicAIChatbot() {
                       : 'bg-neutral-50 text-neutral-800 border border-neutral-200/80 rounded-tl-xs whitespace-pre-line'
                   }`}
                 >
-                  <div>{msg.text}</div>
+                  <div>{stripAsterisks(msg.text)}</div>
                   <div
                     className={`text-[9px] mt-1.5 font-mono ${
                       msg.sender === 'user' ? 'text-neutral-400 text-right' : 'text-neutral-400'

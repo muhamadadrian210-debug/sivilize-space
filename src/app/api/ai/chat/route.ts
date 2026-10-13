@@ -3,20 +3,72 @@ import { aiChatLimiter } from '@/lib/rate-limiter';
 import { checkIsBanned, createBannedResponse } from '@/lib/blacklist';
 
 const SYSTEM_PROMPT = `
-Kamu adalah "Sivilize AI Copilot", asisten AI resmi dari platform Website-as-a-Service (WaaS) Sivilize Space yang dikembangkan oleh PT Sivilize Corp Indonesia.
-Tugas utamamu adalah memandu pemilik toko/bisnis (merchant) dalam mengelola website mereka, menjelaskan fitur, cara menambah menu/katalog, cara kustomisasi tata letak, integrasi SiKasir POS, Sivilize Dine Lite (Self-Order Meja QR), dan pengaturan custom domain.
+Kamu adalah "Sivilize AI Consultant & Tour Guide", asisten kecerdasan buatan resmi dari platform Website-as-a-Service (WaaS) Sivilize Space (produk resmi Divisi SiWeb Production — PT Sivilize Corp Indonesia, NIB: 0207260103661, Kupang, NTT).
 
-Pedoman Menjawab:
-1. Gunakan bahasa Indonesia yang ramah, sopan, ringkas, jelas, dan santai (profesional untuk UMKM).
-2. Jawaban harus langsung to-the-point dan mudah dipahami orang awam yang tidak mengerti koding.
-3. Poin-poin Pengetahuan Ekosistem:
-   - Database: 100% otomatis tersimpan aman di Cloud Database Supabase PT Sivilize Corp Indonesia. Klien tidak perlu setup akun database sendiri dan data tidak akan hilang saat ganti HP/laptop.
-   - SiKasir POS: Aplikasi kasir online/offline dengan Kitchen Display System (KDS), kalkulasi resep bahan baku, struk bluetooth, dan modul industri spesifik (Nopol & mekanik untuk bengkel, rak untuk laundry, kapster untuk barbershop, resep dokter untuk apotek).
-   - Sivilize Dine Lite: Khusus F&B, tamu scan QR di meja resto untuk pesan mandiri. Stok dan menu langsung tersambung 2-arah seketika dengan SiKasir.
-   - Cara Aktivasi: Masukkan Kode Lisensi (misal: SIV-FNB-365D) di form aktivasi awal SiKasir atau Dine Lite, maka aplikasi kasir langsung aktif tanpa perlu registrasi manual.
-   - Custom Domain Pribadi: Bisa diarahkan ke DNS Vercel Anycast Edge (Record A @ -> 76.76.21.21 dan CNAME www -> cname.vercel-dns.com).
-   - Transaksi: Bisnis produk (FnB, Retail, dll) bisa transaksi langsung lewat QRIS Dinamis di web. Sedangkan bisnis jasa berat (kontraktor, arsitek, pembuatan web) otomatis diarahkan ke konsultasi WhatsApp resmi & estimasi proyek.
+Peran & Sikapmu:
+1. Terbuka, ramah, profesional, cerdas, dan siap melayani siapa saja—baik calon klien umum yang bertanya di website publik, maupun pemilik toko/merchant yang sedang mengelola dashboard mereka.
+2. JANGAN MEMBATASI PERTANYAAN: Pengguna berhak menanyakan apa saja—mulai dari cara kerja Sivilize Space, perbandingan dengan WordPress/Shopify/Wix, strategi bisnis online, tips katalog, optimasi penjualan cafe/distro/laundry/bengkel/klinik, teknologi Next.js & Anycast Edge, keamanan Supabase/Firebase, cara rakit custom, hingga pertanyaan bisnis/teknis umum lainnya. Jawablah dengan cerdas, mendalam, dan solutif!
+3. BATASAN KEAMANAN & ETIKA (STRICT SAFETY ONLY):
+   - Jika pengguna mengirim pesan berisi kata-kata toksik, hinaan kasar, pelecehan (harassment), atau ujaran kebencian (SARA), tolak dengan sopan: "Demi kenyamanan bersama, mohon gunakan bahasa yang santun dan profesional. Saya siap membantu pertanyaan Anda seputar bisnis dan website."
+   - Jika pengguna menanyakan atau mempromosikan hal ilegal sesuai Syarat Layanan & Hukum ITE RI (Perjudian online / slot gacor, pornografi, pinjaman online ilegal, penipuan finansial, peretasan ilegal), tolak dengan tegas namun profesional: "Sivilize Space menerapkan kebijakan Zero-Tolerance terhadap perjudian online, pornografi, dan aktivitas ilegal lainnya sesuai UU ITE dan regulasi perizinan resmi kami."
+
+Pengetahuan Inti Platform Sivilize Space:
+- Nilai Utama: Sewa website bisnis siap pakai & mandiri dalam 60 detik. 0% komisi marketplace. Transaksi QRIS otomatis & invoice digital terbit seketika tanpa perlu chat manual WhatsApp.
+- Struktur Harga Transparan:
+  * Paket Mikro (1 Halaman): Rp 39.000/bln atau Rp 349.000/tahun (Subdomain: namatoko.sivilizecorp.my.id).
+  * Paket Pro (2-3 Halaman): Rp 69.000/bln atau Rp 599.000/tahun (GRATIS DOMAIN PRIBADI: .my.id / .biz.id untuk sewa tahunan).
+  * Paket Bisnis (4-5 Halaman): Rp 99.000/bln atau Rp 899.000/tahun (GRATIS DOMAIN INTERNASIONAL: .COM untuk sewa tahunan).
+  * Catatan Aturan Domain: Gratis domain pribadi HANYA berlaku untuk paket tahunan. Untuk bulanan, klien menggunakan subdomain resmi atau membawa domain sendiri (+Rp 0).
+- Ekosistem 3-in-1 Terpadu:
+  * Sivilize Space Web Storefront: Website katalog mandiri dengan kecepatan Anycast Edge (SLA 99.8%).
+  * SiKasir POS: Aplikasi kasir pintar (Kitchen Display System/KDS, barcode scanner, resep bahan, multi-cabang).
+  * Sivilize Dine Lite: Khusus F&B, sistem self-order tamu di meja resto via scan QR tanpa perlu install aplikasi.
+  * Sinkronisasi Stok 2-Arah Seketika: Stok di kasir fisik berkurang langsung otomatis terupdate di QR meja dan website toko detik itu juga.
+  * 1 Kode Lisensi Ekosistem (misal: SIV-FNB-365D) mengaktifkan semua aplikasi secara instan.
+- Template vs Rakitan Custom:
+  * Template Siap Pakai: Langsung tayang dalam 60 detik dengan 5 tema resmi (Warm Cafe, Midnight Distro, Fresh Herbal, Pastel Beauty, Corporate Clean).
+  * Studio Rakit Custom (/rakit): Klien bebas merombak font, layout grid 2/3/4 kolom, efek visual frosted glass, dan tambah halaman ekstra (+Rp 50.000/halaman/tahun) dengan kalkulasi harga transparan.
+- Infrastruktur & Keamanan:
+  * Pure Vercel Anycast Edge (IP 76.76.21.21) + Cloud Database Supabase (PostgreSQL) / Google Firebase.
+  * Zero-Trust Architecture, 20-Layer Firewall & Honeypot System.
+  * Badan Hukum: PT Sivilize Corp Indonesia, NIB 0207260103661, KBLI 62199.
 `;
+
+function checkToxicityAndHarm(text: string): { isViolating: boolean; message?: string } {
+  const lower = text.toLowerCase();
+
+  // 1. Toxic / Harassment / Hinaan Kasar / Sara
+  const toxicWords = [
+    'anjing', 'babi', 'bangsat', 'kontol', 'memek', 'pantek', 'ngentot',
+    'asu', 'perek', 'lonte', 'bajingan', 'goblok', 'tolol', 'idiot',
+    'bacot', 'mati lu', 'bunuh diri'
+  ];
+  for (const w of toxicWords) {
+    if (new RegExp(`\\b${w}\\b`, 'i').test(lower)) {
+      return {
+        isViolating: true,
+        message: 'Demi kenyamanan bersama, mohon gunakan bahasa yang santun dan profesional. Saya siap membantu Anda berkonsultasi seputar website dan bisnis.',
+      };
+    }
+  }
+
+  // 2. Illegal Activities: Judi Online (Judol), Pornografi, Pinjol Ilegal
+  const illegalWords = [
+    'slot gacor', 'judol', 'judi online', 'togel', 'pragmatic play', 'maxwin', 'zeus slot',
+    'bokep', 'pornografi', 'open bo', 'vcs', 'seks bebas',
+    'pinjol ilegal', 'carding', 'arisan bodong'
+  ];
+  for (const w of illegalWords) {
+    if (lower.includes(w)) {
+      return {
+        isViolating: true,
+        message: 'Platform Sivilize Space menerapkan kebijakan Zero-Tolerance terhadap perjudian online, pornografi, dan aktivitas ilegal sesuai amanat UU ITE RI dan dokumen hukum resmi kami.',
+      };
+    }
+  }
+
+  return { isViolating: false };
+}
 
 export async function POST(req: NextRequest) {
   // 🛡️ MULTI-LAYER BLACKLIST CHECK (IP, Device Fingerprint, Country)
@@ -51,9 +103,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Pesan wajib diisi.' }, { status: 400 });
     }
 
+    // 🛡️ MODERASI KONTEN: Blokir hanya jika Toxic / Harassment / Tindakan Ilegal
+    if (userMessage) {
+      const moderation = checkToxicityAndHarm(userMessage);
+      if (moderation.isViolating) {
+        return NextResponse.json({
+          reply: moderation.message,
+          source: 'safety-moderation-shield',
+        });
+      }
+    }
+
     const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    // Jika API Key Gemini tersedia, panggil Google AI Studio (Gemini 2.5 Flash)
+    // Jika API Key Gemini tersedia, panggil Google AI Studio (Gemini 2.0 / 1.5 Flash)
     if (geminiApiKey) {
       try {
         let systemPromptToUse = SYSTEM_PROMPT;
@@ -61,32 +124,42 @@ export async function POST(req: NextRequest) {
 
         if (mode === 'tour-guide') {
           systemPromptToUse = `
-Kamu adalah "Sivilize AI Tour Guide", pemandu pintar interaktif dari platform Sivilize Space.
-Tugasmu adalah memberikan panduan dan tips cerdas yang spesifik untuk bisnis: "${store_name || 'Toko Mitra'}" (Kategori Usaha: ${category || 'UMKM'}, Paket: ${plan_tier || 'Pro'}).
-Langkah Tour: "${tour_step_title || 'Pengenalan'}" (Tab: ${tour_step_key || 'umum'}).
+${SYSTEM_PROMPT}
 
-Aturan:
-1. Berikan penjelasan ringkas (2-3 kalimat) mengenai fungsi fitur ini dan cara memanfaatkannya khusus untuk bisnis ${category || 'UMKM'}.
-2. Jika ada pertanyaan spesifik dari pemilik usaha: "${userMessage}", jawab secara ramah, praktis, dan to-the-point.
-3. Berikan 1 tips emas praktis yang bisa langsung dipraktekkan hari ini.
+Tugas Khusus Saat Ini: Sivilize AI Tour Guide
+Kamu sedang memandu pengguna pada langkah tur platform: "${tour_step_title || 'Pengenalan Platform'}" (Bagian: ${tour_step_key || 'umum'}).
+Target Konteks: ${store_name ? `Toko "${store_name}" (Kategori: ${category || 'UMKM'})` : 'Pengunjung Umum Platform Sivilize Space'}.
+
+Aturan Tur:
+1. Berikan penjelasan ringkas, berwibawa, dan praktis (2-3 paragraf pendek) mengenai keunggulan fitur/layanan ini.
+2. Jika ada pertanyaan spesifik dari pengguna: "${userMessage}", jawab secara cerdas, ramah, dan solutif.
+3. Berikan 1 actionable takeaway / tips emas yang bernilai tinggi.
 `;
           promptText = userMessage
-            ? `Pertanyaan merchant: "${userMessage}"`
-            : `Berikan penjelasan & tips terbaik untuk langkah ini.`;
+            ? `Pertanyaan pengguna: "${userMessage}"`
+            : `Berikan penjelasan & tips terbaik untuk langkah tur ini.`;
         } else {
           promptText = `
-Nama Toko: ${store_name || 'Toko Mitra'}
-Kategori Usaha: ${category || 'Bisnis UMKM'}
-Paket: ${plan_tier || 'Pro'}
+Konteks Pengguna:
+${store_name ? `- Toko: ${store_name} (${category || 'UMKM'}, Paket: ${plan_tier || 'Pro'})` : '- Pengunjung Publik Website Sivilize Space'}
 
-Pertanyaan Merchant:
+Pertanyaan Pengguna:
 "${userMessage}"
+
+Petunjuk Menjawab:
+- Jawab secara cerdas, ramah, jelas, dan tanpa membatasi topik (kecuali toxic/illegal yang sudah difilter).
+- Berikan insight berharga seputar sewa website, bisnis digital, atau solusi praktis.
 `;
         }
 
-        const modelsToTry = ['gemini-2.5-flash', 'gemini-flash-latest'];
+        const modelsToTry = [
+          'gemini-2.0-flash',
+          'gemini-1.5-flash',
+          'gemini-2.5-flash',
+          'gemini-flash-latest',
+        ];
         let candidateText: string | null = null;
-        let usedModel = 'gemini-2.5-flash';
+        let usedModel = 'gemini-2.0-flash';
 
         for (const model of modelsToTry) {
           try {
@@ -106,7 +179,7 @@ Pertanyaan Merchant:
                 ],
                 generationConfig: {
                   temperature: 0.7,
-                  maxOutputTokens: 600,
+                  maxOutputTokens: 1200,
                 },
               }),
             });
@@ -138,22 +211,26 @@ Pertanyaan Merchant:
       }
     }
 
-    // Fallback cerdas lokal jika API Key Gemini belum diset atau offline
+    // Fallback cerdas lokal jika API Key Gemini sedang offline
     const lower = userMessage.toLowerCase();
-    let reply = `Pertanyaan bagus mengenai "${userMessage}". Seluruh fitur website, katalog produk, dan ekosistem kasir Anda telah terintegrasi di platform Sivilize Space. Anda bisa melihat menu panduan interaktif kami atau membuka tab pengaturan terkait untuk mencobanya secara langsung.`;
+    let reply = `Terima kasih atas pertanyaan Anda mengenai "${userMessage}". Sivilize Space adalah platform sewa website bisnis siap pakai & mandiri nomor 1 di Indonesia dengan aktivasi 60 detik, 0% komisi marketplace, dan integrasi kasir SiKasir POS & Dine Lite. Ada yang ingin Anda ketahui lebih lanjut mengenai paket, fitur, atau cara memulainya?`;
 
     if (mode === 'tour-guide') {
-      reply = `Fitur ${tour_step_title || 'ini'} dirancang khusus untuk mempermudah operasional usaha ${category || 'Anda'}. Semua perubahan yang Anda simpan langsung aktif otomatis secara real-time di website dan aplikasi kasir SiKasir.`;
-    } else if (lower.includes('database') || lower.includes('supabase') || lower.includes('aman') || lower.includes('hilang')) {
-      reply = `Tenang sekali! Seluruh data website, katalog produk, menu, foto WebP, dan lisensi Anda 100% OTOMATIS tersimpan di Cloud Database Supabase PT Sivilize Corp Indonesia dengan isolasi tenant yang sangat aman. Anda tidak perlu membuat akun database sendiri. Data Anda tidak akan pernah hilang meskipun ganti ponsel atau laptop.`;
-    } else if (lower.includes('sikasir') || lower.includes('kasir') || lower.includes('dine lite') || lower.includes('meja') || lower.includes('lisensi')) {
-      reply = `Untuk menyambungkan SiKasir POS dan Sivilize Dine Lite, Anda cukup menyalin Kode Lisensi Ekosistem Anda di tab "Ekosistem Lisensi" (misal: SIV-FNB-365D). Buka aplikasi kasir atau dine lite di perangkat Anda, lalu masukkan kode tersebut pada form aktivasi awal. Stok dan pesanan langsung tersambung 2-arah seketika tanpa perlu daftar manual!`;
-    } else if (lower.includes('harga') || lower.includes('stok') || lower.includes('menu') || lower.includes('produk')) {
-      reply = `Untuk mengelola menu/produk, buka tab "Katalog & Menu". Anda bisa klik "Tambah Item Baru" untuk memasukkan foto dan harga, atau klik tombol switch hijau pada produk untuk menandai "Habis / Tersedia". Anda juga bisa klik "Tarik Produk dari SiKasir" untuk sinkronisasi otomatis!`;
-    } else if (lower.includes('domain') || lower.includes('dns') || lower.includes('vercel')) {
-      reply = `Bisa banget! Anda bisa menggunakan domain pribadi seperti www.bisnisanda.com. Cukup arahkan DNS domain Anda ke server Vercel Anycast Edge kami: Record A (@ ➔ 76.76.21.21) dan CNAME (www ➔ cname.vercel-dns.com). Sertifikat SSL HTTPS akan aktif otomatis 100%.`;
-    } else if (lower.includes('transaksi') || lower.includes('jasa') || lower.includes('kontraktor')) {
-      reply = `Untuk bisnis produk seperti F&B, Retail, Laundry, dan Bengkel, pelanggan bisa langsung checkout mandiri via QRIS di web. Namun untuk bisnis jasa non-transaksional (seperti kontraktor bangunan, jasa pembuatan website, konsultan hukum), tombol di web otomatis diarahkan ke konsultasi WhatsApp resmi & form estimasi proyek (Lead Generation) karena biaya proyek butuh diskusi spesifikasi terlebih dahulu.`;
+      reply = `Langkah "${tour_step_title || 'Tur'}" ini merupakan bagian penting dari ekosistem Sivilize Space. Anda mendapatkan infrastruktur sewa website berkecepatan tinggi dengan Anycast Edge SLA 99.8%, transaksi mandiri tanpa komisi, dan dukungan penuh PT Sivilize Corp Indonesia.`;
+    } else if (lower.includes('harga') || lower.includes('biaya') || lower.includes('paket') || lower.includes('sewa')) {
+      reply = `Sivilize Space menyediakan 3 pilihan paket sewa transparan:
+1. Paket Mikro (1 Halaman): Rp 39.000/bln atau Rp 349.000/tahun (cocok untuk warkop, bio-link, jasa 1 servis).
+2. Paket Pro (2-3 Halaman): Rp 69.000/bln atau Rp 599.000/tahun — GRATIS DOMAIN PRIBADI .my.id/.biz.id untuk sewa tahunan (terpopuler untuk cafe, distro, laundry, bengkel).
+3. Paket Bisnis (4-5 Halaman): Rp 99.000/bln atau Rp 899.000/tahun — GRATIS DOMAIN INTERNASIONAL .COM untuk sewa tahunan.
+Semua paket sudah mencakup server Anycast Edge, SSL HTTPS otomatis, dan garansi pemeliharaan 100%!`;
+    } else if (lower.includes('domain') || lower.includes('com') || lower.includes('my.id')) {
+      reply = `Sesuai aturan resmi Sivilize Space, GRATIS DOMAIN PRIBADI (.my.id/.biz.id pada Paket Pro, atau .COM pada Paket Bisnis) berlaku khusus untuk langganan sewa 1 TAHUN PENUH. Untuk sewa bulanan, Anda menggunakan subdomain resmi 'namatoko.sivilizecorp.my.id', atau Anda bebas menghubungkan domain pribadi yang Anda beli sendiri (+Rp 0 tanpa biaya tambahan).`;
+    } else if (lower.includes('sikasir') || lower.includes('kasir') || lower.includes('dine lite') || lower.includes('pos')) {
+      reply = `Setiap sewa website di Sivilize Space sudah otomatis meng-include aplikasi kasir SiKasir POS dan Sivilize Dine Lite (khusus F&B)! Anda cukup memasukkan 1 Kode Lisensi Ekosistem (contoh: SIV-FNB-365D). Stok barang yang terjual di kasir fisik langsung memotong stok di website dan QR Meja Dine Lite detik itu juga secara 2-arah.`;
+    } else if (lower.includes('rakit') || lower.includes('custom') || lower.includes('desain')) {
+      reply = `Selain template siap pakai yang aktif 60 detik, Anda bisa membuka 'Studio Rakit Web' (/rakit) untuk merancang sendiri tampilan toko: memilih font (Inter, JetBrains Mono, Outfit, Playfair), jumlah kolom grid (2/3/4 kolom), efek kaca frosted glass, hingga menambah halaman kustom (+Rp 50.000/halaman/tahun) dengan kalkulasi biaya yang transparan di layar!`;
+    } else if (lower.includes('keamanan') || lower.includes('database') || lower.includes('aman') || lower.includes('pt')) {
+      reply = `Platform Sivilize Space beroperasi di bawah badan hukum resmi PT Sivilize Corp Indonesia (NIB: 0207260103661, KBLI: 62199). Seluruh data toko Anda tersimpan aman di Cloud Database Supabase (PostgreSQL) dengan isolasi tenant, dilindungi 20-Layer Firewall & Honeypot System, serta dihosting di Vercel Anycast Edge global bergaransi SLA 99.8%.`;
     }
 
     const res = NextResponse.json({

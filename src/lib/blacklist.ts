@@ -63,6 +63,12 @@ export async function checkIsBanned(
   const deviceFp = options.deviceFp || getDeviceFingerprintFromReq(req);
   const phone = options.phone ? options.phone.replace(/[^0-9]/g, '') : undefined;
 
+  // Localhost Dev Exemption (Mencegah pengembang/localhost terblokir saat testing lokal)
+  const isLocalDev = ip === '127.0.0.1' || ip === '::1' || ip === 'localhost';
+  if (isLocalDev && process.env.NODE_ENV !== 'production') {
+    return { isBanned: false };
+  }
+
   // 1. Cek Geo-blocking Negara Ekstrim
   if (STRICT_GEO_BLOCKED_COUNTRIES.has(country)) {
     return {

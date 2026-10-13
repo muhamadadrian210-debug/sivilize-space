@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { PublicAIChatbot } from '@/components/public/PublicAIChatbot';
 
 export const metadata: Metadata = {
   title: {
@@ -186,6 +187,7 @@ export default function RootLayout({
         className="min-h-full flex flex-col bg-[#FAFAFA] text-[#0A0D14] selection:bg-neutral-900 selection:text-white"
       >
         {children}
+        <PublicAIChatbot />
       </body>
     </html>
   );

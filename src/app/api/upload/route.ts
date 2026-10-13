@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { authenticateTenantRequest } from '@/lib/session';
 import { uploadLimiter } from '@/lib/rate-limiter';
+import { checkIsBanned, createBannedResponse } from '@/lib/blacklist';
 
 /**
  * -----------------------------------------------------------------------------
@@ -59,6 +60,12 @@ function isValidImageMagicBytes(buffer: Uint8Array): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  // 🛡️ MULTI-LAYER BLACKLIST CHECK
+  const banCheck = await checkIsBanned(req);
+  if (banCheck.isBanned) {
+    return createBannedResponse(banCheck);
+  }
+
   // 🛡️ RATE LIMITER SHIELD (Maksimal 15 upload per menit per IP)
   const rateLimitResult = uploadLimiter.check(req);
   if (!rateLimitResult.success) {
@@ -69,6 +76,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+
 
     // 🛡️ FW 10 & 12: Autentikasi Tenant
     const auth = authenticateTenantRequest(req);

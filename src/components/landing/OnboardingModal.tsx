@@ -19,6 +19,7 @@ import {
   Building2,
 } from 'lucide-react';
 import type { TemplateType, ThemeId, PlanTier } from '@/types/database';
+import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -96,9 +97,13 @@ export function OnboardingModal({
     setLoading(true);
 
     try {
+      const deviceFp = await getDeviceFingerprint();
       const res = await fetch('/api/store/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-device-fingerprint': deviceFp,
+        },
         body: JSON.stringify({
           store_name: storeName,
           slug,
@@ -115,6 +120,7 @@ export function OnboardingModal({
           pin,
           plan_tier: planTier,
           billing_cycle: 'tahunan',
+          device_fingerprint: deviceFp,
           is_paid: true, // Auto-provisioning flag
         }),
       });

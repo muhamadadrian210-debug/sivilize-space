@@ -4,6 +4,7 @@ import { normalizeWhatsAppPhone, isValidSlug } from '@/lib/utils';
 import { checkProhibitedContent } from '@/lib/security';
 import { hashPin, createTenantToken } from '@/lib/session';
 import { storeRegisterLimiter } from '@/lib/rate-limiter';
+import { checkIsBanned, createBannedResponse } from '@/lib/blacklist';
 import type { StoreSectionKey } from '@/types/database';
 import { z } from 'zod';
 
@@ -24,9 +25,16 @@ const registerStoreSchema = z.object({
   plan_tier: z.enum(['mikro', 'pro', 'bisnis']).default('pro'),
   billing_cycle: z.enum(['bulanan', 'tahunan']).default('tahunan'),
   tax_id: z.string().optional(), // Honeypot trap
+  device_fingerprint: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
+  // 🛡️ MULTI-LAYER BLACKLIST CHECK (IP, Device, Country)
+  const initialBanCheck = await checkIsBanned(req);
+  if (initialBanCheck.isBanned) {
+    return createBannedResponse(initialBanCheck);
+  }
+
   // 🛡️ RATE LIMITER SHIELD (Maksimal 5 pendaftaran per 10 menit per IP)
   const rateLimitResult = storeRegisterLimiter.check(req);
   if (!rateLimitResult.success) {
@@ -37,8 +45,17 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-
     const body = await req.json();
+
+    // Cek kembali dengan phone dan device_fingerprint dari body
+    const detailedBanCheck = await checkIsBanned(req, {
+      phone: body.owner_phone,
+      deviceFp: body.device_fingerprint,
+    });
+    if (detailedBanCheck.isBanned) {
+      return createBannedResponse(detailedBanCheck);
+    }
+
 
     // 🍯 HONEYPOT TRAP (HP 04)
     if (body.tax_id) {

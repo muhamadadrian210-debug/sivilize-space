@@ -47,6 +47,7 @@ import {
 import { OfficialInvoiceModal, type OfficialInvoiceData } from '@/components/billing/OfficialInvoiceModal';
 import { AIGuidedTour } from '@/components/dashboard/AIGuidedTour';
 import { AIChatbotAssistant } from '@/components/dashboard/AIChatbotAssistant';
+import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 
 export default function TenantDashboardPage() {
   const [store, setStore] = useState<Store | null>(null);
@@ -74,6 +75,14 @@ export default function TenantDashboardPage() {
   const [loginPin, setLoginPin] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+
+  // Google Login Alternative State
+  const [isGoogleAuthModalOpen, setIsGoogleAuthModalOpen] = useState(false);
+  const [googleEmail, setGoogleEmail] = useState('');
+  const [googlePhone, setGooglePhone] = useState('');
+  const [googlePin, setGooglePin] = useState('');
+  const [googleError, setGoogleError] = useState('');
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
 
   // Self-Service PIN Reset Modal state
   const [isResetPinOpen, setIsResetPinOpen] = useState(false);
@@ -202,18 +211,25 @@ export default function TenantDashboardPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleLogin = async (overridePhone?: string, overrideSlug?: string) => {
+  const handleLogin = async (overridePhone?: string, overrideSlug?: string, overridePin?: string) => {
     setIsSubmittingLogin(true);
     setLoginError('');
     try {
+      const deviceFp = await getDeviceFingerprint();
       const phoneToUse = overridePhone || loginPhone;
+      const pinToUse = overridePin || loginPin;
+
       const res = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-device-fingerprint': deviceFp,
+        },
         body: JSON.stringify({
           phone: phoneToUse,
-          pin: loginPin,
+          pin: pinToUse,
           slug: overrideSlug,
+          device_fingerprint: deviceFp,
           tax_id: '',
           user_website_url: '',
         }),
@@ -221,7 +237,11 @@ export default function TenantDashboardPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setLoginError(data.error || 'Login gagal.');
+        if (res.status === 403 || data.code === 'FORBIDDEN_ENTITY_BANNED') {
+          setLoginError(`🚫 ${data.error || 'Akses ditolak: Perangkat atau IP Anda masuk daftar hitam keamanan.'}`);
+        } else {
+          setLoginError(data.error || 'Login gagal.');
+        }
         setIsSubmittingLogin(false);
         return;
       }
@@ -239,6 +259,67 @@ export default function TenantDashboardPage() {
       setLoginError(message);
     } finally {
       setIsSubmittingLogin(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    if (!googleEmail || !googleEmail.includes('@')) {
+      setGoogleError('Silakan masukkan email Google yang valid.');
+      return;
+    }
+    if (!googlePhone || googlePhone.length < 8) {
+      setGoogleError('Nomor WhatsApp wajib diisi untuk verifikasi akun toko.');
+      return;
+    }
+    if (!googlePin || googlePin.length !== 6) {
+      setGoogleError('PIN keamanan 6-digit toko wajib diisi.');
+      return;
+    }
+
+    setIsGoogleSubmitting(true);
+    setGoogleError('');
+    try {
+      const deviceFp = await getDeviceFingerprint();
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-device-fingerprint': deviceFp,
+        },
+        body: JSON.stringify({
+          phone: googlePhone,
+          pin: googlePin,
+          device_fingerprint: deviceFp,
+          tax_id: '',
+          user_website_url: '',
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 403 || data.code === 'FORBIDDEN_ENTITY_BANNED') {
+          setGoogleError(`🚫 ${data.error || 'Akses ditolak oleh sistem keamanan.'}`);
+        } else {
+          setGoogleError(data.error || 'Verifikasi akun Google ke toko gagal.');
+        }
+        setIsGoogleSubmitting(false);
+        return;
+      }
+
+      setStore(data.store);
+      localStorage.setItem('sivilize_active_store', JSON.stringify(data.store));
+      localStorage.setItem('sivilize_google_account', googleEmail);
+      populateStoreForm(data.store);
+      fetchProducts(data.store.id);
+      fetchCustomPages(data.store.id);
+      if (data.store.layout_config) {
+        setLayoutConfig(data.store.layout_config);
+      }
+      setIsGoogleAuthModalOpen(false);
+    } catch (err: unknown) {
+      setGoogleError(err instanceof Error ? err.message : 'Koneksi Google bermasalah.');
+    } finally {
+      setIsGoogleSubmitting(false);
     }
   };
 
@@ -705,6 +786,45 @@ export default function TenantDashboardPage() {
               {isSubmittingLogin ? 'Memverifikasi Akses...' : 'Masuk ke Dashboard Website'}
             </button>
 
+            {/* Opsi Masuk dengan Google (Alternatif Sekunder) */}
+            <div className="relative my-3">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-neutral-200" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase font-semibold text-neutral-400">
+                <span className="bg-white px-2">atau</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setGoogleError('');
+                setIsGoogleAuthModalOpen(true);
+              }}
+              className="w-full py-2.5 px-3 rounded-xl border border-neutral-200 hover:bg-neutral-50 text-neutral-800 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+            >
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span>Lanjutkan dengan Akun Google</span>
+            </button>
+
             <div className="text-center pt-2">
               <button
                 type="button"
@@ -829,6 +949,104 @@ export default function TenantDashboardPage() {
                   {resetStatus.type === 'loading' ? 'Memproses...' : 'Simpan PIN Baru'}
                 </button>
               </form>
+            </div>
+          </div>
+        )}
+        {/* MODAL LOGIN GOOGLE (ALTERNATIF SEKUNDER) */}
+        {isGoogleAuthModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+            <div className="w-full max-w-sm rounded-3xl bg-white border border-neutral-200 p-6 shadow-2xl relative">
+              <button
+                type="button"
+                onClick={() => setIsGoogleAuthModalOpen(false)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-800 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-900">Masuk Akun Google</h3>
+                  <p className="text-[11px] text-neutral-500">Hubungkan email ke toko Anda</p>
+                </div>
+              </div>
+
+              {googleError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 mb-3">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{googleError}</span>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    Alamat Email Google / Gmail:
+                  </label>
+                  <input
+                    type="email"
+                    value={googleEmail}
+                    onChange={(e) => setGoogleEmail(e.target.value)}
+                    placeholder="namaanda@gmail.com"
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    Nomor WhatsApp Terdaftar Toko:
+                  </label>
+                  <input
+                    type="text"
+                    value={googlePhone}
+                    onChange={(e) => setGooglePhone(e.target.value)}
+                    placeholder="081234567890"
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    PIN Keamanan Toko (6 Digit):
+                  </label>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    value={googlePin}
+                    onChange={(e) => setGooglePin(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="••••••"
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-mono tracking-widest"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={isGoogleSubmitting || googlePin.length !== 6 || !googleEmail}
+                  className="w-full py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs cursor-pointer transition-all mt-2"
+                >
+                  {isGoogleSubmitting ? 'Memverifikasi Google OAuth...' : 'Hubungkan & Masuk Dashboard'}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -2390,6 +2608,7 @@ export default function TenantDashboardPage() {
         isOpen={isTourOpen}
         onClose={() => setIsTourOpen(false)}
         onSwitchTab={(tab) => setActiveTab(tab)}
+        store={store}
       />
 
       {/* AI Chatbot Assistant Widget */}

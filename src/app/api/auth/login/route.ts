@@ -3,9 +3,16 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { normalizeWhatsAppPhone } from '@/lib/utils';
 import { verifyPin, hashPin, createTenantToken } from '@/lib/session';
 import { authLoginLimiter } from '@/lib/rate-limiter';
+import { checkIsBanned, createBannedResponse } from '@/lib/blacklist';
 import type { Store } from '@/types/database';
 
 export async function POST(req: NextRequest) {
+  // 🛡️ MULTI-LAYER BLACKLIST CHECK (IP, Device Fingerprint, Phone, Country)
+  const initialBanCheck = await checkIsBanned(req);
+  if (initialBanCheck.isBanned) {
+    return createBannedResponse(initialBanCheck);
+  }
+
   // 🛡️ RATE LIMITER SHIELD (Maksimal 10 percobaan per menit per IP)
   const rateLimitResult = authLoginLimiter.check(req);
   if (!rateLimitResult.success) {
@@ -17,7 +24,13 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { phone, pin, tax_id, user_website_url } = body;
+    const { phone, pin, tax_id, user_website_url, device_fingerprint } = body;
+
+    // Cek kembali jika ada device_fingerprint atau phone spesifik dalam body
+    const detailedBanCheck = await checkIsBanned(req, { phone, deviceFp: device_fingerprint });
+    if (detailedBanCheck.isBanned) {
+      return createBannedResponse(detailedBanCheck);
+    }
 
     // 🍯 HONEYPOT 04 (Zero-Opacity Bot Trap)
     // Jika bot mengisi kolom tersembunyi ini, log ke security_blacklist & tolak seketika!

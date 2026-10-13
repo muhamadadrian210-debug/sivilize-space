@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { aiChatLimiter } from '@/lib/rate-limiter';
+import { checkIsBanned, createBannedResponse } from '@/lib/blacklist';
 
 const SYSTEM_PROMPT = `
 Kamu adalah "Sivilize AI Copilot", asisten AI resmi dari platform Website-as-a-Service (WaaS) Sivilize Space yang dikembangkan oleh PT Sivilize Corp Indonesia.
@@ -18,6 +19,12 @@ Pedoman Menjawab:
 `;
 
 export async function POST(req: NextRequest) {
+  // 🛡️ MULTI-LAYER BLACKLIST CHECK (IP, Device Fingerprint, Country)
+  const banCheck = await checkIsBanned(req);
+  if (banCheck.isBanned) {
+    return createBannedResponse(banCheck);
+  }
+
   // 🛡️ RATE LIMITER SHIELD (Maksimal 12 request per menit per IP)
   const rateLimitResult = aiChatLimiter.check(req);
   if (!rateLimitResult.success) {
@@ -29,10 +36,18 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { message, store_name, category, plan_tier } = body;
+    const {
+      message,
+      store_name,
+      category,
+      plan_tier,
+      mode,
+      tour_step_title,
+      tour_step_key,
+    } = body;
 
     const userMessage = String(message || '').trim();
-    if (!userMessage) {
+    if (!userMessage && mode !== 'tour-guide') {
       return NextResponse.json({ error: 'Pesan wajib diisi.' }, { status: 400 });
     }
 
@@ -41,7 +56,25 @@ export async function POST(req: NextRequest) {
     // Jika API Key Gemini tersedia, panggil Google AI Studio (Gemini 2.5 Flash)
     if (geminiApiKey) {
       try {
-        const promptText = `
+        let systemPromptToUse = SYSTEM_PROMPT;
+        let promptText = '';
+
+        if (mode === 'tour-guide') {
+          systemPromptToUse = `
+Kamu adalah "Sivilize AI Tour Guide", pemandu pintar interaktif dari platform Sivilize Space.
+Tugasmu adalah memberikan panduan dan tips cerdas yang spesifik untuk bisnis: "${store_name || 'Toko Mitra'}" (Kategori Usaha: ${category || 'UMKM'}, Paket: ${plan_tier || 'Pro'}).
+Langkah Tour: "${tour_step_title || 'Pengenalan'}" (Tab: ${tour_step_key || 'umum'}).
+
+Aturan:
+1. Berikan penjelasan ringkas (2-3 kalimat) mengenai fungsi fitur ini dan cara memanfaatkannya khusus untuk bisnis ${category || 'UMKM'}.
+2. Jika ada pertanyaan spesifik dari pemilik usaha: "${userMessage}", jawab secara ramah, praktis, dan to-the-point.
+3. Berikan 1 tips emas praktis yang bisa langsung dipraktekkan hari ini.
+`;
+          promptText = userMessage
+            ? `Pertanyaan merchant: "${userMessage}"`
+            : `Berikan penjelasan & tips terbaik untuk langkah ini.`;
+        } else {
+          promptText = `
 Nama Toko: ${store_name || 'Toko Mitra'}
 Kategori Usaha: ${category || 'Bisnis UMKM'}
 Paket: ${plan_tier || 'Pro'}
@@ -49,6 +82,7 @@ Paket: ${plan_tier || 'Pro'}
 Pertanyaan Merchant:
 "${userMessage}"
 `;
+        }
 
         const modelsToTry = ['gemini-2.5-flash', 'gemini-flash-latest'];
         let candidateText: string | null = null;
@@ -65,7 +99,7 @@ Pertanyaan Merchant:
                   {
                     role: 'user',
                     parts: [
-                      { text: SYSTEM_PROMPT },
+                      { text: systemPromptToUse },
                       { text: promptText },
                     ],
                   },
@@ -108,7 +142,9 @@ Pertanyaan Merchant:
     const lower = userMessage.toLowerCase();
     let reply = `Pertanyaan bagus mengenai "${userMessage}". Seluruh fitur website, katalog produk, dan ekosistem kasir Anda telah terintegrasi di platform Sivilize Space. Anda bisa melihat menu panduan interaktif kami atau membuka tab pengaturan terkait untuk mencobanya secara langsung.`;
 
-    if (lower.includes('database') || lower.includes('supabase') || lower.includes('aman') || lower.includes('hilang')) {
+    if (mode === 'tour-guide') {
+      reply = `Fitur ${tour_step_title || 'ini'} dirancang khusus untuk mempermudah operasional usaha ${category || 'Anda'}. Semua perubahan yang Anda simpan langsung aktif otomatis secara real-time di website dan aplikasi kasir SiKasir.`;
+    } else if (lower.includes('database') || lower.includes('supabase') || lower.includes('aman') || lower.includes('hilang')) {
       reply = `Tenang sekali! Seluruh data website, katalog produk, menu, foto WebP, dan lisensi Anda 100% OTOMATIS tersimpan di Cloud Database Supabase PT Sivilize Corp Indonesia dengan isolasi tenant yang sangat aman. Anda tidak perlu membuat akun database sendiri. Data Anda tidak akan pernah hilang meskipun ganti ponsel atau laptop.`;
     } else if (lower.includes('sikasir') || lower.includes('kasir') || lower.includes('dine lite') || lower.includes('meja') || lower.includes('lisensi')) {
       reply = `Untuk menyambungkan SiKasir POS dan Sivilize Dine Lite, Anda cukup menyalin Kode Lisensi Ekosistem Anda di tab "Ekosistem Lisensi" (misal: SIV-FNB-365D). Buka aplikasi kasir atau dine lite di perangkat Anda, lalu masukkan kode tersebut pada form aktivasi awal. Stok dan pesanan langsung tersambung 2-arah seketika tanpa perlu daftar manual!`;

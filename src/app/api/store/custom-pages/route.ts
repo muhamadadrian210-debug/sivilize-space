@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { isValidSlug } from '@/lib/utils';
 import { ADDON_PAGE_PRICE_PER_YEAR, createMayarInvoice } from '@/lib/mayar';
+import { authenticateTenantRequest } from '@/lib/session';
 import type { CustomPage } from '@/types/database';
 
 export async function GET(req: NextRequest) {
@@ -37,6 +38,12 @@ export async function POST(req: NextRequest) {
         { error: 'Nama halaman dan URL slug wajib diisi.' },
         { status: 400 }
       );
+    }
+
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
     }
 
     const slug = rawSlug
@@ -121,6 +128,12 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'ID Website dan Halaman wajib diisi.' }, { status: 400 });
     }
 
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
+    }
+
     const { data: store } = await supabaseAdmin
       .from('stores')
       .select('id, custom_pages')
@@ -167,6 +180,16 @@ export async function DELETE(req: NextRequest) {
   try {
     const body = await req.json();
     const { store_id, page_id } = body;
+
+    if (!store_id || !page_id) {
+      return NextResponse.json({ error: 'ID Website dan Halaman wajib diisi.' }, { status: 400 });
+    }
+
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
+    }
 
     const { data: store } = await supabaseAdmin
       .from('stores')

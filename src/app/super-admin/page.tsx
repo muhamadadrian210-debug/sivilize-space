@@ -47,6 +47,11 @@ export default function SuperAdminPage() {
     setIsLoadingData(true);
     try {
       const res = await fetch('/api/super-admin/stores');
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        localStorage.removeItem('sivilize_super_admin_logged');
+        return;
+      }
       const data = await res.json();
       if (data.stores) {
         setStores(data.stores);
@@ -438,6 +443,7 @@ export default function SuperAdminPage() {
                 <tr>
                   <th className="p-4 pl-6">Nama Bisnis & Subdomain</th>
                   <th className="p-4">Kategori & Template</th>
+                  <th className="p-4">Lisensi Ekosistem</th>
                   <th className="p-4">Kontak Pemilik</th>
                   <th className="p-4">Masa Berlaku Sewa</th>
                   <th className="p-4">Status</th>
@@ -447,6 +453,21 @@ export default function SuperAdminPage() {
               <tbody className="divide-y divide-neutral-800/60 font-sans">
                 {filteredStores.map((store) => {
                   const isExpired = store.expired_at ? new Date(store.expired_at) < new Date() : false;
+                  const licenseCode =
+                    store.ecosystem_license_code ||
+                    store.layout_config?.ecosystem_license_code ||
+                    (store.category?.toLowerCase().includes('kuliner') || store.category?.toLowerCase().includes('fnb')
+                      ? 'SIV-FNB-365D'
+                      : store.category?.toLowerCase().includes('bengkel')
+                      ? 'SIV-BENGKEL-365D'
+                      : store.category?.toLowerCase().includes('laundry')
+                      ? 'SIV-LAUNDRY-365D'
+                      : store.category?.toLowerCase().includes('barber')
+                      ? 'SIV-BARBER-365D'
+                      : store.category?.toLowerCase().includes('apotek')
+                      ? 'SIV-APOTEK-365D'
+                      : 'SIV-RETAIL-365D');
+
                   return (
                     <tr key={store.id} className="hover:bg-neutral-800/30 transition-colors">
                       {/* Store Name & Domain */}
@@ -473,6 +494,16 @@ export default function SuperAdminPage() {
                         <p className="font-semibold text-neutral-200">{store.category}</p>
                         <span className="text-[10px] font-mono text-neutral-500 capitalize">
                           Tpl: {store.template_type} • {store.theme_id}
+                        </span>
+                      </td>
+
+                      {/* Ecosystem License Code */}
+                      <td className="p-4">
+                        <span className="px-2 py-1 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px]">
+                          {licenseCode}
+                        </span>
+                        <span className="block text-[10px] text-neutral-500 mt-1">
+                          SiKasir & Dine Lite
                         </span>
                       </td>
 
@@ -546,10 +577,21 @@ export default function SuperAdminPage() {
                             type="button"
                             onClick={() => handleExtendSubscription(store, 30)}
                             className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 transition-colors cursor-pointer text-[10px] font-mono font-bold flex items-center gap-1"
-                            title="Tambah Masa Sewa +30 Hari"
+                            title="Tambah Masa Sewa +30 Hari (1 Bulan)"
                           >
                             <CalendarPlus className="w-3.5 h-3.5 text-indigo-400" />
                             <span>+30H</span>
+                          </button>
+
+                          {/* Extend Subscription (+365 Hari) */}
+                          <button
+                            type="button"
+                            onClick={() => handleExtendSubscription(store, 365)}
+                            className="p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 transition-colors cursor-pointer text-[10px] font-mono font-bold flex items-center gap-1"
+                            title="Tambah Masa Sewa +365 Hari (1 Tahun Penuh)"
+                          >
+                            <CalendarPlus className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>+365H</span>
                           </button>
 
                           {/* Delete */}

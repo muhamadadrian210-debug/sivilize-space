@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { productSchema, checkProhibitedContent } from '@/lib/security';
+import { authenticateTenantRequest } from '@/lib/session';
 
 export async function GET(req: NextRequest) {
   const storeId = req.nextUrl.searchParams.get('store_id');
@@ -35,6 +36,12 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
+
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, data.store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
+    }
 
     // 2. 🛡️ FW 19: Scanner Teks Anti-Judol
     const judolCheck = checkProhibitedContent(`${data.name} ${data.description || ''}`);
@@ -83,6 +90,12 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'ID produk dan store_id wajib diisi.' }, { status: 400 });
     }
 
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
+    }
+
     // Update produk di Supabase
     const { data: product, error } = await supabaseAdmin
       .from('products')
@@ -112,6 +125,12 @@ export async function DELETE(req: NextRequest) {
 
     if (!id || !store_id) {
       return NextResponse.json({ error: 'ID produk dan store_id wajib diisi.' }, { status: 400 });
+    }
+
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
     }
 
     const { error } = await supabaseAdmin

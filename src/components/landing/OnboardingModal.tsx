@@ -25,6 +25,7 @@ interface OnboardingModalProps {
   onClose: () => void;
   initialSlug?: string;
   initialPlan?: PlanTier;
+  initialCategory?: string;
   initialLayoutConfig?: {
     grid_columns_desktop?: 2 | 3 | 4 | 'list';
     text_alignment?: 'left' | 'center' | 'right';
@@ -40,6 +41,7 @@ export function OnboardingModal({
   onClose,
   initialSlug = '',
   initialPlan = 'pro',
+  initialCategory,
   initialLayoutConfig,
 }: OnboardingModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -47,7 +49,7 @@ export function OnboardingModal({
   // Form states
   const [storeName, setStoreName] = useState('');
   const [slug, setSlug] = useState(initialSlug);
-  const [category, setCategory] = useState('Kuliner & Minuman');
+  const [category, setCategory] = useState(initialCategory || 'Kuliner & Minuman');
   const [templateType, setTemplateType] = useState<TemplateType>('katalog');
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4 | 'list'>(3);
   const [themeId, setThemeId] = useState<ThemeId>('warm-cafe');
@@ -62,10 +64,15 @@ export function OnboardingModal({
   const [invoiceNo, setInvoiceNo] = useState('');
   const [invoiceDate, setInvoiceDate] = useState('');
   const [copiedInvoice, setCopiedInvoice] = useState(false);
+  const [ecosystemLicenseCode, setEcosystemLicenseCode] = useState('SIV-FNB-365D');
+  const [copiedLicense, setCopiedLicense] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
     const timer = setTimeout(() => {
+      if (initialCategory) {
+        setCategory(initialCategory);
+      }
       if (initialSlug) {
         setSlug(initialSlug);
         setStoreName((curr) =>
@@ -79,7 +86,7 @@ export function OnboardingModal({
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, [isOpen, initialSlug]);
+  }, [isOpen, initialSlug, initialCategory]);
 
   if (!isOpen) return null;
 
@@ -123,6 +130,23 @@ export function OnboardingModal({
       const assignedSlug = data.store?.slug || slug;
       setCreatedSlug(assignedSlug);
 
+      const resolvedLicense =
+        data.store?.ecosystem_license_code ||
+        data.store?.layout_config?.ecosystem_license_code ||
+        (category.toLowerCase().includes('kuliner') || category.toLowerCase().includes('fnb') || category.toLowerCase().includes('kafe') || category.toLowerCase().includes('resto')
+          ? 'SIV-FNB-365D'
+          : category.toLowerCase().includes('bengkel') || category.toLowerCase().includes('servis')
+          ? 'SIV-BENGKEL-365D'
+          : category.toLowerCase().includes('laundry') || category.toLowerCase().includes('cuci')
+          ? 'SIV-LAUNDRY-365D'
+          : category.toLowerCase().includes('barber') || category.toLowerCase().includes('salon')
+          ? 'SIV-BARBER-365D'
+          : category.toLowerCase().includes('apotek') || category.toLowerCase().includes('klinik')
+          ? 'SIV-APOTEK-365D'
+          : 'SIV-RETAIL-365D');
+
+      setEcosystemLicenseCode(resolvedLicense);
+
       const generatedInv = `INV-SC-2026-${Math.floor(100000 + Math.random() * 900000)}`;
       const generatedDate = new Date().toLocaleDateString('id-ID', {
         day: 'numeric',
@@ -132,9 +156,15 @@ export function OnboardingModal({
       setInvoiceNo(generatedInv);
       setInvoiceDate(generatedDate);
 
-      // Auto login session in browser
+      // Auto provisioning & Auto-login session in browser
       if (data.store) {
-        localStorage.setItem('sivilize_active_store', JSON.stringify(data.store));
+        const fullStoreData = {
+          ...data.store,
+          ecosystem_license_code: resolvedLicense,
+          is_paid: true,
+          is_active: true,
+        };
+        localStorage.setItem('sivilize_active_store', JSON.stringify(fullStoreData));
       }
       setStep(4); // Sukses & Provisioning Live screen with Official Invoice
     } catch {
@@ -144,10 +174,17 @@ export function OnboardingModal({
     }
   };
 
+  const handleCopyLicense = () => {
+    navigator.clipboard.writeText(ecosystemLicenseCode);
+    setCopiedLicense(true);
+    setTimeout(() => setCopiedLicense(false), 2500);
+  };
+
   const handleCopySummary = () => {
     const text = `NOTA TRANSAKSI PEMBAYARAN RESMI PT SIVILIZE CORP INDONESIA
 No. Invoice: ${invoiceNo || 'INV-SC-2026-889102'}
 Website Bisnis: ${storeName} (https://${createdSlug || slug}.sivilizecorp.my.id)
+Kode Lisensi Ekosistem: ${ecosystemLicenseCode} (Aktif untuk SiKasir POS & Dine Lite)
 Tanggal: ${invoiceDate || new Date().toLocaleDateString('id-ID')}
 Paket Sewa: ${planTier === 'mikro' ? 'Paket Website Mikro (1 Halaman)' : planTier === 'bisnis' ? 'Paket Website Bisnis (4-5 Halaman)' : 'Paket Website Pro (2-3 Halaman)'} (365 Hari)
 Total: ${planTier === 'mikro' ? 'Rp 349.000' : planTier === 'bisnis' ? 'Rp 899.000' : 'Rp 599.000'} (LUNAS)
@@ -502,22 +539,98 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
           {/* STEP 4: NOTA PEMBAYARAN & BUKTI SEWA RESMI DIGITAL */}
           {step === 4 && (
             <div className="space-y-4 py-1">
-              {/* Top Success Banner */}
-              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              {/* 1. AUTO-PROVISIONING CELEBRATION BANNER */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-white font-mono text-[10px] font-bold uppercase mb-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>DASHBOARD ADMIN OTOMATIS DIBUAT</span>
+                  </div>
+                  <h4 className="text-base sm:text-lg font-black tracking-tight">
+                    Selamat! Website & Dashboard Admin Anda Telah Siap!
+                  </h4>
+                  <p className="text-xs text-emerald-100 mt-1 max-w-md leading-relaxed">
+                    Sistem telah mem-provisioning database toko Anda. Anda langsung login secara otomatis tanpa perlu registrasi ulang.
+                  </p>
+                </div>
+
+                <a
+                  href="/dashboard"
+                  className="px-5 py-3 rounded-xl bg-white text-neutral-950 hover:bg-neutral-100 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shrink-0 transition-transform active:scale-[0.98]"
+                >
+                  <span>Buka Dashboard Admin</span>
+                  <ArrowRight className="w-4 h-4 text-emerald-700" />
+                </a>
+              </div>
+
+              {/* 2. KARTU LISENSI EKOSISTEM SAAS TERPADU (SIKASIR + DINE LITE) */}
+              <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 text-white space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                      ⚡
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block">
+                        KODE AKTIVASI EKOSISTEM RESMI
+                      </span>
+                      <h4 className="text-xs sm:text-sm font-bold text-white">
+                        Termasuk SiKasir POS & Sivilize Dine Lite
+                      </h4>
+                    </div>
+                  </div>
+
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] border border-emerald-500/30">
+                    STATUS: LISENSI AKTIF
+                  </span>
+                </div>
+
+                {/* License Code Display & Copy Box */}
+                <div className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <strong className="text-white block font-bold text-xs sm:text-sm">
-                      Pembayaran & Sewa Berhasil Dikonfirmasi!
-                    </strong>
-                    <span className="text-[11px] text-emerald-300">
-                      Website bisnis Anda langsung live di Anycast Edge global.
+                    <span className="text-[10px] text-neutral-400 uppercase font-mono block">Kode Lisensi Ekosistem:</span>
+                    <span className="text-xl sm:text-2xl font-black font-mono tracking-wider text-emerald-400">
+                      {ecosystemLicenseCode}
                     </span>
+                    <p className="text-[11px] text-neutral-400 mt-1">
+                      Masukkan kode ini di tampilan awal SiKasir POS atau Sivilize Dine Lite untuk aktivasi otomatis.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyLicense}
+                    className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{copiedLicense ? '✓ Kode Tersalin!' : 'Salin Kode Lisensi'}</span>
+                  </button>
+                </div>
+
+                {/* Included Apps Status Badges */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">💻</span>
+                      <div>
+                        <strong className="text-white block font-semibold text-xs">SiKasir POS Kasir</strong>
+                        <span className="text-[10px] text-neutral-400">KDS Dapur, Resep & Inventori</span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-400">✓ Termasuk</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">📱</span>
+                      <div>
+                        <strong className="text-white block font-semibold text-xs">Sivilize Dine Lite</strong>
+                        <span className="text-[10px] text-neutral-400">Self-Order Scan QR Meja</span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-400">✓ Termasuk</span>
                   </div>
                 </div>
-                <span className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold text-[10px]">
-                  STATUS: LUNAS
-                </span>
               </div>
 
               {/* Printable Official Invoice Card */}

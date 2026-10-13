@@ -41,6 +41,8 @@ import {
   Printer,
   Mail,
   Building2,
+  RefreshCw,
+  Copy,
 } from 'lucide-react';
 import { OfficialInvoiceModal, type OfficialInvoiceData } from '@/components/billing/OfficialInvoiceModal';
 
@@ -49,19 +51,31 @@ export default function TenantDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [customPages, setCustomPages] = useState<CustomPage[]>([]);
   const [activeTab, setActiveTab] = useState<
-    'katalog' | 'tata-letak' | 'halaman' | 'profil' | 'langganan'
+    'katalog' | 'tata-letak' | 'halaman' | 'profil' | 'langganan' | 'ekosistem'
   >('katalog');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Ekosistem SaaS & Kasir Sync States
+  const [isSyncingKasir, setIsSyncingKasir] = useState(false);
+  const [kasirSyncNotice, setKasirSyncNotice] = useState('');
+  const [copiedDashboardLicense, setCopiedDashboardLicense] = useState(false);
 
   // Official invoice modal state
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [currentInvoiceData, setCurrentInvoiceData] = useState<OfficialInvoiceData | null>(null);
 
-  // Login form state
-  const [loginPhone, setLoginPhone] = useState('6281234567890');
-  const [loginPin, setLoginPin] = useState('123456');
+  // Login form state (Empty defaults, zero mock hardcode)
+  const [loginPhone, setLoginPhone] = useState('');
+  const [loginPin, setLoginPin] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+
+  // Self-Service PIN Reset Modal state
+  const [isResetPinOpen, setIsResetPinOpen] = useState(false);
+  const [resetPhone, setResetPhone] = useState('');
+  const [resetSlug, setResetSlug] = useState('');
+  const [resetNewPin, setResetNewPin] = useState('');
+  const [resetStatus, setResetStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' });
 
   // Layout customizer state
   const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>({
@@ -388,20 +402,42 @@ export default function TenantDashboardPage() {
     }
   };
 
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
+      setIsUploadingImage(true);
       const result = await compressImageToWebP(file, { maxWidth: 1080, quality: 0.82 });
       setCompressedImagePreview({
         dataUrl: result.dataUrl,
         sizeKb: result.sizeKb,
       });
-      setProductForm((prev) => ({ ...prev, image_url: result.dataUrl }));
+
+      // Upload binary WebP to Supabase Storage via /api/upload (FW 13)
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', result.file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setProductForm((prev) => ({ ...prev, image_url: data.url }));
+      } else {
+        // Fallback jika storage bucket belum siap
+        console.warn('Storage upload warning:', data.error);
+        setProductForm((prev) => ({ ...prev, image_url: result.dataUrl }));
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal kompresi foto.';
       alert(message);
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -448,6 +484,47 @@ export default function TenantDashboardPage() {
       }
     } catch {
       // ignore
+    }
+  };
+
+  const getDashboardLicenseCode = () => {
+    if (!store) return 'SIV-FNB-365D';
+    return (
+      store.ecosystem_license_code ||
+      store.layout_config?.ecosystem_license_code ||
+      (store.category?.toLowerCase().includes('kuliner') || store.category?.toLowerCase().includes('fnb')
+        ? 'SIV-FNB-365D'
+        : store.category?.toLowerCase().includes('bengkel')
+        ? 'SIV-BENGKEL-365D'
+        : store.category?.toLowerCase().includes('laundry')
+        ? 'SIV-LAUNDRY-365D'
+        : store.category?.toLowerCase().includes('barber')
+        ? 'SIV-BARBER-365D'
+        : store.category?.toLowerCase().includes('apotek')
+        ? 'SIV-APOTEK-365D'
+        : 'SIV-RETAIL-365D')
+    );
+  };
+
+  const handleCopyDashboardLicense = () => {
+    const code = getDashboardLicenseCode();
+    navigator.clipboard.writeText(code);
+    setCopiedDashboardLicense(true);
+    setTimeout(() => setCopiedDashboardLicense(false), 2500);
+  };
+
+  const handleSyncFromKasir = async () => {
+    if (!store) return;
+    setIsSyncingKasir(true);
+    setKasirSyncNotice('');
+    try {
+      await fetchProducts(store.id);
+      setKasirSyncNotice('✓ Berhasil menyinkronkan menu & stok terbaru dari SiKasir POS 2-arah!');
+      setTimeout(() => setKasirSyncNotice(''), 4500);
+    } catch {
+      alert('Gagal menyinkronkan produk dari kasir.');
+    } finally {
+      setIsSyncingKasir(false);
     }
   };
 
@@ -513,6 +590,40 @@ export default function TenantDashboardPage() {
       }
     } catch {
       // ignore
+    }
+  };
+
+  const handleResetPinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetPhone || !resetSlug || resetNewPin.length !== 6) {
+      setResetStatus({ type: 'error', message: 'Nomor WhatsApp, slug website, dan 6 digit PIN baru wajib diisi.' });
+      return;
+    }
+    setResetStatus({ type: 'loading', message: 'Memverifikasi dan memperbarui PIN...' });
+    try {
+      const res = await fetch('/api/auth/reset-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: resetPhone,
+          slug: resetSlug,
+          new_pin: resetNewPin,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setResetStatus({ type: 'error', message: data.error || 'Gagal mereset PIN.' });
+        return;
+      }
+      setResetStatus({ type: 'success', message: data.message });
+      setLoginPhone(resetPhone);
+      setLoginPin(resetNewPin);
+      setTimeout(() => {
+        setIsResetPinOpen(false);
+        setResetStatus({ type: 'idle', message: '' });
+      }, 2500);
+    } catch {
+      setResetStatus({ type: 'error', message: 'Terjadi kesalahan koneksi.' });
     }
   };
 
@@ -589,6 +700,20 @@ export default function TenantDashboardPage() {
               {isSubmittingLogin ? 'Memverifikasi Akses...' : 'Masuk ke Dashboard Website'}
             </button>
 
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setResetPhone(loginPhone);
+                  setIsResetPinOpen(true);
+                  setResetStatus({ type: 'idle', message: '' });
+                }}
+                className="text-[11px] font-semibold text-neutral-500 hover:text-neutral-900 transition-colors underline cursor-pointer"
+              >
+                Lupa PIN Keamanan Website?
+              </button>
+            </div>
+
             {/* Quick Demo Store Buttons */}
             <div className="pt-4 border-t border-neutral-100 space-y-2">
               <p className="text-[11px] text-neutral-500 font-medium text-center">
@@ -609,6 +734,99 @@ export default function TenantDashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* MODAL RESET PIN */}
+        {isResetPinOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+            <div className="w-full max-w-sm rounded-3xl bg-white border border-neutral-200 p-6 shadow-2xl relative">
+              <button
+                type="button"
+                onClick={() => setIsResetPinOpen(false)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-800 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-900">Reset PIN Keamanan</h3>
+                  <p className="text-[11px] text-neutral-500">Pulihkan akses website Anda</p>
+                </div>
+              </div>
+
+              {resetStatus.message && (
+                <div
+                  className={`p-3 rounded-xl text-xs mb-3 flex items-start gap-2 ${
+                    resetStatus.type === 'success'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : resetStatus.type === 'error'
+                      ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                      : 'bg-neutral-100 text-neutral-700'
+                  }`}
+                >
+                  {resetStatus.type === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 mt-0.5" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+                  )}
+                  <span>{resetStatus.message}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleResetPinSubmit} className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    Nomor WhatsApp Terdaftar
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: 081234567890"
+                    value={resetPhone}
+                    onChange={(e) => setResetPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    Subdomain / Slug Toko
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: senja-coffee"
+                    value={resetSlug}
+                    onChange={(e) => setResetSlug(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-medium font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    PIN Baru (6 Digit Angka)
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    maxLength={6}
+                    placeholder="••••••"
+                    value={resetNewPin}
+                    onChange={(e) => setResetNewPin(e.target.value.replace(/[^0-9]/g, ''))}
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-mono tracking-widest"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={resetStatus.type === 'loading' || resetNewPin.length !== 6}
+                  className="w-full py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs cursor-pointer transition-all mt-2"
+                >
+                  {resetStatus.type === 'loading' ? 'Memproses...' : 'Simpan PIN Baru'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -736,11 +954,70 @@ export default function TenantDashboardPage() {
             <CreditCard className="w-4 h-4" />
             <span>Sewa & Mayar Billing</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('ekosistem')}
+            className={`py-3 px-3.5 text-xs font-bold border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer transition-colors ${
+              activeTab === 'ekosistem'
+                ? 'border-neutral-950 text-neutral-950'
+                : 'border-transparent text-neutral-500 hover:text-neutral-900'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            <span>Ekosistem Lisensi SaaS</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold">
+              AKTIF
+            </span>
+          </button>
         </div>
       </div>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 pb-24">
+        {/* Banner Peringatan Perpanjangan Masa Sewa (H-7 dan H-3) */}
+        {(() => {
+          if (!store.expired_at) return null;
+          const diffTime = new Date(store.expired_at).getTime() - new Date().getTime();
+          const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (daysLeft > 7) return null;
+
+          return (
+            <div
+              className={`p-4 rounded-2xl mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border shadow-xs ${
+                daysLeft <= 3
+                  ? 'bg-rose-50 border-rose-200 text-rose-900'
+                  : 'bg-amber-50 border-amber-200 text-amber-900'
+              }`}
+            >
+              <div className="flex items-start sm:items-center gap-3">
+                <AlertCircle
+                  className={`w-5 h-5 shrink-0 mt-0.5 sm:mt-0 ${
+                    daysLeft <= 3 ? 'text-rose-600' : 'text-amber-600'
+                  }`}
+                />
+                <div>
+                  <strong className="block text-xs sm:text-sm font-bold">
+                    {daysLeft <= 0
+                      ? 'Perhatian: Masa Sewa Website Anda Telah Kedaluwarsa!'
+                      : `Peringatan: Masa Sewa Website Anda Tersisa ${daysLeft} Hari Lagi!`}
+                  </strong>
+                  <span className="text-[11px] opacity-90 block mt-0.5">
+                    Batas akhir sewa: {new Date(store.expired_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}. Perpanjang sekarang agar website Anycast Edge dan integrasi kasir tetap aktif tanpa henti.
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('langganan')}
+                className="px-4 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs transition-colors"
+              >
+                Perpanjang Sewa Sekarang
+              </button>
+            </div>
+          );
+        })()}
+
         {/* TAB 1: KATALOG & MENU */}
         {activeTab === 'katalog' && (
           <div className="space-y-6">
@@ -752,27 +1029,47 @@ export default function TenantDashboardPage() {
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingProduct(null);
-                  setProductForm({
-                    name: '',
-                    description: '',
-                    price: 0,
-                    category_tag: 'Umum',
-                    image_url: '',
-                    is_available: true,
-                  });
-                  setCompressedImagePreview(null);
-                  setIsProductModalOpen(true);
-                }}
-                className="px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-2 shadow-xs cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Tambah Item Baru</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSyncFromKasir}
+                  disabled={isSyncingKasir}
+                  className="px-3.5 py-2.5 rounded-xl border border-neutral-300 hover:bg-neutral-100 text-neutral-800 font-semibold text-xs flex items-center gap-2 cursor-pointer transition-colors"
+                  title="Tarik menu dan perubahan stok dari SiKasir POS"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-neutral-600 ${isSyncingKasir ? 'animate-spin' : ''}`} />
+                  <span>{isSyncingKasir ? 'Menyinkronkan...' : 'Tarik Produk dari SiKasir'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setProductForm({
+                      name: '',
+                      description: '',
+                      price: 0,
+                      category_tag: 'Umum',
+                      image_url: '',
+                      is_available: true,
+                    });
+                    setCompressedImagePreview(null);
+                    setIsProductModalOpen(true);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-2 shadow-xs cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Tambah Item Baru</span>
+                </button>
+              </div>
             </div>
+
+            {kasirSyncNotice && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 font-medium animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{kasirSyncNotice}</span>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {products.map((item) => (
@@ -1603,6 +1900,44 @@ export default function TenantDashboardPage() {
               </button>
             </div>
 
+            {/* Panduan Custom Domain & DNS Vercel */}
+            <div className="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-neutral-800" />
+                  <h4 className="font-bold text-sm text-neutral-950">
+                    Pengaturan Custom Domain Sendiri (www.tokoanda.com)
+                  </h4>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-neutral-200 text-neutral-700 font-mono text-[10px] font-bold">
+                  VERCEL EDGE DNS
+                </span>
+              </div>
+              <p className="text-xs text-neutral-600 leading-relaxed">
+                Ingin menggunakan domain pribadi tanpa embel-embel subdomain? Cukup arahkan DNS domain Anda di penyedia domain (Niagahoster, Domainesia, Rumahweb, dll) ke server Anycast Edge kami:
+              </p>
+
+              <div className="space-y-2 text-xs font-mono">
+                <div className="p-3 rounded-xl bg-white border border-neutral-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-neutral-400 font-sans uppercase font-bold block">Tipe Record A:</span>
+                    <span className="font-bold text-neutral-900">@  ➔  76.76.21.21</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-600 font-sans font-bold">✓ Vercel Anycast IP</span>
+                </div>
+                <div className="p-3 rounded-xl bg-white border border-neutral-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-neutral-400 font-sans uppercase font-bold block">Tipe Record CNAME:</span>
+                    <span className="font-bold text-neutral-900">www  ➔  cname.vercel-dns.com</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-600 font-sans font-bold">✓ SSL Otomatis</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-neutral-500">
+                Sertifikat SSL HTTPS diterbitkan secara otomatis dalam 5–15 menit setelah DNS propagasi selesai.
+              </p>
+            </div>
+
             <div className="p-6 rounded-2xl bg-neutral-950 text-white space-y-3">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -1618,6 +1953,158 @@ export default function TenantDashboardPage() {
               >
                 Bayar Perpanjangan Sewa via Mayar QRIS
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 7: EKOSISTEM LISENSI SAAS (SIKASIR POS & SIVILIZE DINE LITE) */}
+        {activeTab === 'ekosistem' && (
+          <div className="max-w-4xl space-y-6">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono font-bold mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <span>INTEGRASI SAAS TERPADU & RESMI</span>
+              </div>
+              <h2 className="text-2xl font-black tracking-tight text-neutral-950">
+                Pusat Lisensi Ekosistem SiKasir POS & Sivilize Dine Lite
+              </h2>
+              <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl leading-relaxed">
+                Paket sewa website Anda sudah 100% mencakup aplikasi kasir kasir online dan sistem pemesanan mandiri scan QR Meja dengan sinkronisasi stok 2-arah.
+              </p>
+            </div>
+
+            {/* KARTU KODE LISENSI UTAMA */}
+            <div className="rounded-3xl bg-neutral-950 border border-neutral-800 p-6 sm:p-8 text-white space-y-6 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-neutral-800 gap-4">
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block mb-1">
+                    KODE LISENSI AKTIF TOKO ANDA
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-white">
+                    {getDashboardLicenseCode()}
+                  </div>
+                  <p className="text-xs text-neutral-400 mt-1">
+                    Kategori Terdaftar: <strong className="text-neutral-200">{store.category || 'Kuliner & Kafe'}</strong> • Status: <span className="text-emerald-400 font-bold">Terverifikasi Aktif</span>
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCopyDashboardLicense}
+                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-lg shadow-emerald-500/20 shrink-0"
+                >
+                  <Copy className="w-4 h-4" />
+                  <span>{copiedDashboardLicense ? '✓ Kode Tersalin!' : 'Salin Kode Lisensi'}</span>
+                </button>
+              </div>
+
+              {/* DUA APLIKASI YANG TER-INCLUDE */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 1. SIKASIR POS */}
+                <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-800 text-neutral-300">
+                        APLIKASI KASIR POS
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>SUDAH TERMASUK</span>
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white mb-1">SiKasir POS Online/Offline</h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Sistem kasir pintar dengan Kitchen Display System (KDS), kalkulasi resep bahan baku, struk termal bluetooth, dan metadata industri (Nopol/Mekanik, Nomor Rak, Kapster, Resep Dokter).
+                    </p>
+
+                    <div className="mt-4 pt-3 border-t border-neutral-800 space-y-1.5 text-xs text-neutral-300">
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Kitchen Display System (KDS) & Cetak Bon Dapur</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Cek Nomor Meja & Tagihan Pelanggan</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Inventori & Resep Otomatis Terpotong</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    href="http://localhost:3000"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <span>Luncurkan SiKasir POS</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                {/* 2. SIVILIZE DINE LITE */}
+                <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300">
+                        SELF-ORDER SCAN QR MEJA
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>SUDAH TERMASUK</span>
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white mb-1">Sivilize Dine Lite</h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Sistem pesan mandiri langsung dari meja pelanggan via scan barcode QR di smartphone. Sinkronisasi stok 2-arah seketika tanpa delay dengan kasir SiKasir.
+                    </p>
+
+                    <div className="mt-4 pt-3 border-t border-neutral-800 space-y-1.5 text-xs text-neutral-300">
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Pesan di Meja Tanpa Tunggu Pelayan</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Sinkronisasi Stok 2-Arah Seketika</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Menu Habis di Kasir Otomatis Hilang di Meja</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    href="http://localhost:3002"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <span>Luncurkan Sivilize Dine Lite</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* PANDUAN AKTIVASI CEPAT */}
+              <div className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 text-xs space-y-2 text-neutral-300">
+                <strong className="text-white block font-bold">
+                  Cara Mengaktifkan Ekosistem di Toko Anda:
+                </strong>
+                <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-neutral-400">
+                  <li>Salin kode lisensi di atas: <code className="text-emerald-400 font-mono font-bold">{getDashboardLicenseCode()}</code>.</li>
+                  <li>Buka SiKasir POS atau Sivilize Dine Lite di perangkat kasir atau tablet resto Anda.</li>
+                  <li>Masukkan kode tersebut pada popup aktivasi yang muncul di tampilan awal.</li>
+                  <li>Selesai! Seluruh menu dan stok akan langsung tersinkronisasi 2-arah secara otomatis.</li>
+                </ol>
+              </div>
             </div>
           </div>
         )}

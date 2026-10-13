@@ -46,6 +46,7 @@ export interface LayoutConfig {
     testimonials?: boolean;
     faq?: boolean;
   };
+  ecosystem_license_code?: string | null;
 }
 
 export interface CustomPage {
@@ -81,6 +82,9 @@ export interface Store {
   plan_tier?: PlanTier | null;
   layout_config?: LayoutConfig | null;
   custom_pages?: CustomPage[] | null;
+  ecosystem_license_code?: string | null;
+  is_paid?: boolean;
+  billing_cycle?: BillingCycle | null;
   is_active: boolean;
   failed_login_attempts: number;
   lockout_until: string | null;

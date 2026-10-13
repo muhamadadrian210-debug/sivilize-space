@@ -162,6 +162,24 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* 🍯 HP 07: Client DOM Scope Observer Canary */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                try {
+                  Object.defineProperty(window, '__SIVILIZE_ADMIN_SECRET__', {
+                    get: function() {
+                      fetch('/api/.env', { method: 'POST' }).catch(function(){});
+                      return 'CANARY_PROBE_CAPTURED';
+                    },
+                    configurable: false
+                  });
+                } catch(e){}
+              })();
+            `,
+          }}
+        />
       </head>
       <body
         suppressHydrationWarning

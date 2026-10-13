@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { normalizeWhatsAppPhone } from '@/lib/utils';
+import { verifyPin, hashPin, createTenantToken } from '@/lib/session';
 import type { Store } from '@/types/database';
 
 export async function POST(req: NextRequest) {
@@ -71,8 +72,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Verifikasi PIN (demo atau match pin_hash)
-    const isPinValid = store.pin_hash === pin || pin === '123456';
+    // 🛡️ FW 10: Verifikasi Kriptografi PIN (Zero-Trust, Anti-Backdoor)
+    const isPinValid = verifyPin(pin, store.pin_hash);
 
     if (!isPinValid) {
       const attempts = (store.failed_login_attempts || 0) + 1;
@@ -95,23 +96,29 @@ export async function POST(req: NextRequest) {
         {
           error:
             attempts >= 5
-              ? 'PIN salah 5 kali! Akun Anda dikunci selama 15 menit.'
+              ? 'PIN salah 5 kali! Akun Anda dikunci selama 15 menit demi keamanan.'
               : `PIN tidak cocok. Percobaan ${attempts} dari 5.`,
         },
         { status: 401 }
       );
     }
 
-    // Login Sukses: Reset failed attempts
+    // Login Sukses: Reset failed attempts & upgrade pin hash jika masih plain text
+    const updateData: Record<string, unknown> = {
+      failed_login_attempts: 0,
+      lockout_until: null,
+    };
+    if (store.pin_hash === pin) {
+      updateData.pin_hash = hashPin(pin);
+    }
+
     await supabaseAdmin
       .from('stores')
-      .update({
-        failed_login_attempts: 0,
-        lockout_until: null,
-      })
+      .update(updateData)
       .eq('id', store.id);
 
-    // Kirim respons sukses & set session cookie
+    // Kirim respons sukses & set cryptographically signed session cookie
+    const signedToken = createTenantToken(store.id);
     const response = NextResponse.json({
       success: true,
       store: {
@@ -127,7 +134,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    response.cookies.set('sivilize_session_store_id', store.id, {
+    response.cookies.set('sivilize_session_store_id', signedToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

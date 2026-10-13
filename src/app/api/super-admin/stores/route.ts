@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { authenticateSuperAdminRequest } from '@/lib/session';
 import type { Store } from '@/types/database';
 
 export async function GET(req: NextRequest) {
   try {
+    // 🛡️ FW 10: Autentikasi Super Admin Wajib
+    const auth = authenticateSuperAdminRequest(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 401 });
+    }
+
     // 1. Ambil seluruh data website
     const { data: stores, error: storesError } = await supabaseAdmin
       .from('stores')
@@ -50,6 +57,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    // 🛡️ FW 10: Autentikasi Super Admin Wajib
+    const auth = authenticateSuperAdminRequest(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 401 });
+    }
+
     const body = await req.json();
     const { action, store_id, days_to_add } = body;
 

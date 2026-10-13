@@ -65,6 +65,12 @@ export const updateStoreSchema = z.object({
   google_maps_url: z.string().max(500).optional().nullable(),
   banner_url: z.string().url().optional().nullable().or(z.literal('')),
   logo_url: z.string().url().optional().nullable().or(z.literal('')),
+  custom_domain: z
+    .string()
+    .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i, 'Format domain tidak valid (contoh: tokoanda.com)')
+    .optional()
+    .nullable()
+    .or(z.literal('')),
 });
 
 // Zod Schema untuk Tambah/Edit Produk

@@ -10,6 +10,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+if (!supabaseServiceRoleKey && process.env.NODE_ENV === 'production') {
+  console.error(
+    '[SivilizeSpace CRITICAL WARNING] SUPABASE_SERVICE_ROLE_KEY is NOT set in production! Server operations will run with anon privileges, which will fail if Row-Level Security (RLS) is enabled.'
+  );
+}
+
 // Client-side & Public Access Supabase Client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {

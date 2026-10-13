@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { authenticateTenantRequest } from '@/lib/session';
 import type { LayoutConfig } from '@/types/database';
 
 export async function POST(req: NextRequest) {
@@ -12,6 +13,12 @@ export async function POST(req: NextRequest) {
         { error: 'ID Website dan konfigurasi layout wajib diisi.' },
         { status: 400 }
       );
+    }
+
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, store_id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
     }
 
     // Update layout_config in stores table

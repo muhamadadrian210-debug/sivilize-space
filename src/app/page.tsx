@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { SaaSOperatingSystemShowcase } from '@/components/landing/SaaSOperatingSystemShowcase';
+import { IndustryBundleSection, type IndustryBundleData } from '@/components/landing/IndustryBundleSection';
 import { LiveStorefrontShowcase } from '@/components/landing/LiveStorefrontShowcase';
 import { LiveSlugChecker } from '@/components/landing/LiveSlugChecker';
 import { OnboardingModal } from '@/components/landing/OnboardingModal';
@@ -27,13 +28,19 @@ export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>('pro');
+  const [selectedCategory, setSelectedCategory] = useState<string>('Kuliner & Minuman');
   const [billingCycle, setBillingCycle] = useState<'bulanan' | 'tahunan'>('tahunan');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const handleOpenClaim = (slug?: string, plan?: PlanTier) => {
+  const handleOpenClaim = (slug?: string, plan?: PlanTier, category?: string) => {
     if (slug) setSelectedSlug(slug);
     if (plan) setSelectedPlan(plan);
+    if (category) setSelectedCategory(category);
     setModalOpen(true);
+  };
+
+  const handleSelectIndustryBundle = (bundle: IndustryBundleData) => {
+    handleOpenClaim(bundle.slugSuggestion, bundle.recommendedPlan, bundle.defaultCategoryName);
   };
 
   const faqs = [
@@ -150,6 +157,9 @@ export default function LandingPage() {
 
           <SaaSOperatingSystemShowcase />
         </section>
+
+        {/* 3.5. Industry Specific Solution Bundles (Inc. SiKasir POS & Sivilize Dine Lite) */}
+        <IndustryBundleSection onSelectBundle={handleSelectIndustryBundle} />
 
         {/* 4. Live Storefront Showcase: Preview Website Template & Custom Rakitan */}
         <LiveStorefrontShowcase onOpenOnboarding={(slug, plan) => handleOpenClaim(slug, plan)} />
@@ -678,6 +688,7 @@ export default function LandingPage() {
         onClose={() => setModalOpen(false)}
         initialSlug={selectedSlug}
         initialPlan={selectedPlan}
+        initialCategory={selectedCategory}
       />
     </div>
   );

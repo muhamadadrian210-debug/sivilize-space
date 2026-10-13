@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { normalizeWhatsAppPhone, isValidSlug } from '@/lib/utils';
 import { checkProhibitedContent } from '@/lib/security';
+import { hashPin, createTenantToken } from '@/lib/session';
 import type { StoreSectionKey } from '@/types/database';
 import { z } from 'zod';
 
@@ -123,10 +124,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Expired 7 hari trial awal atau 365 hari jika bayar (ISO string)
-    const isPaid = body.is_paid === true;
-    const durationDays = isPaid ? 365 + 3 : 7;
+    // 5. Perhitungan Masa Aktif Sewa & Auto-Provisioning Lisensi Ekosistem
+    const isPaid = Boolean(body.is_paid);
+    const durationDays = isPaid
+      ? (billing_cycle === 'bulanan' ? 30 : 365)
+      : 7;
     const expirationDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+
+    const getEcosystemLicense = (cat: string, cycle: string) => {
+      const c = cat.toLowerCase();
+      const suffix = cycle === 'bulanan' ? '30D' : '365D';
+      if (c.includes('kuliner') || c.includes('fnb') || c.includes('kafe') || c.includes('kopi') || c.includes('resto') || c.includes('makan') || c.includes('minum')) {
+        return `SIV-FNB-${suffix}`;
+      }
+      if (c.includes('retail') || c.includes('kelontong') || c.includes('distro') || c.includes('fashion') || c.includes('minimarket') || c.includes('toko')) {
+        return `SIV-RETAIL-${suffix}`;
+      }
+      if (c.includes('bengkel') || c.includes('servis') || c.includes('otomotif') || c.includes('motor') || c.includes('mobil')) {
+        return `SIV-BENGKEL-${suffix}`;
+      }
+      if (c.includes('laundry') || c.includes('cuci')) {
+        return `SIV-LAUNDRY-${suffix}`;
+      }
+      if (c.includes('barber') || c.includes('salon') || c.includes('pangkas') || c.includes('rambut')) {
+        return `SIV-BARBER-${suffix}`;
+      }
+      if (c.includes('apotek') || c.includes('obat') || c.includes('klinik') || c.includes('farmasi')) {
+        return `SIV-APOTEK-${suffix}`;
+      }
+      return `SIV-PRO-${suffix}`;
+    };
+
+    const ecosystemLicenseCode = body.ecosystem_license_code || getEcosystemLicense(category, billing_cycle);
 
     const initialLayoutConfig = {
       grid_columns_desktop: (body.grid_columns_desktop as 2 | 3 | 4 | 'list') || 3,
@@ -146,6 +175,7 @@ export async function POST(req: NextRequest) {
         about: true,
         contact: true,
       },
+      ecosystem_license_code: ecosystemLicenseCode,
     };
 
     // 6. Insert website baru
@@ -159,7 +189,7 @@ export async function POST(req: NextRequest) {
           template_type,
           theme_id,
           owner_phone: cleanPhone,
-          pin_hash: pin, // Hash atau PIN string
+          pin_hash: hashPin(pin),
           layout_config: initialLayoutConfig,
           is_active: true,
           expired_at: expirationDate,
@@ -199,14 +229,22 @@ export async function POST(req: NextRequest) {
       },
     ]);
 
-    // 8. Set session cookie & return auto-login data
+    // 8. Set signed session cookie & return auto-login data
+    const storeWithLicense = {
+      ...newStore,
+      ecosystem_license_code: ecosystemLicenseCode,
+      is_paid: isPaid,
+      billing_cycle,
+    };
+
     const response = NextResponse.json({
       success: true,
-      store: newStore,
+      store: storeWithLicense,
       redirectUrl: `/dashboard?onboarding=success&slug=${newStore.slug}`,
     });
 
-    response.cookies.set('sivilize_session_store_id', newStore.id, {
+    const signedToken = createTenantToken(newStore.id);
+    response.cookies.set('sivilize_session_store_id', signedToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

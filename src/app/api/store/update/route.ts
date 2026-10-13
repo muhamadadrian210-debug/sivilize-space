@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { updateStoreSchema, checkProhibitedContent } from '@/lib/security';
+import { authenticateTenantRequest } from '@/lib/session';
+import { registerDomainToVercel } from '@/lib/vercel-domain';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,6 +18,12 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
+
+    // 🛡️ FW 12: Autentikasi Tenant & Proteksi IDOR/BOLA
+    const auth = authenticateTenantRequest(req, data.id);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error || 'Akses ditolak.' }, { status: 403 });
+    }
 
     // 2. 🛡️ FW 19: Scanner Teks Anti-Judol & Anti-Pinjol
     const textToCheck = `${data.store_name} ${data.description || ''}`;
@@ -41,7 +49,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Update data toko di Supabase
+    // 3. Otomatisasi Registrasi Vercel Edge SSL jika custom domain diisi
+    if (data.custom_domain) {
+      await registerDomainToVercel(data.custom_domain);
+    }
+
+    // 4. Update data toko di Supabase
     const { data: updated, error } = await supabaseAdmin
       .from('stores')
       .update({
@@ -55,6 +68,7 @@ export async function POST(req: NextRequest) {
         google_maps_url: data.google_maps_url,
         banner_url: data.banner_url || null,
         logo_url: data.logo_url || null,
+        custom_domain: data.custom_domain || null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', data.id)

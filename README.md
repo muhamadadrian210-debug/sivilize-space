@@ -83,9 +83,9 @@ Sivilize Space menerapkan arsitektur keamanan berlapis kelas *Enterprise Zero-Tr
 
 ---
 
-### 5. 🔑 Autentikasi Fleksibel
-- **WhatsApp + PIN 6-Digit (Utama):** Standar terbaik bagi pelaku UMKM di Indonesia, tanpa perlu mengingat password panjang dan langsung terhubung dengan nomor notifikasi WhatsApp.
-- **Masuk dengan Akun Google / Gmail (Alternatif):** Tombol 1-klik bagi pengguna korporat/modern untuk menghubungkan akun Google dengan verifikasi toko.
+### 5. 🔑 Autentikasi Praktis WhatsApp + PIN 6-Digit
+- **Standar No. 1 UMKM Indonesia:** Pemilik usaha cukup memasukkan Nomor WhatsApp dan PIN 6-digit. Tanpa password rumit, tanpa risiko lupa kredensial pihak ketiga, dan nomor WhatsApp langsung terhubung dengan notifikasi tagihan serta CS support resmi.
+- **Proteksi Anti-Brute Force (FW 11):** Percobaan salah PIN 5 kali berturut-turut otomatis mengunci akun selama 15 menit (*HTTP 429 Too Many Requests*).
 
 ---
 

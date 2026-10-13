@@ -45,6 +45,8 @@ import {
   Copy,
 } from 'lucide-react';
 import { OfficialInvoiceModal, type OfficialInvoiceData } from '@/components/billing/OfficialInvoiceModal';
+import { AIGuidedTour } from '@/components/dashboard/AIGuidedTour';
+import { AIChatbotAssistant } from '@/components/dashboard/AIChatbotAssistant';
 
 export default function TenantDashboardPage() {
   const [store, setStore] = useState<Store | null>(null);
@@ -54,6 +56,9 @@ export default function TenantDashboardPage() {
     'katalog' | 'tata-letak' | 'halaman' | 'profil' | 'langganan' | 'ekosistem'
   >('katalog');
   const [isLoading, setIsLoading] = useState(true);
+
+  // AI Tour & Copilot States
+  const [isTourOpen, setIsTourOpen] = useState(false);
 
   // Ekosistem SaaS & Kasir Sync States
   const [isSyncingKasir, setIsSyncingKasir] = useState(false);
@@ -857,6 +862,16 @@ export default function TenantDashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setIsTourOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 border border-emerald-500/30 text-emerald-800 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Mulai Panduan Tur Interaktif AI"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="hidden sm:inline">Panduan AI</span>
+            </button>
+
             <Link
               href={`/toko/${store.slug}`}
               target="_blank"
@@ -2367,6 +2382,22 @@ export default function TenantDashboardPage() {
           isOpen={isInvoiceModalOpen}
           onClose={() => setIsInvoiceModalOpen(false)}
           invoice={currentInvoiceData}
+        />
+      )}
+
+      {/* AI Guided Tour Modal */}
+      <AIGuidedTour
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onSwitchTab={(tab) => setActiveTab(tab)}
+      />
+
+      {/* AI Chatbot Assistant Widget */}
+      {store && (
+        <AIChatbotAssistant
+          store={store}
+          onNavigateTab={(tab) => setActiveTab(tab)}
+          onStartTour={() => setIsTourOpen(true)}
         />
       )}
     </div>

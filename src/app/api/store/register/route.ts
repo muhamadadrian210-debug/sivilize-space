@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { normalizeWhatsAppPhone, isValidSlug } from '@/lib/utils';
 import { checkProhibitedContent } from '@/lib/security';
 import { hashPin, createTenantToken } from '@/lib/session';
+import { storeRegisterLimiter } from '@/lib/rate-limiter';
 import type { StoreSectionKey } from '@/types/database';
 import { z } from 'zod';
 
@@ -26,7 +27,17 @@ const registerStoreSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  // 🛡️ RATE LIMITER SHIELD (Maksimal 5 pendaftaran per 10 menit per IP)
+  const rateLimitResult = storeRegisterLimiter.check(req);
+  if (!rateLimitResult.success) {
+    return storeRegisterLimiter.toResponse(
+      rateLimitResult,
+      'Terlalu banyak percobaan pendaftaran toko dari perangkat ini. Mohon tunggu 10 menit sebelum mencoba lagi.'
+    );
+  }
+
   try {
+
     const body = await req.json();
 
     // 🍯 HONEYPOT TRAP (HP 04)

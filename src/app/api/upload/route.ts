@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { authenticateTenantRequest } from '@/lib/session';
+import { uploadLimiter } from '@/lib/rate-limiter';
 
 /**
  * -----------------------------------------------------------------------------
@@ -58,7 +59,17 @@ function isValidImageMagicBytes(buffer: Uint8Array): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  // 🛡️ RATE LIMITER SHIELD (Maksimal 15 upload per menit per IP)
+  const rateLimitResult = uploadLimiter.check(req);
+  if (!rateLimitResult.success) {
+    return uploadLimiter.toResponse(
+      rateLimitResult,
+      'Terlalu banyak permintaan upload dalam 1 menit. Mohon tunggu sebentar.'
+    );
+  }
+
   try {
+
     // 🛡️ FW 10 & 12: Autentikasi Tenant
     const auth = authenticateTenantRequest(req);
     if (!auth.authorized || !auth.storeId) {

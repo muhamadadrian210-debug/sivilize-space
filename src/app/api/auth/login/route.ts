@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { normalizeWhatsAppPhone } from '@/lib/utils';
 import { verifyPin, hashPin, createTenantToken } from '@/lib/session';
+import { authLoginLimiter } from '@/lib/rate-limiter';
 import type { Store } from '@/types/database';
 
 export async function POST(req: NextRequest) {
+  // 🛡️ RATE LIMITER SHIELD (Maksimal 10 percobaan per menit per IP)
+  const rateLimitResult = authLoginLimiter.check(req);
+  if (!rateLimitResult.success) {
+    return authLoginLimiter.toResponse(
+      rateLimitResult,
+      'Terlalu banyak percobaan login dari perangkat ini. Silakan tunggu 1 menit sebelum mencoba kembali.'
+    );
+  }
+
   try {
     const body = await req.json();
     const { phone, pin, tax_id, user_website_url } = body;

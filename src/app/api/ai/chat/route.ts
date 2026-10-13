@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { aiChatLimiter } from '@/lib/rate-limiter';
 
 const SYSTEM_PROMPT = `
 Kamu adalah "Sivilize AI Copilot", asisten AI resmi dari platform Website-as-a-Service (WaaS) Sivilize Space yang dikembangkan oleh PT Sivilize Corp Indonesia.
@@ -17,6 +18,15 @@ Pedoman Menjawab:
 `;
 
 export async function POST(req: NextRequest) {
+  // 🛡️ RATE LIMITER SHIELD (Maksimal 12 request per menit per IP)
+  const rateLimitResult = aiChatLimiter.check(req);
+  if (!rateLimitResult.success) {
+    return aiChatLimiter.toResponse(
+      rateLimitResult,
+      'Terlalu banyak pertanyaan dalam waktu singkat. Demi kenyamanan bersama, mohon tunggu sebentar (maksimal 12 chat per menit).'
+    );
+  }
+
   try {
     const body = await req.json().catch(() => ({}));
     const { message, store_name, category, plan_tier } = body;
@@ -28,11 +38,9 @@ export async function POST(req: NextRequest) {
 
     const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    // Jika API Key Gemini tersedia, panggil Google AI Studio (Gemini 1.5 Flash - Gratis)
+    // Jika API Key Gemini tersedia, panggil Google AI Studio (Gemini 2.5 Flash)
     if (geminiApiKey) {
       try {
-        const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
-
         const promptText = `
 Nama Toko: ${store_name || 'Toko Mitra'}
 Kategori Usaha: ${category || 'Bisnis UMKM'}
@@ -42,42 +50,61 @@ Pertanyaan Merchant:
 "${userMessage}"
 `;
 
-        const geminiRes = await fetch(geminiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [
-                  { text: SYSTEM_PROMPT },
-                  { text: promptText },
-                ],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 600,
-            },
-          }),
-        });
+        const modelsToTry = ['gemini-2.5-flash', 'gemini-flash-latest'];
+        let candidateText: string | null = null;
+        let usedModel = 'gemini-2.5-flash';
 
-        const geminiData = await geminiRes.json();
-        const candidateText =
-          geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+        for (const model of modelsToTry) {
+          try {
+            const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+            const geminiRes = await fetch(geminiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [
+                      { text: SYSTEM_PROMPT },
+                      { text: promptText },
+                    ],
+                  },
+                ],
+                generationConfig: {
+                  temperature: 0.7,
+                  maxOutputTokens: 600,
+                },
+              }),
+            });
+
+            if (geminiRes.ok) {
+              const geminiData = await geminiRes.json();
+              const text = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (text) {
+                candidateText = text;
+                usedModel = model;
+                break;
+              }
+            }
+          } catch {
+            // Coba model berikutnya
+          }
+        }
 
         if (candidateText) {
-          return NextResponse.json({
+          const res = NextResponse.json({
             reply: candidateText.trim(),
-            source: 'gemini-1.5-flash',
+            source: usedModel,
           });
+          res.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
+          return res;
         }
       } catch (geminiErr) {
         console.warn('Gemini API call error, falling back to local reasoning:', geminiErr);
       }
     }
 
-    // Fallback cerdas lokal jika API Key Gemini belum diset di .env
+    // Fallback cerdas lokal jika API Key Gemini belum diset atau offline
     const lower = userMessage.toLowerCase();
     let reply = `Pertanyaan bagus mengenai "${userMessage}". Seluruh fitur website, katalog produk, dan ekosistem kasir Anda telah terintegrasi di platform Sivilize Space. Anda bisa melihat menu panduan interaktif kami atau membuka tab pengaturan terkait untuk mencobanya secara langsung.`;
 
@@ -93,10 +120,12 @@ Pertanyaan Merchant:
       reply = `Untuk bisnis produk seperti F&B, Retail, Laundry, dan Bengkel, pelanggan bisa langsung checkout mandiri via QRIS di web. Namun untuk bisnis jasa non-transaksional (seperti kontraktor bangunan, jasa pembuatan website, konsultan hukum), tombol di web otomatis diarahkan ke konsultasi WhatsApp resmi & form estimasi proyek (Lead Generation) karena biaya proyek butuh diskusi spesifikasi terlebih dahulu.`;
     }
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       reply,
       source: 'local-knowledge-engine',
     });
+    res.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
+    return res;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.';
     return NextResponse.json({ error: message }, { status: 500 });

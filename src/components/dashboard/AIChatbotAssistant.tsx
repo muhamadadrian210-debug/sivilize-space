@@ -124,6 +124,18 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
       });
 
       const data = await res.json();
+
+      if (res.status === 429) {
+        const rateLimitReply: ChatMessage = {
+          id: String(Date.now() + 1),
+          sender: 'ai',
+          text: `⏳ ${data.error || 'Terlalu banyak pertanyaan dalam waktu singkat. Mohon tunggu beberapa detik sebelum mengirim lagi ya.'}`,
+          time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, rateLimitReply]);
+        return;
+      }
+
       const qLower = query.toLowerCase();
       const matched = KNOWLEDGE_RESPONSES.find((item) =>
         item.keywords.some((kw) => qLower.includes(kw))

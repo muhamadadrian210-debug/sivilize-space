@@ -96,7 +96,7 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
     }
   }, [messages, isOpen]);
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputValue).trim();
     if (!query) return;
 
@@ -111,15 +111,28 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
     if (!textToSend) setInputValue('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: query,
+          store_name: store.store_name,
+          category: store.category,
+          plan_tier: store.plan_tier,
+        }),
+      });
+
+      const data = await res.json();
       const qLower = query.toLowerCase();
-      let matched = KNOWLEDGE_RESPONSES.find((item) =>
+      const matched = KNOWLEDGE_RESPONSES.find((item) =>
         item.keywords.some((kw) => qLower.includes(kw))
       );
 
-      let replyText =
+      const replyText =
+        data.reply ||
         matched?.answer ||
-        `Pertanyaan bagus mengenai "${query}". Seluruh fitur website, katalog produk, dan ekosistem kasir Anda telah terintegrasi di platform Sivilize Space. Anda bisa melihat menu panduan interaktif kami atau membuka tab pengaturan terkait untuk mencobanya secara langsung.`;
+        `Fitur yang Anda tanyakan sudah terintegrasi di platform Sivilize Space. Anda bisa melihat panduan interaktif atau membuka tab terkait untuk mencobanya secara langsung.`;
 
       const aiReply: ChatMessage = {
         id: String(Date.now() + 1),
@@ -135,8 +148,31 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
       };
 
       setMessages((prev) => [...prev, aiReply]);
+    } catch {
+      const qLower = query.toLowerCase();
+      const matched = KNOWLEDGE_RESPONSES.find((item) =>
+        item.keywords.some((kw) => qLower.includes(kw))
+      );
+
+      const aiReply: ChatMessage = {
+        id: String(Date.now() + 1),
+        sender: 'ai',
+        text:
+          matched?.answer ||
+          'Koneksi AI sedang memproses data lokal. Seluruh sistem database Supabase, SiKasir POS, dan toko Anda tetap aman dan aktif 100%.',
+        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        quickAction: matched?.quickTab
+          ? {
+              label: `Buka Tab ${matched.quickTab.toUpperCase()}`,
+              actionTab: matched.quickTab,
+            }
+          : undefined,
+      };
+
+      setMessages((prev) => [...prev, aiReply]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   return (

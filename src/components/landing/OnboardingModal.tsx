@@ -17,10 +17,12 @@ import {
   ShieldCheck,
   Mail,
   Building2,
+  AlertCircle,
 } from 'lucide-react';
 import type { TemplateType, ThemeId, PlanTier } from '@/types/database';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
 import { formatRupiah } from '@/lib/utils';
+import { detectIsFoodCategory, generateSmartLicenseKey } from '@/lib/ecosystem-license';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -71,6 +73,37 @@ export function OnboardingModal({
   const [copiedInvoice, setCopiedInvoice] = useState(false);
   const [ecosystemLicenseCode, setEcosystemLicenseCode] = useState('SIV-FNB-365D');
   const [copiedLicense, setCopiedLicense] = useState(false);
+
+  // Live Subdomain Availability Checker
+  const [slugStatus, setSlugStatus] = useState<{
+    checking: boolean;
+    available: boolean | null;
+    reason?: string;
+  }>({ checking: false, available: null });
+
+  useEffect(() => {
+    if (!slug || slug.trim().length < 3) {
+      setSlugStatus({ checking: false, available: null });
+      return;
+    }
+
+    setSlugStatus((prev) => ({ ...prev, checking: true }));
+    const handler = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/store/check-slug?slug=${encodeURIComponent(slug.trim())}`);
+        const data = await res.json();
+        setSlugStatus({
+          checking: false,
+          available: !!data.available,
+          reason: data.reason,
+        });
+      } catch {
+        setSlugStatus({ checking: false, available: null });
+      }
+    }, 350);
+
+    return () => clearTimeout(handler);
+  }, [slug]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -143,17 +176,7 @@ export function OnboardingModal({
       const resolvedLicense =
         data.store?.ecosystem_license_code ||
         data.store?.layout_config?.ecosystem_license_code ||
-        (category.toLowerCase().includes('kuliner') || category.toLowerCase().includes('fnb') || category.toLowerCase().includes('kafe') || category.toLowerCase().includes('resto')
-          ? 'SIV-FNB-365D'
-          : category.toLowerCase().includes('bengkel') || category.toLowerCase().includes('servis')
-          ? 'SIV-BENGKEL-365D'
-          : category.toLowerCase().includes('laundry') || category.toLowerCase().includes('cuci')
-          ? 'SIV-LAUNDRY-365D'
-          : category.toLowerCase().includes('barber') || category.toLowerCase().includes('salon')
-          ? 'SIV-BARBER-365D'
-          : category.toLowerCase().includes('apotek') || category.toLowerCase().includes('klinik')
-          ? 'SIV-APOTEK-365D'
-          : 'SIV-RETAIL-365D');
+        generateSmartLicenseKey(category, 'tahunan');
 
       setEcosystemLicenseCode(resolvedLicense);
 
@@ -191,10 +214,11 @@ export function OnboardingModal({
   };
 
   const handleCopySummary = () => {
+    const isFood = detectIsFoodCategory(category);
     const text = `NOTA TRANSAKSI PEMBAYARAN RESMI PT SIVILIZE CORP INDONESIA
 No. Invoice: ${invoiceNo || 'INV-SC-2026-889102'}
 Website Bisnis: ${storeName} (https://${createdSlug || slug}.sivilizecorp.my.id)
-Kode Lisensi Ekosistem: ${ecosystemLicenseCode} (Aktif untuk SiKasir POS & Dine Lite)
+Kode Lisensi Ekosistem: ${ecosystemLicenseCode} (${isFood ? 'Membuka SiKasir POS & Sivilize Dine Lite QR' : 'Membuka SiKasir POS Only'})
 Tanggal: ${invoiceDate || new Date().toLocaleDateString('id-ID')}
 Paket Sewa: ${initialPrice ? 'Paket Website Rakitan Kustom' : planTier === 'mikro' ? 'Paket Website Mikro (1 Halaman)' : planTier === 'bisnis' ? 'Paket Website Bisnis (4-5 Halaman)' : 'Paket Website Pro (2-3 Halaman)'} (365 Hari)
 Total: ${formatRupiah(effectivePrice)} (LUNAS)
@@ -297,14 +321,35 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     .sivilizecorp.my.id
                   </span>
                 </div>
-                <p className="mt-1.5 text-[11px] text-slate-400">
-                  Subdomain ini langsung aktif di seluruh dunia dengan latensi 0.03s.
-                </p>
+
+                {/* Live Slug Checker Indicator */}
+                <div className="mt-1.5 min-h-[20px] flex items-center">
+                  {slugStatus.checking ? (
+                    <span className="text-slate-400 text-[11px] flex items-center gap-1.5 font-medium">
+                      <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                      <span>Memeriksa ketersediaan subdomain...</span>
+                    </span>
+                  ) : slugStatus.available === true ? (
+                    <span className="text-emerald-400 text-[11px] flex items-center gap-1.5 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>Subdomain https://{slug}.sivilizecorp.my.id tersedia!</span>
+                    </span>
+                  ) : slugStatus.available === false ? (
+                    <span className="text-rose-400 text-[11px] flex items-center gap-1.5 font-semibold">
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                      <span>{slugStatus.reason || 'Subdomain tidak tersedia atau sudah dipakai'}</span>
+                    </span>
+                  ) : (
+                    <p className="text-[11px] text-slate-400">
+                      Subdomain ini langsung aktif di seluruh dunia dengan latensi 0.03s.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <button
                 type="button"
-                disabled={!storeName || !slug}
+                disabled={!storeName || !slug || slugStatus.available === false || slugStatus.checking}
                 onClick={() => setStep(2)}
                 className="w-full mt-4 py-3 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
@@ -326,14 +371,46 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/[0.08] text-white font-medium outline-none text-xs sm:text-sm"
                 >
-                  <option value="Kuliner & Minuman">Kedai Kopi / Resto / FnB Kuliner</option>
-                  <option value="Jasa & Laundry">Laundry / Dry Clean / Jasa Kebersihan</option>
-                  <option value="Retail & Fashion">Distro / Fashion / Aksesoris</option>
-                  <option value="Kesehatan & Klinik">Dokter / Klinik / Apotek / Bidan</option>
-                  <option value="Bengkel & Servis">Bengkel / Servis HP / Elektronik</option>
-                  <option value="Jasa Profesional">Konsultan / Notaris / Les Privat</option>
+                  <option value="Kuliner & Minuman">Kedai Kopi / Resto / FnB Kuliner (Termasuk POS & Dine Lite)</option>
+                  <option value="Jasa & Laundry">Laundry / Dry Clean / Jasa Kebersihan (Termasuk POS Only)</option>
+                  <option value="Retail & Fashion">Distro / Fashion / Aksesoris (Termasuk POS Only)</option>
+                  <option value="Kesehatan & Klinik">Dokter / Klinik / Apotek / Bidan (Termasuk POS Only)</option>
+                  <option value="Bengkel & Servis">Bengkel / Servis HP / Elektronik (Termasuk POS Only)</option>
+                  <option value="Jasa Profesional">Konsultan / Notaris / Les Privat (Termasuk POS Only)</option>
                 </select>
               </div>
+
+              {/* Hak Akses Lisensi Ekosistem Real-Time Sesuai Kategori */}
+              {(() => {
+                const isFood = detectIsFoodCategory(category);
+                return (
+                  <div
+                    className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
+                      isFood
+                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                        : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold mb-1 text-white">
+                      <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>
+                        {isFood
+                          ? 'Paket Usaha Makanan / F&B: Termasuk SiKasir + Dine Lite'
+                          : 'Paket Usaha Non-Makanan: Termasuk SiKasir POS Only'}
+                      </span>
+                    </div>
+                    {isFood ? (
+                      <p className="text-[11px] text-amber-200/90">
+                        ✓ Lisensi sewa Anda otomatis membuka <strong>SiKasir POS</strong> (Kitchen Display KDS, Resep Bahan & Kasir) + <strong>Sivilize Dine Lite</strong> (Self-Order Scan QR Meja Makan Restoran) sekaligus tanpa perlu daftar ulang!
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-indigo-200/90">
+                        ✓ Lisensi sewa Anda otomatis membuka <strong>SiKasir POS Only</strong> (Aplikasi Kasir Barcode, Inventori Stok & Preset Khusus Usaha Anda). Aplikasi Dine Lite QR Meja dinonaktifkan karena bisnis Anda tidak memiliki meja makan restoran.
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
@@ -574,74 +651,91 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
               </div>
 
               {/* 2. KARTU LISENSI EKOSISTEM SAAS TERPADU (SIKASIR + DINE LITE) */}
-              <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 text-white space-y-4 shadow-xl">
-                <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                      ⚡
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block">
-                        KODE AKTIVASI EKOSISTEM RESMI
+              {(() => {
+                const isFoodBusiness = detectIsFoodCategory(category);
+                return (
+                  <div className="rounded-2xl bg-neutral-950 border border-neutral-800 p-5 text-white space-y-4 shadow-xl">
+                    <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                          ⚡
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block">
+                            KODE AKTIVASI EKOSISTEM RESMI
+                          </span>
+                          <h4 className="text-xs sm:text-sm font-bold text-white">
+                            {isFoodBusiness
+                              ? 'Termasuk SiKasir POS & Sivilize Dine Lite'
+                              : 'Termasuk SiKasir POS (Khusus Non-Makanan)'}
+                          </h4>
+                        </div>
+                      </div>
+
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] border border-emerald-500/30">
+                        STATUS: LISENSI AKTIF
                       </span>
-                      <h4 className="text-xs sm:text-sm font-bold text-white">
-                        Termasuk SiKasir POS & Sivilize Dine Lite
-                      </h4>
                     </div>
-                  </div>
 
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] border border-emerald-500/30">
-                    STATUS: LISENSI AKTIF
-                  </span>
-                </div>
-
-                {/* License Code Display & Copy Box */}
-                <div className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-[10px] text-neutral-400 uppercase font-mono block">Kode Lisensi Ekosistem:</span>
-                    <span className="text-xl sm:text-2xl font-black font-mono tracking-wider text-emerald-400">
-                      {ecosystemLicenseCode}
-                    </span>
-                    <p className="text-[11px] text-neutral-400 mt-1">
-                      Masukkan kode ini di tampilan awal SiKasir POS atau Sivilize Dine Lite untuk aktivasi otomatis.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleCopyLicense}
-                    className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>{copiedLicense ? '✓ Kode Tersalin!' : 'Salin Kode Lisensi'}</span>
-                  </button>
-                </div>
-
-                {/* Included Apps Status Badges */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <div className="p-2.5 rounded-xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">💻</span>
+                    {/* License Code Display & Copy Box */}
+                    <div className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
-                        <strong className="text-white block font-semibold text-xs">SiKasir POS Kasir</strong>
-                        <span className="text-[10px] text-neutral-400">KDS Dapur, Resep & Inventori</span>
+                        <span className="text-[10px] text-neutral-400 uppercase font-mono block">Kode Lisensi Ekosistem:</span>
+                        <span className="text-xl sm:text-2xl font-black font-mono tracking-wider text-emerald-400">
+                          {ecosystemLicenseCode}
+                        </span>
+                        <p className="text-[11px] text-neutral-400 mt-1">
+                          {isFoodBusiness
+                            ? 'Masukkan kode ini di SiKasir POS atau Sivilize Dine Lite untuk aktivasi otomatis.'
+                            : 'Masukkan kode ini di SiKasir POS untuk aktivasi kasir & sinkronisasi stok.'}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleCopyLicense}
+                        className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>{copiedLicense ? '✓ Kode Tersalin!' : 'Salin Kode Lisensi'}</span>
+                      </button>
+                    </div>
+
+                    {/* Included Apps Status Badges */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div className="p-2.5 rounded-xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">💻</span>
+                          <div>
+                            <strong className="text-white block font-semibold text-xs">SiKasir POS Kasir</strong>
+                            <span className="text-[10px] text-neutral-400">
+                              {isFoodBusiness ? 'KDS Dapur, Resep & Inventori' : 'Kasir Barcode, Inventori & Struk'}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-emerald-400">✓ Termasuk</span>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">📱</span>
+                          <div>
+                            <strong className="text-white block font-semibold text-xs">Sivilize Dine Lite</strong>
+                            <span className="text-[10px] text-neutral-400">
+                              {isFoodBusiness ? 'Self-Order Scan QR Meja Resto' : 'Khusus Usaha Kuliner / F&B'}
+                            </span>
+                          </div>
+                        </div>
+                        {isFoodBusiness ? (
+                          <span className="text-[10px] font-bold text-emerald-400">✓ Termasuk</span>
+                        ) : (
+                          <span className="text-[10px] font-semibold text-slate-500">❌ Nonaktif (Non-Makanan)</span>
+                        )}
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-400">✓ Termasuk</span>
                   </div>
-
-                  <div className="p-2.5 rounded-xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">📱</span>
-                      <div>
-                        <strong className="text-white block font-semibold text-xs">Sivilize Dine Lite</strong>
-                        <span className="text-[10px] text-neutral-400">Self-Order Scan QR Meja</span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-400">✓ Termasuk</span>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Printable Official Invoice Card */}
               <div className="rounded-2xl bg-white text-neutral-900 border border-neutral-200 p-5 sm:p-6 space-y-4 shadow-xl">
@@ -745,6 +839,22 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     </div>
                     <span className="font-mono font-bold text-neutral-950 text-right shrink-0 ml-2">
                       {formatRupiah(effectivePrice)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between py-1 border-t border-dashed border-neutral-200">
+                    <div>
+                      <strong className="text-neutral-950 font-bold block">
+                        Kunci Lisensi Ekosistem ({ecosystemLicenseCode})
+                      </strong>
+                      <span className="text-[10px] text-neutral-500">
+                        {detectIsFoodCategory(category)
+                          ? 'Aktivasi Otomatis SiKasir POS & Sivilize Dine Lite (QR Meja Makan)'
+                          : 'Aktivasi Otomatis SiKasir POS Only (Khusus Usaha Non-Makanan)'}
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold text-emerald-700 text-right shrink-0 ml-2">
+                      Gratis Termasuk
                     </span>
                   </div>
 

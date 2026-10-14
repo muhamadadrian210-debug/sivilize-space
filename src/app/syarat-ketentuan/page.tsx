@@ -130,6 +130,30 @@ export default function SyaratKetentuanPage() {
               </p>
             </div>
 
+            <hr className="border-neutral-200" />
+
+            {/* Pasal 7: Fasilitas Ekosistem Aplikasi Kasir SiKasir POS & Dine Lite Termasuk Dalam Sewa */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-black text-neutral-950 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-lg bg-neutral-900 text-white text-xs flex items-center justify-center font-mono">7</span>
+                <span>Fasilitas Ekosistem Aplikasi Kasir Termasuk Dalam Sewa</span>
+              </h3>
+              <p>
+                Setiap paket sewa website mandiri di Sivilize Space secara otomatis telah mencakup (include) hak lisensi pemakaian aplikasi kasir resmi tanpa biaya langganan software tambahan selama masa sewa website aktif:
+              </p>
+              <ul className="list-disc list-inside space-y-1.5 pl-2">
+                <li>
+                  <strong>SiKasir POS Modern:</strong> Disertakan untuk <strong>seluruh jenis usaha</strong> (usaha makanan, retail minimarket, bengkel servis, salon/barbershop, klinik/apotek, dan jasa laundry) lengkap dengan modul spesifik industri, pencatatan kasir, dan integrasi stok 2-arah.
+                </li>
+                <li>
+                  <strong>Sivilize Dine Lite (Self-Order Barcode QR Meja):</strong> Khusus disertakan untuk <strong>kategori usaha makanan dan minuman (F&B, Restoran, Kafe, Warung, Katering)</strong>. Untuk jenis usaha non-makanan, fitur Dine Lite secara otomatis dinonaktifkan dari kunci lisensi karena tidak relevan dengan operasional meja restoran.
+                </li>
+                <li>
+                  <strong>Kunci Lisensi Terpadu (Smart Ecosystem Key):</strong> Tercetak resmi pada e-Receipt / Invoice Digital Penyewa (misalnya format <code>SIV-FNB-XXXXX-365D</code> atau <code>SIV-RETAIL-XXXXX-365D</code>) yang secara instan mengimpor profil bisnis dan katalog produk ke aplikasi kasir tanpa perlu mendaftar ulang manual.
+                </li>
+              </ul>
+            </div>
+
           </div>
         </section>
       </main>

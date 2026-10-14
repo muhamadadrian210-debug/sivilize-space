@@ -104,11 +104,34 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
     });
   };
 
-  const handleConfirmWebOrder = () => {
+  const handleConfirmWebOrder = async () => {
     if (totalItems === 0) return;
     const generatedId = `WEB-${Math.floor(100000 + Math.random() * 900000)}`;
     setOrderId(generatedId);
     setOrderSuccess(true);
+
+    try {
+      const itemsList = Object.values(cart)
+        .map((item) => `${item.product.name} (${item.quantity}x)`)
+        .join(', ');
+
+      await fetch('/api/store/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          store_id: store.id,
+          slug: store.slug,
+          type: 'order',
+          customer_name: 'Pelanggan Website (Self-Order)',
+          customer_phone: store.owner_phone || '-',
+          details: `Item: ${itemsList}`,
+          total_amount: totalAmount,
+          notes: customerNotes || '',
+        }),
+      });
+    } catch {
+      // Non-blocking
+    }
   };
 
   const handleResetOrder = () => {

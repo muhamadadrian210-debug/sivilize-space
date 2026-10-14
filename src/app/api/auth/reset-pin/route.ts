@@ -15,11 +15,11 @@ import type { Store } from '@/types/database';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { phone, slug: rawSlug, new_pin } = body;
+    const { phone, slug: rawSlug, new_pin, license_key } = body;
 
-    if (!phone || !rawSlug || !new_pin) {
+    if (!phone || !rawSlug || !new_pin || !license_key) {
       return NextResponse.json(
-        { error: 'Nomor WhatsApp, slug website, dan PIN baru 6 digit wajib diisi.' },
+        { error: 'Nomor WhatsApp, slug website, PIN baru 6 digit, dan Kunci Lisensi (tertera di Invoice Resmi) wajib diisi.' },
         { status: 400 }
       );
     }
@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
 
     const cleanPhone = normalizeWhatsAppPhone(phone);
     const slug = String(rawSlug).toLowerCase().trim();
+    const cleanKey = String(license_key).toUpperCase().trim();
 
     if (!isValidSlug(slug)) {
       return NextResponse.json(
@@ -41,10 +42,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cari toko berdasarkan slug dan nomor HP pemilik
+    // Cari website berdasarkan slug dan nomor HP pemilik
     const { data: store, error } = await supabaseAdmin
       .from('stores')
-      .select('id, store_name, slug, owner_phone, is_active, failed_login_attempts')
+      .select('id, store_name, slug, owner_phone, is_active, failed_login_attempts, ecosystem_license_code, layout_config')
       .eq('slug', slug)
       .eq('owner_phone', cleanPhone)
       .maybeSingle();
@@ -66,6 +67,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Kombinasi nomor WhatsApp dan alamat website tidak cocok atau belum terdaftar.' },
         { status: 404 }
+      );
+    }
+
+    // Verifikasi Kunci Lisensi Ekosistem (Anti-Bajak Akun Zero Trust)
+    const storedLicense = (
+      store.ecosystem_license_code ||
+      (store.layout_config as Record<string, any>)?.ecosystem_license_code ||
+      ''
+    ).toUpperCase().trim();
+
+    if (!storedLicense || storedLicense !== cleanKey) {
+      return NextResponse.json(
+        {
+          error:
+            'Kunci Lisensi Ekosistem tidak cocok dengan invoice resmi website ini. Silakan periksa kembali kode lisensi pada nota fisik sewa Anda.',
+        },
+        { status: 403 }
       );
     }
 

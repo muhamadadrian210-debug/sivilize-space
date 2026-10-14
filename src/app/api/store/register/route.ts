@@ -5,6 +5,7 @@ import { checkProhibitedContent } from '@/lib/security';
 import { hashPin, createTenantToken } from '@/lib/session';
 import { storeRegisterLimiter } from '@/lib/rate-limiter';
 import { checkIsBanned, createBannedResponse } from '@/lib/blacklist';
+import { generateSmartLicenseKey } from '@/lib/ecosystem-license';
 import type { StoreSectionKey } from '@/types/database';
 import { z } from 'zod';
 
@@ -152,38 +153,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Perhitungan Masa Aktif Sewa & Auto-Provisioning Lisensi Ekosistem
+    // 5. Perhitungan Masa Aktif Sewa & Auto-Provisioning Lisensi Ekosistem Pintar
     const isPaid = Boolean(body.is_paid);
     const durationDays = isPaid
       ? (billing_cycle === 'bulanan' ? 30 : 365)
       : 7;
     const expirationDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString();
 
-    const getEcosystemLicense = (cat: string, cycle: string) => {
-      const c = cat.toLowerCase();
-      const suffix = cycle === 'bulanan' ? '30D' : '365D';
-      if (c.includes('kuliner') || c.includes('fnb') || c.includes('kafe') || c.includes('kopi') || c.includes('resto') || c.includes('makan') || c.includes('minum')) {
-        return `SIV-FNB-${suffix}`;
-      }
-      if (c.includes('retail') || c.includes('kelontong') || c.includes('distro') || c.includes('fashion') || c.includes('minimarket') || c.includes('toko')) {
-        return `SIV-RETAIL-${suffix}`;
-      }
-      if (c.includes('bengkel') || c.includes('servis') || c.includes('otomotif') || c.includes('motor') || c.includes('mobil')) {
-        return `SIV-BENGKEL-${suffix}`;
-      }
-      if (c.includes('laundry') || c.includes('cuci')) {
-        return `SIV-LAUNDRY-${suffix}`;
-      }
-      if (c.includes('barber') || c.includes('salon') || c.includes('pangkas') || c.includes('rambut')) {
-        return `SIV-BARBER-${suffix}`;
-      }
-      if (c.includes('apotek') || c.includes('obat') || c.includes('klinik') || c.includes('farmasi')) {
-        return `SIV-APOTEK-${suffix}`;
-      }
-      return `SIV-PRO-${suffix}`;
-    };
-
-    const ecosystemLicenseCode = body.ecosystem_license_code || getEcosystemLicense(category, billing_cycle);
+    const ecosystemLicenseCode = body.ecosystem_license_code || generateSmartLicenseKey(category, billing_cycle);
 
     const initialLayoutConfig = {
       grid_columns_desktop: (body.grid_columns_desktop as 2 | 3 | 4 | 'list') || 3,
@@ -219,9 +196,10 @@ export async function POST(req: NextRequest) {
           owner_phone: cleanPhone,
           pin_hash: hashPin(pin),
           layout_config: initialLayoutConfig,
+          ecosystem_license_code: ecosystemLicenseCode,
           is_active: true,
           expired_at: expirationDate,
-          description: `Selamat datang di ${store_name}! Silakan pilih produk/layanan kami dan pesan langsung di web.`,
+          description: `Selamat datang di ${store_name}! Silakan lihat katalog produk/layanan kami langsung di web resmi ini.`,
         },
       ])
       .select()

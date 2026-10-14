@@ -43,18 +43,24 @@ import {
   Building2,
   RefreshCw,
   Copy,
+  MessageSquare,
+  Inbox,
 } from 'lucide-react';
 import { OfficialInvoiceModal, type OfficialInvoiceData } from '@/components/billing/OfficialInvoiceModal';
 import { AIGuidedTour } from '@/components/dashboard/AIGuidedTour';
 import { AIChatbotAssistant } from '@/components/dashboard/AIChatbotAssistant';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
+import { detectIsFoodCategory, generateSmartLicenseKey } from '@/lib/ecosystem-license';
+import type { StoreInquiry } from '@/app/api/store/inquiries/route';
 
 export default function TenantDashboardPage() {
   const [store, setStore] = useState<Store | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [customPages, setCustomPages] = useState<CustomPage[]>([]);
+  const [inquiries, setInquiries] = useState<StoreInquiry[]>([]);
+  const [isLoadingInquiries, setIsLoadingInquiries] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    'katalog' | 'tata-letak' | 'halaman' | 'profil' | 'langganan' | 'ekosistem'
+    'katalog' | 'tata-letak' | 'halaman' | 'pesan' | 'profil' | 'langganan' | 'ekosistem'
   >('katalog');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,8 +87,13 @@ export default function TenantDashboardPage() {
   const [isResetPinOpen, setIsResetPinOpen] = useState(false);
   const [resetPhone, setResetPhone] = useState('');
   const [resetSlug, setResetSlug] = useState('');
+  const [resetLicenseKey, setResetLicenseKey] = useState('');
   const [resetNewPin, setResetNewPin] = useState('');
   const [resetStatus, setResetStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' });
+
+  // In-Dashboard Change PIN state (for logged-in tenant)
+  const [changePinForm, setChangePinForm] = useState({ newPin: '', licenseKey: '' });
+  const [changePinStatus, setChangePinStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' });
 
   // Layout customizer state
   const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>({
@@ -181,6 +192,21 @@ export default function TenantDashboardPage() {
     }
   };
 
+  const fetchInquiries = async (storeId: string) => {
+    try {
+      setIsLoadingInquiries(true);
+      const res = await fetch(`/api/store/inquiries?store_id=${storeId}`);
+      const data = await res.json();
+      if (data.inquiries) {
+        setInquiries(data.inquiries);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setIsLoadingInquiries(false);
+    }
+  };
+
   // Fetch initial session or demo store
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -191,6 +217,7 @@ export default function TenantDashboardPage() {
           setStore(parsed);
           fetchProducts(parsed.id);
           fetchCustomPages(parsed.id);
+          fetchInquiries(parsed.id);
           populateStoreForm(parsed);
           if (parsed.layout_config) {
             setLayoutConfig(parsed.layout_config);
@@ -244,6 +271,7 @@ export default function TenantDashboardPage() {
       populateStoreForm(data.store);
       fetchProducts(data.store.id);
       fetchCustomPages(data.store.id);
+      fetchInquiries(data.store.id);
       if (data.store.layout_config) {
         setLayoutConfig(data.store.layout_config);
       }
@@ -314,35 +342,45 @@ export default function TenantDashboardPage() {
         ? 'Paket Website Bisnis (4-5 Halaman)'
         : 'Paket Website Pro (2-3 Halaman)';
 
-    const invData: OfficialInvoiceData = {
-      invoiceNumber: `INV-SC-2026-${(store.id || '881920').slice(-6).toUpperCase()}`,
-      storeName: store.store_name,
-      slug: store.slug,
-      ownerPhone: store.owner_phone,
-      planName: planLabel,
-      amount: planAmount,
-      paymentDate: new Date(store.created_at || Date.now()).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
-      paymentMethod: 'Mayar.id QRIS Dinamis & BI-FAST Instant Settlement',
-      billingPeriod: `365 Hari (s/d ${
-        store.expired_at
-          ? new Date(store.expired_at).toLocaleDateString('id-ID')
-          : new Date(Date.now() + 365 * 24 * 3600 * 1000).toLocaleDateString('id-ID')
-      })`,
-      items: [
-        {
-          name: `Sewa Tahunan Website (${planLabel})`,
-          desc: `Infrastruktur WaaS Anycast Edge, SSL Dinamis, Subdomain https://${store.slug}.sivilizecorp.my.id`,
-          price: planAmount,
-        },
-      ],
+      const isFood = detectIsFoodCategory(store.category || '');
+      const licenseCode = getDashboardLicenseCode();
+
+      const invData: OfficialInvoiceData = {
+        invoiceNumber: `INV-SC-2026-${(store.id || '881920').slice(-6).toUpperCase()}`,
+        storeName: store.store_name,
+        slug: store.slug,
+        ownerPhone: store.owner_phone,
+        planName: planLabel,
+        amount: planAmount,
+        paymentDate: new Date(store.created_at || Date.now()).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+        paymentMethod: 'Mayar.id QRIS Dinamis & BI-FAST Instant Settlement',
+        billingPeriod: `365 Hari (s/d ${
+          store.expired_at
+            ? new Date(store.expired_at).toLocaleDateString('id-ID')
+            : new Date(Date.now() + 365 * 24 * 3600 * 1000).toLocaleDateString('id-ID')
+        })`,
+        items: [
+          {
+            name: `Sewa Tahunan Website (${planLabel})`,
+            desc: `Infrastruktur WaaS Anycast Edge, SSL Dinamis, Subdomain https://${store.slug}.sivilizecorp.my.id`,
+            price: planAmount,
+          },
+          {
+            name: `Kunci Aktivasi Pintar Ekosistem (${licenseCode})`,
+            desc: isFood
+              ? 'Membuka Hak Akses SiKasir POS & Sivilize Dine Lite (Self-Order Scan QR Meja)'
+              : 'Membuka Hak Akses SiKasir POS Only (Khusus Bidang Usaha Non-Makanan)',
+            price: 0,
+          },
+        ],
+      };
+      setCurrentInvoiceData(invData);
+      setIsInvoiceModalOpen(true);
     };
-    setCurrentInvoiceData(invData);
-    setIsInvoiceModalOpen(true);
-  };
 
   const handleConfirmMayarPayment = async () => {
     if (!store || !pendingPageToActivate) return;
@@ -511,17 +549,7 @@ export default function TenantDashboardPage() {
     return (
       store.ecosystem_license_code ||
       store.layout_config?.ecosystem_license_code ||
-      (store.category?.toLowerCase().includes('kuliner') || store.category?.toLowerCase().includes('fnb')
-        ? 'SIV-FNB-365D'
-        : store.category?.toLowerCase().includes('bengkel')
-        ? 'SIV-BENGKEL-365D'
-        : store.category?.toLowerCase().includes('laundry')
-        ? 'SIV-LAUNDRY-365D'
-        : store.category?.toLowerCase().includes('barber')
-        ? 'SIV-BARBER-365D'
-        : store.category?.toLowerCase().includes('apotek')
-        ? 'SIV-APOTEK-365D'
-        : 'SIV-RETAIL-365D')
+      generateSmartLicenseKey(store.category || 'services', 'tahunan')
     );
   };
 
@@ -614,11 +642,11 @@ export default function TenantDashboardPage() {
 
   const handleResetPinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resetPhone || !resetSlug || resetNewPin.length !== 6) {
-      setResetStatus({ type: 'error', message: 'Nomor WhatsApp, slug website, dan 6 digit PIN baru wajib diisi.' });
+    if (!resetPhone || !resetSlug || !resetLicenseKey || resetNewPin.length !== 6) {
+      setResetStatus({ type: 'error', message: 'Nomor WhatsApp, slug website, Kunci Lisensi (tertera di nota invoice), dan 6 digit PIN baru wajib diisi.' });
       return;
     }
-    setResetStatus({ type: 'loading', message: 'Memverifikasi dan memperbarui PIN...' });
+    setResetStatus({ type: 'loading', message: 'Memverifikasi bukti kepemilikan dan memperbarui PIN...' });
     try {
       const res = await fetch('/api/auth/reset-pin', {
         method: 'POST',
@@ -626,6 +654,7 @@ export default function TenantDashboardPage() {
         body: JSON.stringify({
           phone: resetPhone,
           slug: resetSlug,
+          license_key: resetLicenseKey,
           new_pin: resetNewPin,
         }),
       });
@@ -643,6 +672,40 @@ export default function TenantDashboardPage() {
       }, 2500);
     } catch {
       setResetStatus({ type: 'error', message: 'Terjadi kesalahan koneksi.' });
+    }
+  };
+
+  const handleChangePinLoggedIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!store) return;
+    if (changePinForm.newPin.length !== 6) {
+      setChangePinStatus({ type: 'error', message: 'PIN baru harus tepat 6 digit angka.' });
+      return;
+    }
+    const license = changePinForm.licenseKey.trim() || getDashboardLicenseCode();
+    setChangePinStatus({ type: 'loading', message: 'Menyimpan PIN baru...' });
+
+    try {
+      const res = await fetch('/api/auth/reset-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: store.owner_phone,
+          slug: store.slug,
+          license_key: license,
+          new_pin: changePinForm.newPin,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setChangePinStatus({ type: 'error', message: data.error || 'Gagal memperbarui PIN.' });
+        return;
+      }
+      setChangePinStatus({ type: 'success', message: '✓ PIN keamanan website Anda berhasil diperbarui!' });
+      setChangePinForm({ newPin: '', licenseKey: '' });
+      setTimeout(() => setChangePinStatus({ type: 'idle', message: '' }), 4000);
+    } catch {
+      setChangePinStatus({ type: 'error', message: 'Terjadi kesalahan koneksi.' });
     }
   };
 
@@ -824,6 +887,22 @@ export default function TenantDashboardPage() {
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    Kunci Lisensi Ekosistem (Tertera di Invoice Resmi)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: SIV-FNB-88192-365D"
+                    value={resetLicenseKey}
+                    onChange={(e) => setResetLicenseKey(e.target.value.toUpperCase())}
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-mono tracking-wider uppercase font-bold"
+                  />
+                  <p className="text-[10px] text-neutral-400 mt-1">
+                    Cek nota fisik sewa website Anda. Kunci ini membuktikan kepemilikan sah Anda.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
                     PIN Baru (6 Digit Angka)
                   </label>
                   <input
@@ -838,7 +917,7 @@ export default function TenantDashboardPage() {
                 </div>
                 <button
                   type="submit"
-                  disabled={resetStatus.type === 'loading' || resetNewPin.length !== 6}
+                  disabled={resetStatus.type === 'loading' || resetNewPin.length !== 6 || !resetLicenseKey}
                   className="w-full py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs cursor-pointer transition-all mt-2"
                 >
                   {resetStatus.type === 'loading' ? 'Memproses...' : 'Simpan PIN Baru'}
@@ -955,6 +1034,27 @@ export default function TenantDashboardPage() {
             {customPages.length > 0 && (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-700 font-mono font-bold">
                 {customPages.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('pesan');
+              if (store) fetchInquiries(store.id);
+            }}
+            className={`py-3 px-3.5 text-xs font-bold border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer transition-colors ${
+              activeTab === 'pesan'
+                ? 'border-neutral-950 text-neutral-950'
+                : 'border-transparent text-neutral-500 hover:text-neutral-900'
+            }`}
+          >
+            <Inbox className="w-4 h-4 text-indigo-600" />
+            <span>Pesan & Reservasi Web</span>
+            {inquiries.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold">
+                {inquiries.length}
               </span>
             )}
           </button>
@@ -1751,6 +1851,120 @@ export default function TenantDashboardPage() {
           </div>
         )}
 
+        {/* TAB PESAN MASUK & RESERVASI MANDIRI */}
+        {activeTab === 'pesan' && (
+          <div className="max-w-4xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-mono font-bold mb-2">
+                  <Inbox className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>KOTAK MASUK & RESERVASI WEB</span>
+                </div>
+                <h2 className="text-2xl font-black tracking-tight text-neutral-950">
+                  Pesan Masuk, Janji Temu & Pesanan Web
+                </h2>
+                <p className="text-xs sm:text-sm text-neutral-600 mt-1">
+                  Seluruh formulir konsultasi, booking layanan, dan checkout yang masuk langsung dari website publik Anda
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => store && fetchInquiries(store.id)}
+                disabled={isLoadingInquiries}
+                className="px-4 py-2.5 rounded-xl bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-xs shrink-0"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoadingInquiries ? 'animate-spin' : ''}`} />
+                <span>{isLoadingInquiries ? 'Memperbarui...' : 'Segarkan Data'}</span>
+              </button>
+            </div>
+
+            {inquiries.length === 0 ? (
+              <div className="p-12 rounded-3xl bg-white border border-neutral-200 text-center space-y-3 shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
+                  <Inbox className="w-6 h-6" />
+                </div>
+                <h4 className="text-sm font-bold text-neutral-950">Belum Ada Pesan Masuk</h4>
+                <p className="text-xs text-neutral-500 max-w-sm mx-auto">
+                  Ketika pengunjung website Anda mengisi formulir konsultasi, melakukan booking jadwal, atau pesan menu mandiri, data akan otomatis muncul di sini.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {inquiries.map((inq) => (
+                  <div
+                    key={inq.id}
+                    className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-neutral-300"
+                  >
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono font-bold text-xs text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                          {inq.reference_id}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${
+                          inq.type === 'booking'
+                            ? 'bg-amber-100 text-amber-800'
+                            : inq.type === 'order'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {inq.type === 'booking' ? '📅 Reservasi' : inq.type === 'order' ? '🛒 Pesanan Web' : '💬 Konsultasi'}
+                        </span>
+                        <span className="text-[11px] text-neutral-400">
+                          {new Date(inq.created_at).toLocaleString('id-ID', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+
+                      <div className="text-sm font-bold text-neutral-950 flex items-center gap-2">
+                        <span>{inq.customer_name}</span>
+                        <span className="text-xs text-neutral-500 font-mono font-normal">
+                          ({inq.customer_phone})
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-neutral-700 font-medium">
+                        {inq.details}
+                      </p>
+
+                      {inq.notes && (
+                        <p className="text-[11px] text-neutral-500 italic bg-neutral-50 p-2 rounded-lg border border-neutral-100">
+                          Catatan: &ldquo;{inq.notes}&rdquo;
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex sm:flex-col items-end justify-between sm:justify-center gap-2 shrink-0">
+                      {inq.total_amount && inq.total_amount > 0 ? (
+                        <div className="text-right">
+                          <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Total</span>
+                          <span className="font-mono font-bold text-sm text-emerald-700">
+                            {formatRupiah(inq.total_amount)}
+                          </span>
+                        </div>
+                      ) : null}
+
+                      <a
+                        href={`https://wa.me/${inq.customer_phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3.5 py-1.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Balas Pengunjung</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* TAB 4: PROFIL BISNIS & WEBSITE */}
         {activeTab === 'profil' && (
           <div className="max-w-3xl rounded-3xl bg-white border border-neutral-200 p-8 space-y-6 shadow-xs">
@@ -1847,6 +2061,56 @@ export default function TenantDashboardPage() {
               >
                 Simpan Perubahan Profil
               </button>
+            </div>
+
+            {/* Form Ubah PIN Keamanan Website (In-Session Safe Change) */}
+            <div className="pt-6 border-t border-neutral-200 space-y-4">
+              <div className="flex items-center gap-2">
+                <Lock className="w-5 h-5 text-neutral-800" />
+                <div>
+                  <h4 className="font-bold text-sm text-neutral-950">Ubah PIN Keamanan Website</h4>
+                  <p className="text-[11px] text-neutral-500">Perbarui 6 digit PIN login dashboard Anda</p>
+                </div>
+              </div>
+
+              {changePinStatus.message && (
+                <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
+                  changePinStatus.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                    : 'bg-rose-50 text-rose-800 border border-rose-200'
+                }`}>
+                  {changePinStatus.type === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                  )}
+                  <span>{changePinStatus.message}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleChangePinLoggedIn} className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    PIN Baru 6 Digit Angka:
+                  </label>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    required
+                    placeholder="Contoh: 654321"
+                    value={changePinForm.newPin}
+                    onChange={(e) => setChangePinForm({ ...changePinForm, newPin: e.target.value.replace(/[^0-9]/g, '') })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-950 font-mono tracking-widest"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={changePinStatus.type === 'loading' || changePinForm.newPin.length !== 6}
+                  className="w-full py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs cursor-pointer transition-colors"
+                >
+                  {changePinStatus.type === 'loading' ? 'Menyimpan...' : 'Perbarui PIN Keamanan'}
+                </button>
+              </form>
             </div>
           </div>
         )}
@@ -2031,97 +2295,147 @@ export default function TenantDashboardPage() {
               </div>
 
               {/* DUA APLIKASI YANG TER-INCLUDE */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 1. SIKASIR POS */}
-                <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-800 text-neutral-300">
-                        APLIKASI KASIR POS
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>SUDAH TERMASUK</span>
-                      </span>
+              {(() => {
+                const isFoodStore = detectIsFoodCategory(store.category || '');
+                const presetDesc = isFoodStore
+                  ? 'Preset Resto & Kafe: Kitchen Display System (KDS), Resep Bahan Baku, Struk Kasir & Cek Tagihan Meja.'
+                  : store.category?.toLowerCase().includes('bengkel')
+                  ? 'Preset Bengkel: Tracking Nopol Kendaraan, Riwayat Servis, Mekanik & Komisi Montir.'
+                  : store.category?.toLowerCase().includes('laundry')
+                  ? 'Preset Laundry: Penomoran Rak Pakaian, Status Cuci & Timbangan Kiloan Desimal.'
+                  : store.category?.toLowerCase().includes('barber')
+                  ? 'Preset Barbershop: Pilihan Kapster/Stylist, Komisi Harian & Produk Grooming.'
+                  : store.category?.toLowerCase().includes('apotek')
+                  ? 'Preset Farmasi: Resep Dokter, Batch No & Pengingat Expired Date.'
+                  : 'Preset Retail & Distro: Barcode Scanner USB/BT, Multi-Varian & Label Harga.';
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* 1. SIKASIR POS */}
+                    <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-800 text-neutral-300">
+                            APLIKASI KASIR POS
+                          </span>
+                          <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>SUDAH TERMASUK</span>
+                          </span>
+                        </div>
+
+                        <h3 className="text-lg font-bold text-white mb-1">SiKasir POS Online/Offline</h3>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          {presetDesc}
+                        </p>
+
+                        <div className="mt-4 pt-3 border-t border-neutral-800 space-y-1.5 text-xs text-neutral-300">
+                          <div className="flex items-center gap-2">
+                            <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>Sinkronisasi Stok 2-Arah dengan Website</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>Cetak Struk Termal Bluetooth & Laporan Omset</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>Aktivasi Instan dengan Kunci Lisensi Anda</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <a
+                        href="http://localhost:3000"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <span>Luncurkan SiKasir POS</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
 
-                    <h3 className="text-lg font-bold text-white mb-1">SiKasir POS Online/Offline</h3>
-                    <p className="text-xs text-neutral-400 leading-relaxed">
-                      Sistem kasir pintar dengan Kitchen Display System (KDS), kalkulasi resep bahan baku, struk termal bluetooth, dan metadata industri (Nopol/Mekanik, Nomor Rak, Kapster, Resep Dokter).
-                    </p>
+                    {/* 2. SIVILIZE DINE LITE */}
+                    <div className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 ${
+                      isFoodStore
+                        ? 'bg-neutral-900 border-neutral-800'
+                        : 'bg-neutral-900/50 border-neutral-800/60 opacity-80'
+                    }`}>
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300">
+                            SELF-ORDER SCAN QR MEJA
+                          </span>
+                          {isFoodStore ? (
+                            <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>SUDAH TERMASUK</span>
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold text-neutral-400 flex items-center gap-1">
+                              <span>KHUSUS KULINER / F&B</span>
+                            </span>
+                          )}
+                        </div>
 
-                    <div className="mt-4 pt-3 border-t border-neutral-800 space-y-1.5 text-xs text-neutral-300">
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Kitchen Display System (KDS) & Cetak Bon Dapur</span>
+                        <h3 className="text-lg font-bold text-white mb-1">
+                          Sivilize Dine Lite {isFoodStore ? '' : '(Khusus Resto/F&B)'}
+                        </h3>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          {isFoodStore
+                            ? 'Sistem pesan mandiri langsung dari meja pelanggan via scan barcode QR di smartphone. Sinkronisasi stok 2-arah seketika tanpa delay dengan kasir SiKasir.'
+                            : `Aplikasi Sivilize Dine Lite (QR Meja Restoran) hanya untuk bisnis makanan/minuman ber-meja makan. Usaha Anda (${store.category || 'Non-Makanan'}) fokus penuh pada kasir SiKasir POS.`}
+                        </p>
+
+                        <div className="mt-4 pt-3 border-t border-neutral-800 space-y-1.5 text-xs text-neutral-300">
+                          {isFoodStore ? (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                <span>Pesan di Meja Tanpa Tunggu Pelayan</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                <span>Sinkronisasi Stok 2-Arah Seketika</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                <span>Menu Habis di Kasir Otomatis Hilang di Meja</span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex items-center gap-2 text-neutral-400">
+                                <span>• Kategori usaha non-makanan tidak memerlukan QR meja makan</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-neutral-400">
+                                <span>• Kunci lisensi Anda dioptimalkan untuk SiKasir POS</span>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Cek Nomor Meja & Tagihan Pelanggan</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Inventori & Resep Otomatis Terpotong</span>
-                      </div>
+
+                      {isFoodStore ? (
+                        <a
+                          href="http://localhost:3002"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <span>Luncurkan Sivilize Dine Lite</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      ) : (
+                        <div className="w-full py-2.5 px-4 rounded-xl bg-neutral-800/80 text-neutral-400 font-semibold text-xs text-center border border-neutral-700/50">
+                          Dinonaktifkan (Usaha Non-Makanan)
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  <a
-                    href="http://localhost:3000"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <span>Luncurkan SiKasir POS</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                {/* 2. SIVILIZE DINE LITE */}
-                <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300">
-                        SELF-ORDER SCAN QR MEJA
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>SUDAH TERMASUK</span>
-                      </span>
-                    </div>
-
-                    <h3 className="text-lg font-bold text-white mb-1">Sivilize Dine Lite</h3>
-                    <p className="text-xs text-neutral-400 leading-relaxed">
-                      Sistem pesan mandiri langsung dari meja pelanggan via scan barcode QR di smartphone. Sinkronisasi stok 2-arah seketika tanpa delay dengan kasir SiKasir.
-                    </p>
-
-                    <div className="mt-4 pt-3 border-t border-neutral-800 space-y-1.5 text-xs text-neutral-300">
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Pesan di Meja Tanpa Tunggu Pelayan</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Sinkronisasi Stok 2-Arah Seketika</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Menu Habis di Kasir Otomatis Hilang di Meja</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <a
-                    href="http://localhost:3002"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <span>Luncurkan Sivilize Dine Lite</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* PANDUAN AKTIVASI CEPAT */}
               <div className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 text-xs space-y-2 text-neutral-300">

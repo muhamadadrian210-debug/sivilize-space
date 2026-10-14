@@ -114,6 +114,26 @@ export function SaaSOperatingSystemShowcase() {
               </div>
             </div>
 
+            {/* Ecosystem Inclusions Status Bar (SiKasir POS + Dine Lite Included) */}
+            <div className="p-3.5 rounded-2xl bg-neutral-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border border-neutral-800">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-bold text-neutral-200">Ekosistem Termasuk Sewa:</span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800/80 font-mono text-[11px] font-bold">
+                  ✓ SiKasir POS
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800/80 font-mono text-[11px] font-bold">
+                  ✓ Sivilize Dine Lite (Self-Order QR Meja FnB)
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400">
+                <span>Kunci Lisensi Terpadu:</span>
+                <span className="text-emerald-400 font-bold bg-neutral-800 px-2.5 py-0.5 rounded-md border border-neutral-700">
+                  SIV-FNB-89241-365D
+                </span>
+              </div>
+            </div>
+
             {/* Metrics Row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 rounded-2xl bg-white border border-neutral-200">

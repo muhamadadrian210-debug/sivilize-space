@@ -55,7 +55,7 @@ const KNOWLEDGE_RESPONSES: { keywords: string[]; answer: string; quickTab?: 'kat
   {
     keywords: ['tata letak', 'grid', 'desain', 'warna', 'tema', 'kolom', 'tampilan'],
     answer:
-      'Tampilan toko bisa Anda modifikasi di tab "Tata Letak & Grid". Anda bisa memilih mode 2 kolom, 3 kolom, atau 4 kolom untuk desktop, mengatur posisi teks, serta tombol beli. Pratinjau langsung terlihat di simulator sebelah kanan.',
+      'Tampilan website bisa Anda modifikasi di tab "Tata Letak & Grid". Anda bisa memilih mode 2 kolom, 3 kolom, atau 4 kolom untuk desktop, mengatur posisi teks, serta tombol beli. Pratinjau langsung terlihat di simulator sebelah kanan.',
     quickTab: 'tata-letak',
   },
   {
@@ -171,7 +171,7 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
         sender: 'ai',
         text:
           matched?.answer ||
-          'Koneksi AI sedang memproses data lokal. Seluruh sistem database Supabase, SiKasir POS, dan toko Anda tetap aman dan aktif 100%.',
+          'Koneksi AI sedang memproses data lokal. Seluruh sistem database Supabase, SiKasir POS, dan website Anda tetap aman dan aktif 100%.',
         time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
         quickAction: matched?.quickTab
           ? {
@@ -230,7 +230,7 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 </h4>
                 <p className="text-[10px] text-neutral-400">
-                  Panduan Resmi Ekosistem SaaS & Toko
+                  Panduan Resmi Ekosistem SaaS & Website Bisnis
                 </p>
               </div>
             </div>
@@ -348,7 +348,7 @@ export function AIChatbotAssistant({ store, onNavigateTab, onStartTour }: AIChat
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Tanya apa saja tentang toko Anda..."
+              placeholder="Tanya apa saja tentang website Anda..."
               className="flex-1 px-3 py-2 rounded-xl bg-black border border-neutral-800 text-xs text-white focus:outline-none focus:border-emerald-500 placeholder:text-neutral-500"
             />
             <button

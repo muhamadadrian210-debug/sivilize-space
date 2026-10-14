@@ -123,10 +123,14 @@ export function Footer() {
                 <span>SLA 99.8% Uptime</span>
               </li>
               <li>
-                <span>UU ITE No. 1 Tahun 2024</span>
+                <Link href="/syarat-ketentuan" className="hover:text-white transition-colors">
+                  Syarat & Ketentuan Sewa
+                </Link>
               </li>
               <li>
-                <span>PP No. 71 Tahun 2019 (PSTE)</span>
+                <Link href="/kebijakan-privasi" className="hover:text-white transition-colors">
+                  Kebijakan Privasi Data
+                </Link>
               </li>
               <li>
                 <span className="text-neutral-300 font-medium">Kebijakan Anti-Judol & Pinjol</span>

@@ -169,12 +169,12 @@ const INDUSTRY_BUNDLES: IndustryBundleData[] = [
       {
         step: '02',
         title: 'Sinkronisasi Etalase Web',
-        desc: 'Stok toko fisik dan website langsung tersinkronisasi sehingga Anda terhindar dari overselling.',
+        desc: 'Stok fisik dan website langsung tersinkronisasi sehingga Anda terhindar dari overselling.',
       },
       {
         step: '03',
         title: 'Laporan Penjualan Rapi',
-        desc: 'Semua omset dan margin profit terekap detail di dashboard admin toko Anda.',
+        desc: 'Semua omset dan margin profit terekap detail di dashboard admin website bisnis Anda.',
       },
     ],
     licenseExample: 'SIV-RETAIL-365D',
@@ -182,8 +182,8 @@ const INDUSTRY_BUNDLES: IndustryBundleData[] = [
     monthlyPrice: 'Rp 69.000',
     annualPrice: 'Rp 599.000',
     annualSavings: 'Hemat Rp 229.000 + Gratis Domain Pribadi',
-    slugSuggestion: 'tokoberkah-jaya',
-    defaultCategoryName: 'Retail & Toko Kelontong',
+    slugSuggestion: 'berkah-jaya',
+    defaultCategoryName: 'Retail & Minimarket Mandiri',
   },
   {
     id: 'workshop',
@@ -367,7 +367,7 @@ const INDUSTRY_BUNDLES: IndustryBundleData[] = [
   },
   {
     id: 'pharmacy',
-    name: 'Apotek, Toko Obat Herbal & Klinik',
+    name: 'Apotek, Farmasi Herbal & Klinik',
     shortName: '💊 Apotek & Klinik',
     icon: Pill,
     tagline: 'Website Katalog Obat & Kasir Nomor Resep Dokter',
@@ -614,7 +614,7 @@ export function IndustryBundleSection({ onSelectBundle }: IndustryBundleSectionP
               </div>
             </div>
 
-            {/* Right: Alur Kerja Nyata di Toko Anda */}
+            {/* Right: Alur Kerja Nyata di Bisnis Anda */}
             <div className="space-y-4 bg-neutral-50 p-6 rounded-2xl border border-neutral-200">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500 block">
                 SIMULASI ALUR OPERASIONAL NYATA

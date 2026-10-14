@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   if (!rateLimitResult.success) {
     return storeRegisterLimiter.toResponse(
       rateLimitResult,
-      'Terlalu banyak percobaan pendaftaran toko dari perangkat ini. Mohon tunggu 10 menit sebelum mencoba lagi.'
+      'Terlalu banyak percobaan pendaftaran website dari perangkat ini. Mohon tunggu 10 menit sebelum mencoba lagi.'
     );
   }
 

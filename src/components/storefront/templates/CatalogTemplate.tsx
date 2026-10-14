@@ -3,10 +3,9 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { Store, Product } from '@/types/database';
-import { formatRupiah, generateWhatsAppOrderUrl } from '@/lib/utils';
+import { formatRupiah } from '@/lib/utils';
 import {
   ShoppingBag,
-  MessageCircle,
   MapPin,
   Clock,
   Phone,
@@ -15,6 +14,8 @@ import {
   Minus,
   Search,
   Check,
+  CheckCircle2,
+  Copy,
   Flame,
   Coffee,
 } from 'lucide-react';
@@ -37,6 +38,9 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
   const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [customerNotes, setCustomerNotes] = useState('');
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState('');
+  const [copiedOrder, setCopiedOrder] = useState(false);
 
   // Ekstrak kategori unik
   const categories = useMemo(() => {
@@ -61,7 +65,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
     });
   }, [products, selectedCategory, searchQuery]);
 
-  // Kalkulasi keranjang
+  // Kalkulasi pesanan
   const totalItems = useMemo(() => {
     return Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
   }, [cart]);
@@ -100,21 +104,28 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
     });
   };
 
-  const handleCheckoutWhatsApp = () => {
+  const handleConfirmWebOrder = () => {
     if (totalItems === 0) return;
-    const items = Object.values(cart).map((item) => ({
-      name: item.product.name + (item.variant ? ` (${item.variant})` : ''),
-      quantity: item.quantity,
-      price: item.product.price,
-    }));
-    const url = generateWhatsAppOrderUrl(
-      store.owner_phone,
-      store.store_name,
-      items,
-      totalAmount,
-      customerNotes
-    );
-    window.open(url, '_blank');
+    const generatedId = `WEB-${Math.floor(100000 + Math.random() * 900000)}`;
+    setOrderId(generatedId);
+    setOrderSuccess(true);
+  };
+
+  const handleResetOrder = () => {
+    setCart({});
+    setOrderSuccess(false);
+    setIsCartOpen(false);
+    setCustomerNotes('');
+  };
+
+  const handleCopyOrderSummary = () => {
+    const itemsList = Object.values(cart)
+      .map((item, idx) => `${idx + 1}. ${item.product.name} (${item.quantity}x) = ${formatRupiah(item.product.price * item.quantity)}`)
+      .join('\n');
+    const text = `BUKTI PESANAN MANDIRI DI WEBSITE\nNo. Pesanan: ${orderId}\nBisnis: ${store.store_name}\n\n${itemsList}\n\nTotal Tagihan: ${formatRupiah(totalAmount)}\nCatatan: ${customerNotes || '-'}\nStatus: Terverifikasi di Website\nTerima kasih telah memesan langsung melalui website resmi kami.`;
+    navigator.clipboard.writeText(text);
+    setCopiedOrder(true);
+    setTimeout(() => setCopiedOrder(false), 2000);
   };
 
   // Konfigurasi Grid & Kolom Dinamis sesuai pilihan Penyewa
@@ -537,83 +548,144 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
         </div>
       )}
 
-      {/* 5. Cart Drawer Modal */}
+      {/* 5. Cart Drawer Modal (100% Mandiri di Web) */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
           <div className="w-full sm:max-w-md bg-[var(--theme-card)] border border-[var(--theme-border)] rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border)] mb-3">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-[var(--theme-accent)]" />
-                <h3 className="font-black text-base">Rincian Pesanan Mandiri</h3>
+                <h3 className="font-black text-base">
+                  {orderSuccess ? 'Bukti Pesanan Mandiri' : 'Rincian Pesanan Mandiri'}
+                </h3>
               </div>
               <button
-                onClick={() => setIsCartOpen(false)}
+                onClick={orderSuccess ? handleResetOrder : () => setIsCartOpen(false)}
                 className="w-8 h-8 rounded-full flex items-center justify-center opacity-70 hover:opacity-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-3 pr-1 py-1">
-              {Object.values(cart).map((item) => (
-                <div
-                  key={item.product.id}
-                  className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--theme-bg)] border border-[var(--theme-border)]"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm truncate">{item.product.name}</p>
-                    <p className="text-xs text-[var(--theme-accent)] font-bold">
-                      {formatRupiah(item.product.price)}
-                    </p>
+            {orderSuccess ? (
+              <div className="py-4 text-center space-y-4 overflow-y-auto pr-1">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400">
+                    PESANAN TERKONFIRMASI DI WEB
+                  </span>
+                  <h3 className="text-xl font-black mt-1">{orderId}</h3>
+                  <p className="text-xs opacity-75 mt-1 max-w-xs mx-auto">
+                    Pesanan Anda telah berhasil tercatat langsung di sistem web {store.store_name}.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[var(--theme-bg)] border border-[var(--theme-border)] text-left text-xs space-y-2">
+                  <div className="flex justify-between font-bold border-b border-[var(--theme-border)] pb-2">
+                    <span>Menu / Layanan</span>
+                    <span>Subtotal</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="w-6 h-6 rounded-full border border-[var(--theme-border)] flex items-center justify-center text-xs cursor-pointer"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="text-xs font-bold w-4 text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => addToCart(item.product)}
-                      className="w-6 h-6 rounded-full border border-[var(--theme-border)] flex items-center justify-center text-xs cursor-pointer"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
+                  {Object.values(cart).map((item) => (
+                    <div key={item.product.id} className="flex justify-between text-xs opacity-90">
+                      <span>{item.product.name} ({item.quantity}x)</span>
+                      <span className="font-mono">{formatRupiah(item.product.price * item.quantity)}</span>
+                    </div>
+                  ))}
+                  {customerNotes && (
+                    <p className="pt-2 border-t border-[var(--theme-border)] text-[11px] opacity-70 italic">
+                      Catatan: &quot;{customerNotes}&quot;
+                    </p>
+                  )}
+                  <div className="flex justify-between font-black text-sm pt-2 border-t border-[var(--theme-border)] text-[var(--theme-accent)]">
+                    <span>Total Tagihan:</span>
+                    <span>{formatRupiah(totalAmount)}</span>
                   </div>
                 </div>
-              ))}
 
-              <div className="pt-2">
-                <label className="block text-xs font-semibold opacity-80 mb-1">
-                  Catatan untuk Penjual (Opsional):
-                </label>
-                <textarea
-                  value={customerNotes}
-                  onChange={(e) => setCustomerNotes(e.target.value)}
-                  placeholder="Contoh: Es sedikit gula, sambal dipisah, minta sedotan..."
-                  className="w-full text-xs rounded-xl p-3 bg-[var(--theme-bg)] border border-[var(--theme-border)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)] resize-none h-16"
-                />
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleCopyOrderSummary}
+                    className="w-full py-3 rounded-xl border border-[var(--theme-border)] text-xs font-bold flex items-center justify-center gap-2 hover:bg-[var(--theme-bg)] transition-colors cursor-pointer"
+                  >
+                    <Copy className="w-4 h-4" />
+                    <span>{copiedOrder ? 'Ringkasan Berhasil Disalin!' : 'Salin Ringkasan Pesanan'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResetOrder}
+                    className="w-full py-3 rounded-xl bg-[var(--theme-accent)] text-white text-xs font-black hover:opacity-90 transition-opacity cursor-pointer shadow-md"
+                  >
+                    Selesai & Tutup
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1 py-1">
+                  {Object.values(cart).map((item) => (
+                    <div
+                      key={item.product.id}
+                      className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--theme-bg)] border border-[var(--theme-border)]"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm truncate">{item.product.name}</p>
+                        <p className="text-xs text-[var(--theme-accent)] font-bold">
+                          {formatRupiah(item.product.price)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => removeFromCart(item.product.id)}
+                          className="w-6 h-6 rounded-full border border-[var(--theme-border)] flex items-center justify-center text-xs cursor-pointer"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-xs font-bold w-4 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => addToCart(item.product)}
+                          className="w-6 h-6 rounded-full border border-[var(--theme-border)] flex items-center justify-center text-xs cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
 
-            <div className="pt-3 border-t border-[var(--theme-border)] mt-2">
-              <div className="flex items-center justify-between mb-3 text-sm">
-                <span className="opacity-80">Total Tagihan:</span>
-                <span className="font-black text-lg text-[var(--theme-accent)]">
-                  {formatRupiah(totalAmount)}
-                </span>
-              </div>
-              <button
-                onClick={handleCheckoutWhatsApp}
-                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Kirim Pesanan ke WhatsApp</span>
-              </button>
-            </div>
+                  <div className="pt-2">
+                    <label className="block text-xs font-semibold opacity-80 mb-1">
+                      Catatan Tambahan (Opsional):
+                    </label>
+                    <textarea
+                      value={customerNotes}
+                      onChange={(e) => setCustomerNotes(e.target.value)}
+                      placeholder="Contoh: Permintaan khusus, preferensi layanan, dll..."
+                      className="w-full text-xs rounded-xl p-3 bg-[var(--theme-bg)] border border-[var(--theme-border)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)] resize-none h-16"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[var(--theme-border)] mt-2">
+                  <div className="flex items-center justify-between mb-3 text-sm">
+                    <span className="opacity-80">Total Tagihan:</span>
+                    <span className="font-black text-lg text-[var(--theme-accent)]">
+                      {formatRupiah(totalAmount)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleConfirmWebOrder}
+                    className="w-full py-3.5 rounded-xl bg-[var(--theme-accent)] hover:opacity-90 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Konfirmasi Pesanan Mandiri di Web</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

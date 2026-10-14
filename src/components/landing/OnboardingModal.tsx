@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import type { TemplateType, ThemeId, PlanTier } from '@/types/database';
 import { getDeviceFingerprint } from '@/lib/device-fingerprint';
+import { formatRupiah } from '@/lib/utils';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ interface OnboardingModalProps {
   initialSlug?: string;
   initialPlan?: PlanTier;
   initialCategory?: string;
+  initialPrice?: number;
   initialLayoutConfig?: {
     grid_columns_desktop?: 2 | 3 | 4 | 'list';
     text_alignment?: 'left' | 'center' | 'right';
@@ -43,6 +45,7 @@ export function OnboardingModal({
   initialSlug = '',
   initialPlan = 'pro',
   initialCategory,
+  initialPrice,
   initialLayoutConfig,
 }: OnboardingModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -57,6 +60,7 @@ export function OnboardingModal({
   const [ownerPhone, setOwnerPhone] = useState('');
   const [pin, setPin] = useState('');
   const [planTier] = useState<PlanTier>(initialPlan);
+  const effectivePrice = initialPrice || (planTier === 'mikro' ? 349000 : planTier === 'bisnis' ? 899000 : 599000);
 
   // Status & Official Invoice States
   const [loading, setLoading] = useState(false);
@@ -192,8 +196,8 @@ No. Invoice: ${invoiceNo || 'INV-SC-2026-889102'}
 Website Bisnis: ${storeName} (https://${createdSlug || slug}.sivilizecorp.my.id)
 Kode Lisensi Ekosistem: ${ecosystemLicenseCode} (Aktif untuk SiKasir POS & Dine Lite)
 Tanggal: ${invoiceDate || new Date().toLocaleDateString('id-ID')}
-Paket Sewa: ${planTier === 'mikro' ? 'Paket Website Mikro (1 Halaman)' : planTier === 'bisnis' ? 'Paket Website Bisnis (4-5 Halaman)' : 'Paket Website Pro (2-3 Halaman)'} (365 Hari)
-Total: ${planTier === 'mikro' ? 'Rp 349.000' : planTier === 'bisnis' ? 'Rp 899.000' : 'Rp 599.000'} (LUNAS)
+Paket Sewa: ${initialPrice ? 'Paket Website Rakitan Kustom' : planTier === 'mikro' ? 'Paket Website Mikro (1 Halaman)' : planTier === 'bisnis' ? 'Paket Website Bisnis (4-5 Halaman)' : 'Paket Website Pro (2-3 Halaman)'} (365 Hari)
+Total: ${formatRupiah(effectivePrice)} (LUNAS)
 Status Pembayaran: LUNAS & TERVERIFIKASI SAH MAYAR.ID
 NIB Perusahaan: 0207260103661 (KBLI: 62199)
 Email Resmi Pengaduan & Layanan: sivilizecorpindonesia@gmail.com
@@ -556,7 +560,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                     Selamat! Website & Dashboard Admin Anda Telah Siap!
                   </h4>
                   <p className="text-xs text-emerald-100 mt-1 max-w-md leading-relaxed">
-                    Sistem telah mem-provisioning database toko Anda. Anda langsung login secara otomatis tanpa perlu registrasi ulang.
+                    Sistem telah mem-provisioning database website bisnis Anda. Anda langsung login secara otomatis tanpa perlu registrasi ulang.
                   </p>
                 </div>
 
@@ -733,14 +737,14 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                   <div className="flex items-center justify-between py-1">
                     <div>
                       <strong className="text-neutral-950 font-bold block">
-                        Sewa Infrastruktur Website WaaS ({planTier === 'mikro' ? 'Paket Mikro' : planTier === 'bisnis' ? 'Paket Bisnis' : 'Paket Pro'})
+                        Sewa Infrastruktur Website WaaS ({initialPrice ? 'Paket Rakitan Kustom' : planTier === 'mikro' ? 'Paket Mikro' : planTier === 'bisnis' ? 'Paket Bisnis' : 'Paket Pro'})
                       </strong>
                       <span className="text-[10px] text-neutral-500">
                         Termasuk Anycast Edge Hosting, SSL Otomatis, Subdomain, & Panel Admin Website
                       </span>
                     </div>
                     <span className="font-mono font-bold text-neutral-950 text-right shrink-0 ml-2">
-                      {planTier === 'mikro' ? 'Rp 349.000' : planTier === 'bisnis' ? 'Rp 899.000' : 'Rp 599.000'}
+                      {formatRupiah(effectivePrice)}
                     </span>
                   </div>
 
@@ -751,7 +755,7 @@ Alamat: Kota Kupang, Nusa Tenggara Timur (NTT), Indonesia`;
                   <div className="flex items-center justify-between font-extrabold text-sm text-neutral-950 pt-1">
                     <span>Total Pembayaran (Lunas):</span>
                     <span className="font-mono text-emerald-700 text-base">
-                      {planTier === 'mikro' ? 'Rp 349.000' : planTier === 'bisnis' ? 'Rp 899.000' : 'Rp 599.000'}
+                      {formatRupiah(effectivePrice)}
                     </span>
                   </div>
                 </div>

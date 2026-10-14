@@ -811,7 +811,7 @@ export default function TenantDashboardPage() {
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                    Subdomain / Slug Toko
+                    Subdomain / Slug Website
                   </label>
                   <input
                     type="text"
@@ -1936,7 +1936,7 @@ export default function TenantDashboardPage() {
                 <div className="flex items-center gap-2">
                   <Globe className="w-5 h-5 text-neutral-800" />
                   <h4 className="font-bold text-sm text-neutral-950">
-                    Pengaturan Custom Domain Sendiri (www.tokoanda.com)
+                    Pengaturan Custom Domain Sendiri (www.bisnisanda.com)
                   </h4>
                 </div>
                 <span className="px-2.5 py-0.5 rounded-full bg-neutral-200 text-neutral-700 font-mono text-[10px] font-bold">
@@ -2010,7 +2010,7 @@ export default function TenantDashboardPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-neutral-800 gap-4">
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block mb-1">
-                    KODE LISENSI AKTIF TOKO ANDA
+                    KODE LISENSI AKTIF WEBSITE ANDA
                   </span>
                   <div className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-white">
                     {getDashboardLicenseCode()}
@@ -2126,7 +2126,7 @@ export default function TenantDashboardPage() {
               {/* PANDUAN AKTIVASI CEPAT */}
               <div className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 text-xs space-y-2 text-neutral-300">
                 <strong className="text-white block font-bold">
-                  Cara Mengaktifkan Ekosistem di Toko Anda:
+                  Cara Mengaktifkan Ekosistem di Bisnis Anda:
                 </strong>
                 <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-neutral-400">
                   <li>Salin kode lisensi di atas: <code className="text-emerald-400 font-mono font-bold">{getDashboardLicenseCode()}</code>.</li>

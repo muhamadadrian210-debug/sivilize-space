@@ -5092,6 +5092,7 @@ export default function RakitWebPage() {
         onClose={() => setModalOpen(false)}
         initialSlug="website-rakitan"
         initialPlan="pro"
+        initialPrice={calculatedTotal}
         initialLayoutConfig={{
           grid_columns_desktop: selectedGrid === 'list' ? 'list' : (parseInt(selectedGrid) as 2 | 3 | 4) || 3,
           text_alignment: textAlign,

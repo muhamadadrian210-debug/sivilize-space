@@ -133,14 +133,14 @@ export const aiChatLimiter = new SlidingWindowRateLimiter({
   name: 'ai-chat',
 });
 
-// 2. Pendaftaran Toko: Max 5 pendaftaran per 10 menit per IP (mencegah spam database Supabase)
+// 2. Pendaftaran Website: Max 5 pendaftaran per 10 menit per IP (mencegah spam database Supabase)
 export const storeRegisterLimiter = new SlidingWindowRateLimiter({
   windowMs: 10 * 60 * 1000,
   max: 5,
   name: 'store-register',
 });
 
-// 3. Login Toko: Max 10 percobaan per menit per IP (lapisan awal sebelum lock akun 5x salah PIN)
+// 3. Login Dashboard Website: Max 10 percobaan per menit per IP (lapisan awal sebelum lock akun 5x salah PIN)
 export const authLoginLimiter = new SlidingWindowRateLimiter({
   windowMs: 60 * 1000,
   max: 10,

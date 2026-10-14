@@ -32,7 +32,7 @@ export default async function TenantStorePage({ params }: PageProps) {
     return (
       <div className="min-h-screen bg-[#090d16] text-white flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-6">
-          <span className="text-3xl">🏪</span>
+          <span className="text-3xl">🌐</span>
         </div>
         <h1 className="text-2xl font-bold text-slate-100 mb-2">
           Website &quot;{slug}&quot; Belum Terdaftar

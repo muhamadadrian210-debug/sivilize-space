@@ -73,7 +73,7 @@ const PUBLIC_TOUR_STEPS: TourStep[] = [
     description:
       'Beroperasi resmi di bawah PT Sivilize Corp Indonesia (NIB: 0207260103661, KBLI: 62199). Berjalan di atas Vercel Anycast Edge (SLA 99.8%) dan Cloud Database Supabase dengan isolasi tenant.',
     highlight: 'Badan Hukum Resmi Kemenkumham RI • SLA Anycast 99.8%',
-    suggestedPrompt: 'Apakah data toko dan transaksi saya aman di Sivilize Space?',
+    suggestedPrompt: 'Apakah data website dan transaksi saya aman di Sivilize Space?',
   },
 ];
 

@@ -56,11 +56,11 @@ export async function createMayarInvoice(
         },
         body: JSON.stringify({
           name: params.storeName,
-          email: `${params.slug}@sivilizespace.id`,
+          email: `${params.slug}@${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'sivilizecorp.my.id'}`,
           mobile: params.ownerPhone,
           amount: params.amount,
           description: params.itemDescription,
-          redirectUrl: `https://${params.slug}.sivilizespace.id/dashboard?payment=success&inv=${invoiceId}`,
+          redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://sivilizespace.vercel.app'}/dashboard?payment=success&inv=${invoiceId}`,
           metadata: {
             storeId: params.storeId,
             paymentType: params.paymentType,

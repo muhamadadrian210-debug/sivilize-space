@@ -27,14 +27,14 @@ export interface TourStep {
 
 const TOUR_STEPS: TourStep[] = [
   {
-    title: 'Selamat Datang di Pusat Kendali Toko Anda!',
+    title: 'Selamat Datang di Pusat Kendali Website Anda!',
     description:
       'Dashboard ini adalah pusat operasional website bisnis Anda. Dari sini Anda bisa mengatur menu, tata letak tampilan web di ponsel & PC, hingga menghubungkan aplikasi kasir dan meja QR.',
     badge: 'Langkah 1/5 • Pengenalan',
     defaultTip: 'Website Anda sudah langsung aktif di server Anycast Edge berkecepatan tinggi.',
     suggestedQuestions: [
       'Fitur apa saja yang ada di dashboard ini?',
-      'Apakah data toko saya aman di Supabase?',
+      'Apakah data website saya aman di Supabase?',
     ],
   },
   {
@@ -226,7 +226,7 @@ export function AIGuidedTour({ isOpen, onClose, onSwitchTab, store }: AIGuidedTo
                 </span>
               </div>
               <h3 className="text-xs sm:text-sm font-bold text-white">
-                Panduan Interaktif: {store?.store_name || 'Toko Mitra'}
+                Panduan Interaktif: {store?.store_name || 'Website Mitra'}
               </h3>
             </div>
           </div>

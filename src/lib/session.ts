@@ -127,7 +127,7 @@ export function authenticateTenantRequest(
   if (targetStoreId && verification.storeId !== targetStoreId) {
     return {
       authorized: false,
-      error: 'Pelanggaran Otorisasi (IDOR/BOLA): Anda tidak berhak mengelola data toko ini.',
+      error: 'Pelanggaran Otorisasi (IDOR/BOLA): Anda tidak berhak mengelola data website ini.',
     };
   }
 

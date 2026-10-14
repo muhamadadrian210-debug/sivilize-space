@@ -7,6 +7,8 @@ import { Mail, MapPin, Send, CheckCircle2 } from 'lucide-react';
 
 export default function KontakPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -14,9 +16,31 @@ export default function KontakPage() {
     message: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMsg('');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Gagal mengirim pesan.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setErrorMsg('Koneksi terganggu. Silakan coba kembali atau kirim email langsung ke sivilizecorpindonesia@gmail.com.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -103,6 +127,12 @@ export default function KontakPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <h3 className="font-bold text-base text-neutral-950 mb-4">Kirimkan Pertanyaan Anda</h3>
 
+                  {errorMsg && (
+                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs leading-relaxed">
+                      {errorMsg}
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-xs font-bold text-neutral-700 mb-1">Nama Lengkap</label>
                     <input
@@ -152,10 +182,11 @@ export default function KontakPage() {
 
                   <button
                     type="submit"
-                    className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+                    disabled={isSubmitting}
+                    className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Kirim Pesan Konsultasi</span>
+                    <span>{isSubmitting ? 'Mengirim Pesan...' : 'Kirim Pesan Konsultasi'}</span>
                   </button>
                 </form>
               )}

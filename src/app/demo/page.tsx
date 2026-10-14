@@ -36,7 +36,7 @@ export default function DemoPage() {
       slug: 'kopisenja',
       name: 'Kedai Kopi Senja',
       category: 'Kuliner, Kafe & FnB',
-      desc: 'Etalase menu artisan coffee Flores Bajawa & pastry. Coba langsung checkout WhatsApp di web.',
+      desc: 'Etalase menu artisan coffee Flores Bajawa & pastry. Coba langsung rincian pemesanan mandiri di web.',
       theme: 'Warm Cafe (Cokelat Hangat)',
       badge: 'Template Jadi (Rp 349k/thn)',
       badgeColor: 'bg-amber-100 text-amber-900',

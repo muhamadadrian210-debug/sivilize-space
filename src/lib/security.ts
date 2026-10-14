@@ -67,7 +67,7 @@ export const updateStoreSchema = z.object({
   logo_url: z.string().url().optional().nullable().or(z.literal('')),
   custom_domain: z
     .string()
-    .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i, 'Format domain tidak valid (contoh: tokoanda.com)')
+    .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i, 'Format domain tidak valid (contoh: bisnisanda.com)')
     .optional()
     .nullable()
     .or(z.literal('')),

@@ -22,6 +22,7 @@ import {
   QrCode,
   Barcode,
   AlertTriangle,
+  MessageSquare,
 } from 'lucide-react';
 
 interface CatalogTemplateProps {
@@ -764,6 +765,22 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                 </div>
 
                 <div className="flex flex-col gap-2 pt-2">
+                  {store.owner_phone && (
+                    <a
+                      href={`https://wa.me/${store.owner_phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                        `Halo ${store.store_name}, saya ${customerName} telah membuat pesanan melalui website:\n\nNo. Pesanan: ${orderId}\n${Object.values(cart)
+                          .map((item, idx) => `${idx + 1}. ${item.product.name} (${item.quantity}x) = ${formatRupiah(item.product.price * item.quantity)}`)
+                          .join('\n')}\n\nTotal: ${formatRupiah(totalAmount)}${customerNotes ? `\nCatatan: ${customerNotes}` : ''}${tableNumber ? `\nMeja: ${tableNumber}` : ''}`
+                      )}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Kirim Rincian ke WhatsApp Toko</span>
+                    </a>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleCopyOrderSummary}

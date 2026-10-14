@@ -130,8 +130,8 @@ const INDUSTRY_BUNDLES: IndustryBundleData[] = [
     name: 'Retail, Minimarket & Fashion Distro',
     shortName: '🛒 Retail & Minimarket',
     icon: ShoppingBag,
-    tagline: 'Website Etalase Online & POS Kasir Barcode Scanner',
-    badge: '2-in-1 POS & E-Commerce Suite',
+    tagline: 'Website Etalase Produk & POS Kasir Barcode Scanner',
+    badge: 'Website Katalog & Kasir SiKasir POS',
     colorScheme: {
       accent: 'emerald-500',
       bgAccent: 'bg-emerald-500/10',
@@ -142,10 +142,10 @@ const INDUSTRY_BUNDLES: IndustryBundleData[] = [
     includesDineLite: false,
     includedApps: [
       {
-        name: 'Website Katalog & Olshop Mandiri',
-        tag: 'Storefront Olshop',
-        desc: 'Etalase produk dengan varian warna/ukuran, checkout mandiri dengan QRIS otomatis langsung ke rekening Anda.',
-        highlight: '0% Potongan Komisi Penjualan',
+        name: 'Website Katalog & Profil Usaha Mandiri',
+        tag: 'Website Profil & Katalog',
+        desc: 'Etalase produk dengan varian warna/ukuran, profil bisnis terpercaya, dan tombol pesan langsung terhubung ke WhatsApp bisnis Anda (Bukan platform e-commerce rumit).',
+        highlight: '0% Komisi • Langsung ke WhatsApp',
       },
       {
         name: 'SiKasir POS Retail & Grosir',

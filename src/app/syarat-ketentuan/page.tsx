@@ -55,13 +55,16 @@ export default function SyaratKetentuanPage() {
             <div className="space-y-3">
               <h3 className="text-base sm:text-lg font-black text-neutral-950 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-lg bg-neutral-900 text-white text-xs flex items-center justify-center font-mono">2</span>
-                <span>Sifat Layanan: Sewa Website Mandiri (WaaS)</span>
+                <span>Sifat Layanan: Sewa Website Mandiri (WaaS Only) — Bukan Marketplace atau E-Commerce</span>
               </h3>
               <p>
-                Sivilize Space menyediakan layanan <em>Website-as-a-Service (WaaS)</em> berbasis sewa berkala (tahunan atau bulanan). Seluruh proses konfigurasi modul, pemilihan tata letak, dan pengisian konten diselesaikan secara mandiri di dalam website oleh Penyewa.
+                Sivilize Space menyediakan layanan murni <strong>Website-as-a-Service (WaaS)</strong> berbasis <strong>sewa website berkala</strong> (tahunan atau bulanan). Sivilize Space <strong>BUKAN merupakan marketplace</strong> (seperti pasar daring bersama yang menampung banyak toko) dan <strong>BUKAN platform e-commerce perantara</strong> yang memotong komisi transaksi penjualan.
               </p>
               <p>
-                Biaya sewa telah mencakup hak pemakaian perangkat lunak, infrastruktur server Global Anycast Edge SLA 99.8%, sertifikat SSL otomatis, dan subdomain resmi <code>namabisnis.sivilizecorp.my.id</code> (atau custom domain berbayar).
+                PT Sivilize Corp Indonesia <strong>TIDAK menampung dana transaksi penjualan</strong> milik Penyewa, tidak menyediakan rekening bersama (escrow) marketplace, dan memberlakukan <strong>0% potongan komisi penjualan produk</strong>. Seluruh transaksi pesanan, pembayaran pelanggan melalui WhatsApp, QRIS rekening merchant, maupun kasir fisik SiKasir POS adalah 100% hak mandiri dan hubungan langsung antara Penyewa dengan pelanggannya.
+              </p>
+              <p>
+                Biaya yang ditagihkan oleh Sivilize Space adalah murni <strong>biaya sewa infrastruktur website</strong> yang mencakup hak pemakaian perangkat lunak, infrastruktur server Global Anycast Edge SLA 99.8%, sertifikat SSL otomatis, subdomain resmi <code>namabisnis.sivilizecorp.my.id</code> (atau custom domain), serta fasilitas lisensi software kasir SiKasir POS dan Sivilize Dine Lite.
               </p>
             </div>
 

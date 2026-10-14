@@ -78,7 +78,7 @@ export default function LandingPage() {
             {/* Pill Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-200 text-xs font-mono font-semibold text-neutral-800 mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Platform Sewa Website No. 1 Indonesia • WaaS Infrastructure</span>
+              <span>Platform Sewa Website Mandiri No. 1 Indonesia • WaaS Only (Bukan Marketplace)</span>
             </div>
 
             {/* Main Headline */}
@@ -88,7 +88,7 @@ export default function LandingPage() {
 
             {/* Subheadline */}
             <p className="mt-6 text-base sm:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-              Solusi sewa website profesional siap pakai terbaik untuk bisnis dan UMKM Indonesia. Aktif dalam 60 detik mulai Rp 349.000/tahun. 100% selesai mandiri di website tanpa repot chat WhatsApp, transaksi QRIS otomatis, hosting Anycast Edge global SLA 99.8% bergaransi resmi PT Sivilize Corp Indonesia.
+              Layanan sewa website mandiri (WaaS Only) siap pakai untuk brand dan UMKM Indonesia. 100% website milik Anda sendiri tanpa potongan komisi penjualan (Bukan Marketplace bersama). Aktif instan mulai Rp 349.000/tahun dengan hosting Anycast Edge global SLA 99.8% dan include aplikasi kasir SiKasir POS & Dine Lite.
             </p>
 
             {/* Direct Action Group */}

@@ -46,7 +46,7 @@ export function Navbar({ onOpenOnboarding }: NavbarProps) {
               <span className="text-neutral-300">sivilizecorpindonesia@gmail.com</span>
             </a>
             <span className="hidden sm:inline text-neutral-700">•</span>
-            <span className="hidden sm:inline text-neutral-300 font-medium">0% Komisi Marketplace</span>
+            <span className="hidden sm:inline text-neutral-300 font-medium">Sewa Website Only • 0% Komisi Penjualan</span>
           </div>
         </div>
       </div>

@@ -83,4 +83,7 @@ export const productSchema = z.object({
   image_url: z.string().optional().nullable(),
   is_available: z.boolean().default(true),
   display_order: z.number().int().default(0),
+  stock: z.number().int().min(0).default(0).optional(),
+  barcode: z.string().max(64).optional().nullable(),
+  sku: z.string().max(64).optional().nullable(),
 });

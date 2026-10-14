@@ -103,12 +103,41 @@ async function handleVerify(req: NextRequest) {
     }
 
     // 4. Ambil katalog menu/layanan agar SiKasir POS & Dine Lite otomatis terisi 100%
-    const { data: products } = await supabaseAdmin
+    const currentConfig = (store.layout_config as any) || {};
+    const productMeta = currentConfig.product_meta || {};
+
+    const { data: rawProducts } = await supabaseAdmin
       .from('products')
       .select('*')
       .eq('store_id', store.id)
-      .eq('is_available', true)
       .order('display_order', { ascending: true });
+
+    const catalogItems = (rawProducts || []).map((p: any) => {
+      const meta = productMeta[p.id] || {};
+      const stock = p.stock !== undefined && p.stock !== null ? Number(p.stock) : (meta.stock !== undefined ? Number(meta.stock) : 10);
+      const barcode = p.barcode || meta.barcode || null;
+      const sku = p.sku || meta.sku || null;
+
+      return {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        category: p.category_tag,
+        image_url: p.image_url,
+        stock,
+        barcode,
+        sku,
+        is_available: stock <= 0 ? false : (p.is_available ?? true),
+      };
+    });
+
+    const tables = currentConfig.tables || [
+      { id: 'tbl-01', number: '01', name: 'Meja 01 (Indoor)', status: 'available' },
+      { id: 'tbl-02', number: '02', name: 'Meja 02 (Indoor)', status: 'available' },
+      { id: 'tbl-03', number: '03', name: 'Meja 03 (Outdoor)', status: 'available' },
+      { id: 'tbl-04', number: '04', name: 'Meja 04 (Outdoor)', status: 'available' },
+    ];
 
     return NextResponse.json({
       success: true,
@@ -126,14 +155,9 @@ async function handleVerify(req: NextRequest) {
       opening_hours: store.opening_hours || null,
       expired_at: store.expired_at || null,
       website_url: `https://${store.slug}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'sivilizecorp.my.id'}`,
-      catalog_items: (products as Product[] || []).map((p) => ({
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        category: p.category_tag,
-        image_url: p.image_url,
-      })),
+      catalog_items: catalogItems,
+      tables: metadata.isFoodBusiness ? tables : [],
+      sync_endpoint: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/v1/pos/sync-event`,
       message: metadata.isFoodBusiness
         ? 'Aktivasi Berhasil: Hak akses SiKasir POS dan Sivilize Dine Lite QR aktif 100%.'
         : 'Aktivasi Berhasil: Hak akses SiKasir POS aktif 100% (Preset Non-Makanan).',

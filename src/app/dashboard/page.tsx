@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import type { Store, Product, ThemeId, TemplateType, LayoutConfig, CustomPage } from '@/types/database';
+import type { Store, Product, ThemeId, TemplateType, LayoutConfig, CustomPage, TableConfig } from '@/types/database';
 import { formatRupiah } from '@/lib/utils';
 import { compressImageToWebP } from '@/lib/image-compressor';
 import {
@@ -45,6 +45,8 @@ import {
   Copy,
   MessageSquare,
   Inbox,
+  Barcode,
+  Utensils,
 } from 'lucide-react';
 import { OfficialInvoiceModal, type OfficialInvoiceData } from '@/components/billing/OfficialInvoiceModal';
 import { AIGuidedTour } from '@/components/dashboard/AIGuidedTour';
@@ -148,11 +150,26 @@ export default function TenantDashboardPage() {
     category_tag: 'Umum',
     image_url: '',
     is_available: true,
+    stock: 10,
+    barcode: '',
+    sku: '',
   });
   const [compressedImagePreview, setCompressedImagePreview] = useState<{
     dataUrl: string;
     sizeKb: number;
   } | null>(null);
+
+  // Dine Lite Restaurant Table Management state
+  const [tablesList, setTablesList] = useState<TableConfig[]>([
+    { id: 'tbl-01', number: '01', name: 'Meja 01 (Indoor)', status: 'available' },
+    { id: 'tbl-02', number: '02', name: 'Meja 02 (Indoor)', status: 'available' },
+    { id: 'tbl-03', number: '03', name: 'Meja 03 (Outdoor)', status: 'available' },
+    { id: 'tbl-04', number: '04', name: 'Meja 04 (Outdoor)', status: 'available' },
+  ]);
+  const [newTableNumber, setNewTableNumber] = useState('');
+  const [newTableName, setNewTableName] = useState('');
+  const [isAddingTable, setIsAddingTable] = useState(false);
+  const [copiedTableUrl, setCopiedTableUrl] = useState<string | null>(null);
 
   const populateStoreForm = (s: Store) => {
     setStoreForm({
@@ -221,6 +238,9 @@ export default function TenantDashboardPage() {
           populateStoreForm(parsed);
           if (parsed.layout_config) {
             setLayoutConfig(parsed.layout_config);
+            if (parsed.layout_config.tables && Array.isArray(parsed.layout_config.tables)) {
+              setTablesList(parsed.layout_config.tables);
+            }
           }
         } catch {
           // ignore
@@ -274,6 +294,9 @@ export default function TenantDashboardPage() {
       fetchInquiries(data.store.id);
       if (data.store.layout_config) {
         setLayoutConfig(data.store.layout_config);
+        if (data.store.layout_config.tables && Array.isArray(data.store.layout_config.tables)) {
+          setTablesList(data.store.layout_config.tables);
+        }
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Koneksi bermasalah.';
@@ -565,13 +588,122 @@ export default function TenantDashboardPage() {
     setIsSyncingKasir(true);
     setKasirSyncNotice('');
     try {
-      await fetchProducts(store.id);
-      setKasirSyncNotice('✓ Berhasil menyinkronkan menu & stok terbaru dari SiKasir POS 2-arah!');
+      const licenseCode = getDashboardLicenseCode();
+      const res = await fetch('/api/v1/pos/sync-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          license_key: licenseCode,
+          app: 'sikasir_pos',
+          action: 'fetch_catalog',
+        }),
+      });
+      const data = await res.json();
+      if (data.products && Array.isArray(data.products)) {
+        setProducts(data.products);
+      } else {
+        await fetchProducts(store.id);
+      }
+      if (data.store?.tables && Array.isArray(data.store.tables)) {
+        setTablesList(data.store.tables);
+      }
+      setKasirSyncNotice(`✓ Berhasil sinkronisasi 2-arah: ${data.products?.length || products.length} produk, stok fisik, & data meja kasir terhubung!`);
       setTimeout(() => setKasirSyncNotice(''), 4500);
     } catch {
       alert('Gagal menyinkronkan produk dari kasir.');
     } finally {
       setIsSyncingKasir(false);
+    }
+  };
+
+  const handleAdjustStock = async (product: Product, delta: number) => {
+    const currentStock = product.stock !== undefined ? product.stock : 10;
+    const newStock = Math.max(0, currentStock + delta);
+    const isAvail = newStock > 0;
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: product.id,
+          store_id: store?.id,
+          stock: newStock,
+          is_available: isAvail,
+        }),
+      });
+      if (res.ok) {
+        setProducts((prev) =>
+          prev.map((p) => (p.id === product.id ? { ...p, stock: newStock, is_available: isAvail } : p))
+        );
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleAddTable = async () => {
+    if (!newTableNumber.trim() || !store) return;
+    setIsAddingTable(true);
+    try {
+      const licenseCode = getDashboardLicenseCode();
+      const res = await fetch('/api/v1/pos/sync-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          license_key: licenseCode,
+          app: 'sivilize_dine_lite',
+          action: 'manage_table',
+          table: {
+            number: newTableNumber.trim().toUpperCase(),
+            name: newTableName.trim() || `Meja ${newTableNumber.trim().toUpperCase()}`,
+            status: 'available',
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.tables) {
+        setTablesList(data.tables);
+        setNewTableNumber('');
+        setNewTableName('');
+      }
+    } catch {
+      alert('Gagal menambahkan meja.');
+    } finally {
+      setIsAddingTable(false);
+    }
+  };
+
+  const handleCopyTableUrl = (tableNum: string) => {
+    const url = `https://${store?.slug}.sivilizecorp.my.id?table=${tableNum}&dine_mode=qr_meja`;
+    navigator.clipboard.writeText(url);
+    setCopiedTableUrl(tableNum);
+    setTimeout(() => setCopiedTableUrl(null), 2500);
+  };
+
+  const handleDeleteTable = async (tableNum: string) => {
+    if (!confirm(`Hapus Meja ${tableNum} dari sistem Dine Lite?`)) return;
+    try {
+      const licenseCode = getDashboardLicenseCode();
+      const res = await fetch('/api/v1/pos/sync-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          license_key: licenseCode,
+          app: 'sivilize_dine_lite',
+          action: 'delete_table',
+          table: {
+            number: tableNum,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.tables) {
+        setTablesList(data.tables);
+      } else {
+        setTablesList((prev) => prev.filter((t) => t.number !== tableNum));
+      }
+    } catch {
+      alert('Gagal menghapus meja.');
     }
   };
 
@@ -1182,6 +1314,9 @@ export default function TenantDashboardPage() {
                       category_tag: 'Umum',
                       image_url: '',
                       is_available: true,
+                      stock: 10,
+                      barcode: '',
+                      sku: '',
                     });
                     setCompressedImagePreview(null);
                     setIsProductModalOpen(true);
@@ -1205,7 +1340,7 @@ export default function TenantDashboardPage() {
               {products.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 rounded-2xl bg-white border border-neutral-200 flex items-center justify-between gap-4 shadow-xs"
+                  className="p-4 rounded-2xl bg-white border border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
                     {item.image_url ? (
@@ -1221,31 +1356,78 @@ export default function TenantDashboardPage() {
                     )}
 
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
                         <h4 className="font-extrabold text-sm text-neutral-950 truncate">
                           {item.name}
                         </h4>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 shrink-0">
                           {item.category_tag}
                         </span>
+                        {item.barcode && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-600 border border-neutral-200 shrink-0 flex items-center gap-0.5">
+                            <Barcode className="w-3 h-3 text-neutral-500" />
+                            {item.barcode}
+                          </span>
+                        )}
                       </div>
-                      <p className="text-xs font-black text-neutral-900 font-mono mt-0.5">
+                      <p className="text-xs font-black text-neutral-900 font-mono">
                         {formatRupiah(item.price)}
                       </p>
+                      
+                      {/* Live Stock Counter Stepper */}
+                      <div className="flex items-center gap-2 mt-1 text-xs">
+                        <span className="text-[11px] text-neutral-500">Stok Fisik:</span>
+                        <div className="flex items-center gap-1 bg-neutral-50 border border-neutral-200 rounded-lg px-1.5 py-0.5">
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustStock(item, -1)}
+                            className="w-4 h-4 rounded flex items-center justify-center text-neutral-600 hover:bg-neutral-200 cursor-pointer font-bold"
+                            title="Kurangi 1 Stok"
+                          >
+                            -
+                          </button>
+                          <span className={`font-mono font-bold text-xs px-1 ${
+                            (item.stock ?? 10) <= 0
+                              ? 'text-rose-600'
+                              : (item.stock ?? 10) <= 5
+                              ? 'text-amber-600'
+                              : 'text-neutral-900'
+                          }`}>
+                            {item.stock !== undefined ? item.stock : 10}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustStock(item, 1)}
+                            className="w-4 h-4 rounded flex items-center justify-center text-neutral-600 hover:bg-neutral-200 cursor-pointer font-bold"
+                            title="Tambah 1 Stok"
+                          >
+                            +
+                          </button>
+                        </div>
+                        {(item.stock ?? 10) <= 0 ? (
+                          <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded">
+                            Habis di Kasir
+                          </span>
+                        ) : (item.stock ?? 10) <= 5 ? (
+                          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded">
+                            Menipis
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
                     <button
                       type="button"
                       onClick={() => handleToggleProductStock(item)}
                       className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
-                        item.is_available
+                        item.is_available && (item.stock === undefined || item.stock > 0)
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : 'bg-rose-50 text-rose-700 border border-rose-200'
                       }`}
                     >
-                      {item.is_available ? (
+                      {item.is_available && (item.stock === undefined || item.stock > 0) ? (
                         <>
                           <ToggleRight className="w-4 h-4" />
                           <span>Ready</span>
@@ -1269,6 +1451,9 @@ export default function TenantDashboardPage() {
                           category_tag: item.category_tag || 'Umum',
                           image_url: item.image_url || '',
                           is_available: item.is_available,
+                          stock: item.stock !== undefined ? item.stock : 10,
+                          barcode: item.barcode || '',
+                          sku: item.sku || '',
                         });
                         setCompressedImagePreview(
                           item.image_url ? { dataUrl: item.image_url, sizeKb: 0 } : null
@@ -2437,6 +2622,131 @@ export default function TenantDashboardPage() {
                 );
               })()}
 
+              {/* SUB-PANEL: MANAJEMEN MEJA RESTORAN (SIVILIZE DINE LITE QR) - KHUSUS F&B */}
+              {detectIsFoodCategory(store.category || '') && (
+                <div className="p-6 rounded-2xl bg-neutral-900 border border-amber-500/30 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                        <Utensils className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-base font-bold text-white">
+                            🍽️ Manajemen Meja & Scan QR Pelanggan (Sivilize Dine Lite)
+                          </h3>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300">
+                            {tablesList.length} Meja Aktif
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-400">
+                          Tamu scan QR meja → Order otomatis terhubung ke Kitchen Display & kasir SiKasir dengan nomor meja terikat.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleSyncFromKasir}
+                      disabled={isSyncingKasir}
+                      className="px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncingKasir ? 'animate-spin' : ''}`} />
+                      <span>Sinkronkan Status Meja</span>
+                    </button>
+                  </div>
+
+                  {/* Form Tambah Meja Baru */}
+                  <div className="p-3.5 rounded-xl bg-neutral-950/60 border border-neutral-800 flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={newTableNumber}
+                      onChange={(e) => setNewTableNumber(e.target.value)}
+                      placeholder="Nomor (misal: 05)"
+                      className="w-full sm:w-32 px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-700 text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                    <input
+                      type="text"
+                      value={newTableName}
+                      onChange={(e) => setNewTableName(e.target.value)}
+                      placeholder="Nama Meja (misal: Meja 05 - Rooftop)"
+                      className="flex-1 px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-700 text-white text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddTable}
+                      disabled={isAddingTable || !newTableNumber.trim()}
+                      className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>{isAddingTable ? 'Menyimpan...' : 'Tambah Meja'}</span>
+                    </button>
+                  </div>
+
+                  {/* Daftar Grid Meja */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    {tablesList.map((tbl) => {
+                      const tableUrl = `https://${store.slug}.sivilizecorp.my.id?table=${tbl.number}&dine_mode=qr_meja`;
+                      const isCopied = copiedTableUrl === tbl.number;
+                      return (
+                        <div
+                          key={tbl.id || tbl.number}
+                          className="p-3.5 rounded-xl bg-neutral-950/80 border border-neutral-800 flex flex-col justify-between space-y-2.5 hover:border-neutral-700 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono font-black text-amber-400 text-sm">
+                              MEJA {tbl.number}
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300">
+                              Ready
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-neutral-300 font-medium truncate">
+                            {tbl.name}
+                          </p>
+
+                          <div className="pt-2 border-t border-neutral-800/80 flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleCopyTableUrl(tbl.number)}
+                              className="flex-1 py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                              title="Salin Link QR Meja ini untuk dicetak stiker meja"
+                            >
+                              <Copy className="w-3 h-3 text-amber-400" />
+                              <span>{isCopied ? '✓ Tersalin!' : 'Link QR'}</span>
+                            </button>
+                            <a
+                              href={tableUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors"
+                              title="Buka Pratinjau Tampilan Meja"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteTable(tbl.number)}
+                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-900/60 text-neutral-400 hover:text-rose-300 transition-colors cursor-pointer"
+                              title="Hapus Meja"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-neutral-400 flex items-center gap-1.5">
+                    <QrCode className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span>
+                      Cetak Link QR di atas pada akrilik meja resto Anda. Tamu cukup scan dengan kamera smartphone tanpa perlu download aplikasi.
+                    </span>
+                  </p>
+                </div>
+              )}
+
               {/* PANDUAN AKTIVASI CEPAT */}
               <div className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 text-xs space-y-2 text-neutral-300">
                 <strong className="text-white block font-bold">
@@ -2637,25 +2947,88 @@ export default function TenantDashboardPage() {
                 />
               </div>
 
-              <div>
-                <label className="block font-bold text-neutral-700 mb-1">Harga (Rupiah):</label>
-                <input
-                  type="number"
-                  value={productForm.price}
-                  onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-neutral-700 mb-1">Harga (Rupiah):</label>
+                  <input
+                    type="number"
+                    value={productForm.price}
+                    onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-neutral-700 mb-1">Kategori Tag:</label>
+                  <input
+                    type="text"
+                    value={productForm.category_tag}
+                    onChange={(e) => setProductForm({ ...productForm, category_tag: e.target.value })}
+                    placeholder="Contoh: Minuman, Makanan"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-medium text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
+                  />
+                </div>
               </div>
 
+              {/* STOK FISIK & SKU */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-neutral-700 mb-1">
+                    Stok Fisik (Live Sync):
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={productForm.stock !== undefined ? productForm.stock : 10}
+                    onChange={(e) => setProductForm({ ...productForm, stock: Math.max(0, parseInt(e.target.value) || 0) })}
+                    placeholder="Contoh: 50"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
+                  />
+                  <span className="text-[10px] text-neutral-400 mt-0.5 block">0 = Terkunci Habis di Toko</span>
+                </div>
+                <div>
+                  <label className="block font-bold text-neutral-700 mb-1">
+                    SKU / Kode Unik:
+                  </label>
+                  <input
+                    type="text"
+                    value={productForm.sku || ''}
+                    onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+                    placeholder="Contoh: KPS-01"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
+                  />
+                  <span className="text-[10px] text-neutral-400 mt-0.5 block">Opsional / Kode Rak</span>
+                </div>
+              </div>
+
+              {/* BARCODE SCANNER USB / KAMERA */}
               <div>
-                <label className="block font-bold text-neutral-700 mb-1">Kategori Tag:</label>
-                <input
-                  type="text"
-                  value={productForm.category_tag}
-                  onChange={(e) => setProductForm({ ...productForm, category_tag: e.target.value })}
-                  placeholder="Contoh: Minuman, Makanan, Jasa"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-medium text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
-                />
+                <label className="block font-bold text-neutral-700 mb-1">
+                  Barcode Produk (Scanner USB/Kamera SiKasir POS):
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={productForm.barcode || ''}
+                      onChange={(e) => setProductForm({ ...productForm, barcode: e.target.value })}
+                      placeholder="Scan barcode USB / ketik (misal: 8991234567890)"
+                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-neutral-50 border border-neutral-200 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-neutral-950"
+                    />
+                    <Barcode className="w-4 h-4 text-neutral-400 absolute left-2.5 top-3" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const randomBarcode = '899' + Math.floor(1000000000 + Math.random() * 9000000000);
+                      setProductForm({ ...productForm, barcode: randomBarcode });
+                    }}
+                    title="Generate Barcode Otomatis EAN-13"
+                    className="px-3 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[11px] font-semibold transition-colors shrink-0"
+                  >
+                    Auto EAN-13
+                  </button>
+                </div>
+                <span className="text-[10px] text-neutral-400 mt-0.5 block">Dapat discan kasir SiKasir POS & kamera smartphone</span>
               </div>
 
               <div>

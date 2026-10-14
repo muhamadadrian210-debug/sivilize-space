@@ -22,6 +22,14 @@ export type StoreSectionKey =
   | 'testimonials'
   | 'faq';
 
+export interface TableConfig {
+  id: string;
+  number: string;
+  name: string;
+  capacity?: number;
+  status: 'available' | 'occupied' | 'reserved';
+}
+
 export interface LayoutConfig {
   grid_columns_desktop: 2 | 3 | 4 | 'list';
   grid_columns_mobile: 1 | 2;
@@ -47,6 +55,21 @@ export interface LayoutConfig {
     faq?: boolean;
   };
   ecosystem_license_code?: string | null;
+  tables?: TableConfig[];
+  product_meta?: Record<string, { stock?: number; barcode?: string | null; sku?: string | null }>;
+  inquiries?: Array<{
+    id: string;
+    type: 'consultation' | 'reservation' | 'order';
+    customer_name: string;
+    customer_phone: string;
+    details: string;
+    total_amount?: number;
+    notes?: string;
+    status: 'pending' | 'contacted' | 'completed';
+    created_at: string;
+    table_number?: string;
+    order_source?: string;
+  }>;
 }
 
 export interface CustomPage {
@@ -103,6 +126,9 @@ export interface Product {
   category_tag: string;
   is_available: boolean;
   display_order: number;
+  stock?: number;
+  barcode?: string | null;
+  sku?: string | null;
   created_at: string;
   updated_at: string;
 }

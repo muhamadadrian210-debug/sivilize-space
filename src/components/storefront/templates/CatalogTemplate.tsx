@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import type { Store, Product } from '@/types/database';
 import { formatRupiah } from '@/lib/utils';
@@ -18,6 +18,10 @@ import {
   Copy,
   Flame,
   Coffee,
+  UtensilsCrossed,
+  QrCode,
+  Barcode,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface CatalogTemplateProps {
@@ -38,9 +42,24 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
   const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [customerNotes, setCustomerNotes] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [tableNumber, setTableNumber] = useState<string | null>(null);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [copiedOrder, setCopiedOrder] = useState(false);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+
+  // Deteksi nomor meja dari URL parameter (?table=04 atau ?meja=04)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tbl = params.get('table') || params.get('meja');
+      if (tbl) {
+        setTableNumber(tbl.toUpperCase());
+      }
+    }
+  }, []);
 
   // Ekstrak kategori unik
   const categories = useMemo(() => {
@@ -51,16 +70,18 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
     return ['Semua', ...Array.from(set)];
   }, [products]);
 
-  // Filter produk berdasarkan kategori & pencarian
+  // Filter produk berdasarkan kategori & pencarian (termasuk Barcode & SKU)
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchCat =
         selectedCategory === 'Semua' || p.category_tag === selectedCategory;
+      const q = searchQuery.trim().toLowerCase();
       const matchSearch =
-        !searchQuery.trim() ||
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.description &&
-          p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+        (p.sku && p.sku.toLowerCase().includes(q));
       return matchCat && matchSearch;
     });
   }, [products, selectedCategory, searchQuery]);
@@ -78,12 +99,20 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
   }, [cart]);
 
   const addToCart = (product: Product) => {
+    // Validasi ketersediaan dan batas stok fisik
+    if (!product.is_available) return;
+    if (product.stock !== undefined && product.stock <= 0) return;
+
     setCart((prev) => {
       const existing = prev[product.id];
-      const newQty = existing ? existing.quantity + 1 : 1;
+      const currentQty = existing ? existing.quantity : 0;
+      if (product.stock !== undefined && currentQty >= product.stock) {
+        alert(`Maaf, stok ${product.name} hanya tersisa ${product.stock} item.`);
+        return prev;
+      }
       return {
         ...prev,
-        [product.id]: { product, quantity: newQty },
+        [product.id]: { product, quantity: currentQty + 1 },
       };
     });
   };
@@ -106,15 +135,31 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
 
   const handleConfirmWebOrder = async () => {
     if (totalItems === 0) return;
-    const generatedId = `WEB-${Math.floor(100000 + Math.random() * 900000)}`;
+    if (!customerName.trim() || !customerPhone.trim()) {
+      alert('Mohon isi Nama Pemesan dan Nomor WhatsApp Anda.');
+      return;
+    }
+
+    setIsSubmittingOrder(true);
+    const generatedId = tableNumber
+      ? `DINE-M${tableNumber}-${Math.floor(1000 + Math.random() * 9000)}`
+      : `WEB-${Math.floor(100000 + Math.random() * 900000)}`;
+
     setOrderId(generatedId);
-    setOrderSuccess(true);
 
     try {
       const itemsList = Object.values(cart)
         .map((item) => `${item.product.name} (${item.quantity}x)`)
         .join(', ');
 
+      const itemsPayload = Object.values(cart).map((item) => ({
+        product_id: item.product.id,
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price,
+      }));
+
+      // 1. Simpan ke sistem Inquiries toko
       await fetch('/api/store/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -122,15 +167,41 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
           store_id: store.id,
           slug: store.slug,
           type: 'order',
-          customer_name: 'Pelanggan Website (Self-Order)',
-          customer_phone: store.owner_phone || '-',
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone.trim(),
           details: `Item: ${itemsList}`,
           total_amount: totalAmount,
-          notes: customerNotes || '',
+          notes: `${customerNotes ? customerNotes + ' • ' : ''}${tableNumber ? 'Nomor Meja: ' + tableNumber : 'Takeaway / Web Order'}`,
         }),
       });
+
+      // 2. Kirim ke sync-event webhook agar stok otomatis terpotong 2-arah di SiKasir POS & web
+      const licenseCode = store.ecosystem_license_code || (store.layout_config as any)?.ecosystem_license_code;
+      if (licenseCode) {
+        await fetch('/api/v1/pos/sync-event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            license_key: licenseCode,
+            app: tableNumber ? 'sivilize_dine_lite' : 'sikasir_pos',
+            action: 'create_transaction',
+            transaction: {
+              order_id: generatedId,
+              cashier_name: customerName.trim(),
+              payment_method: 'QRIS',
+              total_amount: totalAmount,
+              table_number: tableNumber || undefined,
+              items: itemsPayload,
+            },
+          }),
+        }).catch(() => null);
+      }
+
+      setOrderSuccess(true);
     } catch {
-      // Non-blocking
+      setOrderSuccess(true);
+    } finally {
+      setIsSubmittingOrder(false);
     }
   };
 
@@ -139,6 +210,8 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
     setOrderSuccess(false);
     setIsCartOpen(false);
     setCustomerNotes('');
+    setCustomerName('');
+    setCustomerPhone('');
   };
 
   const handleCopyOrderSummary = () => {
@@ -225,6 +298,15 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
             filter: `blur(${store.layout_config.background_blur ?? 0}px)`,
           }}
         />
+      )}
+
+      {/* Sivilize Dine Lite Table Mode Banner */}
+      {tableNumber && (
+        <div className="relative z-20 bg-amber-500/20 border-b border-amber-500/30 text-amber-950 dark:text-amber-200 px-4 py-2.5 text-xs text-center font-bold flex items-center justify-center gap-2 backdrop-blur-md">
+          <UtensilsCrossed className="w-4 h-4 text-amber-600 shrink-0" />
+          <span>Sivilize Dine Lite • Mode Self-Order MEJA {tableNumber}</span>
+          <span className="hidden sm:inline text-[11px] font-normal opacity-80">(Pesanan masuk otomatis ke Kasir & Dapur)</span>
+        </div>
       )}
 
       {/* 1. Header & Hero Banner */}
@@ -403,9 +485,17 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                       )}
 
                       <div className="min-w-0">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--theme-bg)] text-[var(--theme-text)] border border-[var(--theme-border)]">
-                          {product.category_tag}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--theme-bg)] text-[var(--theme-text)] border border-[var(--theme-border)]">
+                            {product.category_tag}
+                          </span>
+                          {product.barcode && (
+                            <span className="text-[10px] font-mono opacity-65 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[var(--theme-bg)] border border-[var(--theme-border)]">
+                              <Barcode className="w-2.5 h-2.5" />
+                              {product.barcode}
+                            </span>
+                          )}
+                        </div>
                         <h3 className="font-extrabold text-sm sm:text-base mt-1 truncate">
                           {product.name}
                         </h3>
@@ -414,14 +504,31 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                             {product.description}
                           </p>
                         )}
-                        <p className="font-black text-sm text-[var(--theme-accent)] mt-1">
-                          {formatRupiah(product.price)}
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="font-black text-sm text-[var(--theme-accent)]">
+                            {formatRupiah(product.price)}
+                          </p>
+                          {product.stock !== undefined && (
+                            product.stock <= 0 ? (
+                              <span className="text-[10px] font-bold text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">
+                                Stok Habis
+                              </span>
+                            ) : product.stock <= 5 ? (
+                              <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                                Sisa {product.stock}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] opacity-60">
+                                Stok: {product.stock}
+                              </span>
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
 
                     <div className="shrink-0">
-                      {product.is_available ? (
+                      {product.is_available && (product.stock === undefined || product.stock > 0) ? (
                         qtyInCart > 0 ? (
                           <div className="flex items-center gap-2 bg-[var(--theme-bg)] border border-[var(--theme-border)] rounded-full px-2 py-1 shadow-xs">
                             <button
@@ -450,7 +557,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                         )
                       ) : (
                         <span className="text-[11px] font-bold text-rose-500 bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/20">
-                          Habis
+                          Stok Habis
                         </span>
                       )}
                     </div>
@@ -475,10 +582,22 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                       <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-black/60 text-white backdrop-blur-xs">
                         {product.category_tag}
                       </span>
+                      {product.barcode && (
+                        <span className="absolute bottom-2 left-2 text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/70 text-white/90 backdrop-blur-xs flex items-center gap-0.5">
+                          <Barcode className="w-2.5 h-2.5" />
+                          {product.barcode}
+                        </span>
+                      )}
                     </div>
                   ) : (
-                    <div className="w-full h-24 rounded-xl mb-3 bg-[var(--theme-bg)] flex items-center justify-center border border-[var(--theme-border)]">
+                    <div className="w-full h-24 rounded-xl mb-3 bg-[var(--theme-bg)] flex items-center justify-center border border-[var(--theme-border)] relative">
                       <Coffee className="w-8 h-8 opacity-25 text-[var(--theme-accent)]" />
+                      {product.barcode && (
+                        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--theme-card)] border border-[var(--theme-border)] text-xs opacity-75 flex items-center gap-0.5">
+                          <Barcode className="w-2.5 h-2.5" />
+                          {product.barcode}
+                        </span>
+                      )}
                     </div>
                   )}
 
@@ -489,9 +608,26 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                       </h3>
                     </div>
                     {product.description && (
-                      <p className="text-xs opacity-75 line-clamp-2 mb-3 leading-relaxed">
+                      <p className="text-xs opacity-75 line-clamp-2 mb-2 leading-relaxed">
                         {product.description}
                       </p>
+                    )}
+                    {product.stock !== undefined && (
+                      <div className="mb-2">
+                        {product.stock <= 0 ? (
+                          <span className="text-[10px] font-bold text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                            Stok Habis
+                          </span>
+                        ) : product.stock <= 5 ? (
+                          <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                            Sisa {product.stock} pcs
+                          </span>
+                        ) : (
+                          <span className="text-[10px] opacity-60 font-medium">
+                            Stok: {product.stock} pcs
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -500,7 +636,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                       {formatRupiah(product.price)}
                     </span>
 
-                    {product.is_available ? (
+                    {product.is_available && (product.stock === undefined || product.stock > 0) ? (
                       qtyInCart > 0 ? (
                         <div className="flex items-center gap-2 bg-[var(--theme-bg)] border border-[var(--theme-border)] rounded-full px-2 py-1 shadow-xs">
                           <button
@@ -529,7 +665,7 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                       )
                     ) : (
                       <span className="text-[11px] font-bold text-rose-500 bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/20">
-                        Habis
+                        Stok Habis
                       </span>
                     )}
                   </div>
@@ -679,16 +815,64 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                     </div>
                   ))}
 
-                  <div className="pt-2">
-                    <label className="block text-xs font-semibold opacity-80 mb-1">
-                      Catatan Tambahan (Opsional):
-                    </label>
-                    <textarea
-                      value={customerNotes}
-                      onChange={(e) => setCustomerNotes(e.target.value)}
-                      placeholder="Contoh: Permintaan khusus, preferensi layanan, dll..."
-                      className="w-full text-xs rounded-xl p-3 bg-[var(--theme-bg)] border border-[var(--theme-border)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)] resize-none h-16"
-                    />
+                  {/* Identitas Pemesan & Nomor Meja */}
+                  <div className="pt-2 border-t border-[var(--theme-border)] space-y-2.5">
+                    {tableNumber ? (
+                      <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200">
+                        <span className="font-bold flex items-center gap-1.5">
+                          <UtensilsCrossed className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Dine Lite QR Meja:</span>
+                        </span>
+                        <span className="font-mono font-black text-amber-700 dark:text-amber-300">
+                          MEJA {tableNumber}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="p-2 rounded-xl bg-[var(--theme-bg)] border border-[var(--theme-border)] flex items-center justify-between text-[11px] opacity-80">
+                        <span>Layanan Pesanan:</span>
+                        <span className="font-bold">Takeaway / Pembelian Web</span>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-[11px] font-bold opacity-90 mb-1">
+                        Nama Pemesan <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        placeholder="Contoh: Budi Santoso"
+                        className="w-full text-xs rounded-xl px-3 py-2 bg-[var(--theme-bg)] border border-[var(--theme-border)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold opacity-90 mb-1">
+                        Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        placeholder="Contoh: 081234567890"
+                        className="w-full text-xs rounded-xl px-3 py-2 bg-[var(--theme-bg)] border border-[var(--theme-border)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)] font-mono"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold opacity-80 mb-1">
+                        Catatan Tambahan (Opsional):
+                      </label>
+                      <textarea
+                        value={customerNotes}
+                        onChange={(e) => setCustomerNotes(e.target.value)}
+                        placeholder="Contoh: Jangan terlalu manis, sambal dipisah, dll..."
+                        className="w-full text-xs rounded-xl p-2.5 bg-[var(--theme-bg)] border border-[var(--theme-border)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)] resize-none h-14"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -700,11 +884,12 @@ export function CatalogTemplate({ store, products }: CatalogTemplateProps) {
                     </span>
                   </div>
                   <button
+                    disabled={isSubmittingOrder || !customerName.trim() || !customerPhone.trim()}
                     onClick={handleConfirmWebOrder}
-                    className="w-full py-3.5 rounded-xl bg-[var(--theme-accent)] hover:opacity-90 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+                    className="w-full py-3.5 rounded-xl bg-[var(--theme-accent)] hover:opacity-90 disabled:opacity-40 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Konfirmasi Pesanan Mandiri di Web</span>
+                    <span>{isSubmittingOrder ? 'Memproses Pesanan...' : tableNumber ? `Konfirmasi Pesanan MEJA ${tableNumber}` : 'Konfirmasi Pesanan Mandiri di Web'}</span>
                   </button>
                 </div>
               </>

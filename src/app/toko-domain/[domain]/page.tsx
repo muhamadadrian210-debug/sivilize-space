@@ -57,7 +57,21 @@ export default async function CustomDomainStorePage({ params }: PageProps) {
     .eq('store_id', store.id)
     .order('display_order', { ascending: true });
 
-  const products = (productsData || []) as Product[];
+  const productMeta = (store.layout_config as any)?.product_meta || {};
+  const products = (productsData || []).map((p: any) => {
+    const meta = productMeta[p.id] || {};
+    const stock = p.stock !== undefined && p.stock !== null ? Number(p.stock) : (meta.stock !== undefined ? Number(meta.stock) : 10);
+    const barcode = p.barcode || meta.barcode || null;
+    const sku = p.sku || meta.sku || null;
+
+    return {
+      ...p,
+      stock,
+      barcode,
+      sku,
+      is_available: stock <= 0 ? false : (p.is_available ?? true),
+    } as Product;
+  });
 
   return (
     <StorefrontView
